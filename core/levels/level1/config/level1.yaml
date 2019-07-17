@@ -1,0 +1,9 @@
+imports:
+- path: bucket.jinja
+
+resources:
+- name: bucket
+  type: bucket.jinja
+  properties:
+    predefinedAcl: publicRead
+    randomSeed: //bucket_nonce//
