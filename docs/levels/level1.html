@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<title>GCP CTF</title>
+<link rel= "stylesheet" type= "text/css" href= "./static/style.css">
+<link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<header>
+<div id="nav">
+<center><h1>GCP CTF</h1></center>
+</div>
+</header>
+<section>
+<div class=page>
+    
+<center>
+<p>This CTF is designed to help teach students about Google Cloud Platform and common security problems that need to be considered when using it.  It is inspired by the excellent AWS <a href="http://flaws.cloud">flAWS</a> challenge by Scott Piper at <a href="https://summitroute.com/">Summit Route</a>.  To get started, you will need access to a Google Cloud Platform account.  If you do not have one, you can create one with $300 in credits via GCP's <a href="https://codelabs.developers.google.com/codelabs/cpb100-free-trial">free trial</a>.  Then, using the web console, you can create a project that you'll then use to complete the levels.  For each level, you can either use Google Cloud Shell from the console or download the <a href="https://cloud.google.com/sdk/docs/downloads-interactive" class="lil_button">Google Cloud SDK</a> locally. gl;hf
+<h2>Level 1</h2>
+<p>The password for the next level is in a file in the Google Cloud Storage bucket <i>level1-577553251</i></p>
+<button class="accordion">Hint 1</button>
+<div class="panel">
+  <p>You can list a bucket’s contents with this command:</p>
+  <pre>gsutil ls gs://level1-577553251/</pre>
+</div>
+
+<button class="accordion">Hint 2</button>
+<div class="panel">
+  <p>You can download the contents of a bucket to your local machine with this command:</p>
+  <pre>gsutil cp gs://level1-577553251/secret.txt .</pre>
+</div>
+
+<p>Once you've located the password, use any username with the provided password to progress levels.</p>
+<p>
+<a href="../level2" class="big_button">Level 2</a>
+</center>
+
+</div>
+</section>
+<p>
+<p>
+<p>
+<footer class="clearfix">
+        <center>PSU CTF: Work done under NSF Award #1821841</center>
+</footer>
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="./static/accordion.js"></script>
+<script>
+           $(function(){
+                   $(window).scroll(function(){
+                           var winTop = $(this).scrollTop();
+                           if(winTop >= 10){
+                                   $("body").addClass("shrink-header");
+                           } else{
+                                   $("body").removeClass("shrink-header");
+                           }
+                   });
+           });
+</script>
+</body>
+</html>
