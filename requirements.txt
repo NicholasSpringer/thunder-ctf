@@ -1,6 +1,10 @@
-# REST client apis
+# Google REST client apis
 google-api-python-client
 google-auth
 
 # Cloud client apis
 google-cloud-storage
+
+# SSH keys
+cryptography
+gitpython

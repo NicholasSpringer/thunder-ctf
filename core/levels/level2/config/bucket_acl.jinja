@@ -1,0 +1,16 @@
+{% set BUCKET_NAME = env['name']+ '-' + env["deployment"]+ "-" + properties["nonce"] %}
+
+resources:
+- type: storage.v1.bucket
+  name: {{ BUCKET_NAME }}
+  properties:
+    predefinedAcl: {{ properties['predefinedAcl'] }}
+    projection: full
+    location: US
+    storageClass: STANDARD
+- type: storage.v1.bucketAccessControl
+  name: bucket-{{ env['deployment'] }}-acl-{{ properties['service_account']}}
+  properties:
+    bucket: {{ BUCKET_NAME }}
+    entity: user-{{ properties['service_account'] }}
+    role: properties['service_account_role']

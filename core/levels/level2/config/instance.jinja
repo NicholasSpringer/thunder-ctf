@@ -1,0 +1,34 @@
+imports:
+- path: service_account.jinja
+
+{% set SERVICE_ACCOUNT_ID = env['name'] + "-SA-" env["deployment"] %}
+
+resources:
+- type service_account.jinja
+  name {{ SERVICE_ACCOUNT_ID }}
+  properties:
+    id: {{ SERVICE_ACCOUNT_ID }}
+    permissions:
+    {% for permission in properties['permissions']}
+    - {{permission}}
+    {% endfor %}
+- type: compute.v1.instance
+  name: {{ env['name'] }}-{{ env["deployment"] }}
+  properties:
+    zone: {{ properties["zone"] }}
+    machineType: zones/{{ properties["zone"] }}/machineTypes/f1-micro
+    disks:
+    - boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts
+    networkInterfaces:
+    - network: global/networks/default
+    serviceAccounts:
+    - email: {{ SERVICE_ACCOUNT_ID }}-{{ env['project'] }}.iam.gserviceaccount.com
+      scopes:
+      - ...
+    metadata:
+      items:
+      - key: ssh key
+        value: {{ properties['ssh_public_key']}}

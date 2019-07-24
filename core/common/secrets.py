@@ -1,7 +1,6 @@
 import json
 import random
 import hashlib
-import warnings
 import os
 
 import google.auth

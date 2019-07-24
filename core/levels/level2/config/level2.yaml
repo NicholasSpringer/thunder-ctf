@@ -1,0 +1,27 @@
+imports:
+- path: bucket.jinja
+- path: service_account.jinja
+- path: instance.jinja
+
+resources:
+- name: level2-access
+  type: service_account.jinja
+  properties:
+    id: level2-access
+    permissions: 
+    - compute.instances.get
+    - compute.instances.list
+- name: bucket
+  type: bucket_acl.jinja
+  properties:
+    predefinedAcl: private
+    nonce: //nonce//
+    service_account: level2-access
+    service_account_role: READER
+- name: log-instance
+  type: instance.jinja
+  properties:
+    zone: us-west1-b
+    ssh_public_key: //ssh_public_key//
+    permissions:
+    - logging....-----------------------------

@@ -1,5 +1,4 @@
 import random
-import warnings
 
 from google.cloud import storage
 
@@ -9,6 +8,10 @@ LEVEL_NAME = 'level1'
 
 
 def create():
+    # Make sure level isn't already deployed
+    if LEVEL_NAME in deployments.list_deployments():
+        raise Exception(f'Level {LEVEL_NAME} has already been deployed. '
+        'To reload the level, first destroy the running instance.')
     # Create randomized bucket name to avoid namespace conflict
     bucket_nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'bucket-{LEVEL_NAME}-{bucket_nonce}'
@@ -29,9 +32,12 @@ def create():
 
 
 def destroy():
+    # Make sure level is deployed
+    if not LEVEL_NAME in deployments.list_deployments():
+        raise Exception(f'Level {LEVEL_NAME} is not currently deployed')
     print('Level tear-down started for: '+ LEVEL_NAME)
     # Find bucket name from deployment label
-    bucket_nonce = deployments.get_labels('level1')['bucket_nonce']
+    bucket_nonce = deployments.get_labels(LEVEL_NAME)['bucket_nonce']
     bucket_name = f'bucket-{LEVEL_NAME}-{bucket_nonce}'
     # Delete secret from bucket
     storage_client = storage.Client()

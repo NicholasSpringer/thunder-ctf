@@ -1,4 +1,3 @@
-import warnings
 import random
 import os
 import time
@@ -107,6 +106,7 @@ def wait_for_operation(op_name, deployment_api, project_id):
     print(f'[{int(t/60)}m {t%60}s] '
           f'Deployment operation finished. Status: {op_status}')
 
+
 def list_deployments():
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
@@ -119,5 +119,3 @@ def list_deployments():
     for deployment in deployments_list:
         deployed_level_names.append(deployment['name'])
     return deployed_level_names
-
-    
