@@ -56,7 +56,9 @@ def help():
     print("""Available commands:
     python3 gcp-vulnerable.py create [level]
     python3 gcp-vulnerable.py destroy [level]
-    python3 gcp-vulnerable.py help""")
+    python3 gcp-vulnerable.py help
+    python3 gcp-vulnerable.py list_levels
+    python3 gcp-vulnerable.py list_active_levels""")
     exit()
 
 

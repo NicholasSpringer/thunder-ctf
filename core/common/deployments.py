@@ -49,8 +49,12 @@ def insert(level_name, config_file, template_files=[],
             "value": labels[key]
         })
     # Send insert request, get operation name
-    op_name = deployment_api.deployments().insert(
-        project=project_id, body=request_body).execute()['name']
+    operation = deployment_api.deployments().insert(
+        project=project_id, body=request_body).execute()
+    op_name = operation['name']
+    # If error occurred in deployment, raise it
+    if 'error' in operation.keys():
+        raise Exception(operation['error'])
     print('Deployment insertion started.')
     wait_for_operation(op_name, deployment_api, project_id)
     print('Deployment insertion finished.')
@@ -63,7 +67,11 @@ def delete(level_name):
         'deploymentmanager', 'v2', credentials=credentials)
     # Send delete request
     op_name = deployment_api.deployments().delete(
-        project=project_id, deployment=level_name).execute()['name']
+        project=project_id, deployment=level_name).execute()
+    op_name = operation['name']
+    # If error occurred in deployment, raise it
+    if 'error' in operation.keys():
+        raise Exception(operation['error'])
     print('Deployment deletion started.')
     wait_for_operation(op_name, deployment_api, project_id)
     print('Deployment deletion finished.')
@@ -113,9 +121,26 @@ def list_deployments():
     deployment_api = googleapiclient.discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
     # Get list of deployments
-    deployments_list = deployment_api.deployments().list(
-        project=project_id).execute()['deployments']
+    try:
+        deployments_list = deployment_api.deployments().list(
+            project=project_id).execute()['deployments']
+    except KeyError:
+        return []
     deployed_level_names = []
     for deployment in deployments_list:
         deployed_level_names.append(deployment['name'])
     return deployed_level_names
+
+def upload_directory_recursive(dir_path, top_dir, bucket):
+    for subitem in os.listdir(dir_path):
+        subitem_path = dir_path + "/" + subitem
+        if os.path.isdir(subitem_path):
+            upload_directory_recursive(subitem_path, top_dir, bucket)
+        else:
+            relative_file_path = subitem_path.replace(top_dir + '/', '', 1)
+            blob = storage.Blob(relative_file_path, bucket)
+            with open(subitem_path, 'rb') as f:
+                blob.upload_from_file(f)
+
+def clear_bucket():
+    pass

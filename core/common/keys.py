@@ -25,7 +25,7 @@ def generate_ssh_key():
         crypto_serialization.Encoding.OpenSSH,
         crypto_serialization.PublicFormat.OpenSSH)
     # Add username to public key
-    public_key = public_key.decode('utf-8') + " clouduser"
+    public_key = public_key.decode('utf-8')
 
     return private_key, public_key
 

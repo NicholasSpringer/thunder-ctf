@@ -4,10 +4,10 @@ imports:
 - path: instance.jinja
 
 resources:
-- name: level2-access
+- name: access
   type: service_account.jinja
   properties:
-    id: level2-access
+    nonce: "//nonce//"
     permissions: 
     - compute.instances.get
     - compute.instances.list
@@ -15,13 +15,15 @@ resources:
   type: bucket_acl.jinja
   properties:
     predefinedAcl: private
-    nonce: //nonce//
-    service_account: level2-access
+    nonce: "//nonce//"
+    service_account: access-level2
     service_account_role: READER
 - name: log-instance
   type: instance.jinja
   properties:
     zone: us-west1-b
     ssh_public_key: //ssh_public_key//
-    permissions:
-    - logging....-----------------------------
+    ssh_username: //ssh_username//
+    startup_script: //startup_script//
+    sa_properties:
+    - role: roles/logging.viewer
