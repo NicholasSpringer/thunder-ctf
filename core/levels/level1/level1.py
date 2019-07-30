@@ -12,6 +12,7 @@ def create():
     if LEVEL_NAME in deployments.list_deployments():
         raise Exception(f'Level {LEVEL_NAME} has already been deployed. '
         'To reload the level, first destroy the running instance.')
+        
     # Create randomized bucket name to avoid namespace conflict
     bucket_nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'bucket-{LEVEL_NAME}-{bucket_nonce}'

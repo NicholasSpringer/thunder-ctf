@@ -11,12 +11,12 @@ LEVEL_NAME = 'level2'
 
 
 def create():
-    print("Level initialization started for: " + LEVEL_NAME)
     # Make sure level isn't already deployed
     if LEVEL_NAME in deployments.list_deployments():
         raise Exception(f'Level {LEVEL_NAME} has already been deployed. '
                         'To reload the level, first destroy the running instance.')
 
+    print("Level initialization started for: " + LEVEL_NAME)
     # Create randomized nonce name to avoid namespace conflicts
     nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'bucket-{LEVEL_NAME}-{nonce}'

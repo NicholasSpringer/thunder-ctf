@@ -2,6 +2,7 @@ imports:
 - path: bucket.jinja
 - path: service_account.jinja
 - path: instance.jinja
+- path: set_iam_policy.jinja
 
 resources:
 - name: access
@@ -14,16 +15,28 @@ resources:
 - name: bucket
   type: bucket_acl.jinja
   properties:
-    predefinedAcl: private
     nonce: "//nonce//"
-    service_account: access-level2
-    service_account_role: READER
+    acl_entries:
+    - service_account: access-level2
+      role: READER
 - name: log-instance
   type: instance.jinja
   properties:
     zone: us-west1-b
-    ssh_public_key: //ssh_public_key//
-    ssh_username: //ssh_username//
+    ssh_credentials:
+      username: //ssh_username//
+      public_key: //ssh_public_key//
     startup_script: //startup_script//
-    sa_properties:
-    - role: roles/logging.viewer
+    sa_scopes:
+    - https://www.googleapis.com/auth/logging.read
+- name: iam_policy
+  type: set_iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: 
+      access:
+        role: 
+        role_nonce:
+        permissions:
+        - 
+      

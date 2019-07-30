@@ -1,18 +1,14 @@
 imports:
 - path: service_account.jinja
 
-{% set INSTANCE_ID = env['name'] + "-" + env["deployment"] %}
-{% set SERVICE_ACCOUNT_ID = "sa-" + env['name'] %}
+{% set INSTANCE_NAME = env['name'] %}
+{% set SERVICE_ACCOUNT_NAME = env['name'] + "-sa" %}
 
 resources:
 - type: service_account.jinja
-  name: {{ SERVICE_ACCOUNT_ID }}
-  properties:
-    {% for sa_property in properties['sa_properties'] %}
-    {{ sa_property }}
-    {% endfor %}
+  name: {{ SERVICE_ACCOUNT_NAME }}
 - type: compute.v1.instance
-  name: {{ INSTANCE_ID }}
+  name: {{ INSTANCE_NAME }}
   properties:
     zone: {{ properties["zone"] }}
     machineType: zones/{{ properties["zone"] }}/machineTypes/f1-micro
@@ -24,12 +20,20 @@ resources:
     networkInterfaces:
     - network: global/networks/default
     serviceAccounts:
-    - email: {{ SERVICE_ACCOUNT_ID + "-" + env['deployment'] }}@{{ env['project'] }}.iam.gserviceaccount.com
+    - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
+      {% if properties['sa_scopes'] %}
       scopes:
-      - https://www.googleapis.com/auth/logging.read
+      {% for scope in properties['sa_scopes'] %}
+      - {{ scope }}
+      {% endfor %}
+      {% endif %}
     metadata:
       items:
+      {% if properties['ssh_credentials'] %}
       - key: ssh-keys
-        value: {{ properties['ssh_username'] }}:{{ properties['ssh_public_key']}} {{ properties['ssh_username'] }}
-#      - key: startup-script
-#        value: "{{properties['startup_script']}}"
+        value: {{ properties['ssh_credentials']['username'] }}:{{ properties['ssh_credentials']['public_key'] }} {{ properties['ssh_credentials']['username'] }}
+      {% endif %}
+      {% if properties['startup_script'] %}
+      - key: startup-script
+        value: "{{properties['startup_script']}}"
+      {% endif %}

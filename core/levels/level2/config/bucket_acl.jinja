@@ -1,19 +1,19 @@
-{% set BUCKET_NAME = env['name']+ '-' + env["deployment"]+ "-" + properties["nonce"] %}
-{% set ACL_NAME = "acl-" + BUCKET_NAME %}
+{% set BUCKET_NAME = env['name'] +  "-" + properties["nonce"] %}
 
 resources:
 - type: storage.v1.bucket
   name: {{ BUCKET_NAME }}
   properties:
+    {% if properties['predefinedAcl'] %}
     predefinedAcl: {{ properties['predefinedAcl'] }}
+    {% elif properties['acl_entries'] %}
+    acl: 
+    {% for acl_entry in properties['acl_entries'] %}
+    - bucket: {{ BUCKET_NAME }}
+      entity: user-{{ acl_entry['service_account'] }}@{{ env['project'] }}.iam.gserviceaccount.com
+      role: {{ acl_entry['role'] }}
+    {% endfor %}
+    {% endif %}
     projection: full
     location: US
     storageClass: STANDARD
-{% if properties['service_account'] %}
-- type: storage.v1.bucketAccessControl
-  name: {{ ACL_NAME }}
-  properties:
-    bucket: {{ BUCKET_NAME }}
-    entity: user-{{ properties['service_account'] }}@{{ env['project'] }}.iam.gserviceaccount.com"
-    role: {{ properties['service_account_role'] }}
-{% endif %}
