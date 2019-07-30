@@ -10,7 +10,7 @@ resources:
     acl: 
     {% for acl_entry in properties['acl_entries'] %}
     - bucket: {{ BUCKET_NAME }}
-      entity: user-{{ acl_entry['service_account'] }}@{{ env['project'] }}.iam.gserviceaccount.com
+      entity: user-$(ref.{{ acl_entry['service_account_id'] }}.email)
       role: {{ acl_entry['role'] }}
     {% endfor %}
     {% endif %}

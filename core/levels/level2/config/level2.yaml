@@ -5,21 +5,16 @@ imports:
 - path: set_iam_policy.jinja
 
 resources:
-- name: access
+- name: level2-access
   type: service_account.jinja
-  properties:
-    nonce: "//nonce//"
-    permissions: 
-    - compute.instances.get
-    - compute.instances.list
-- name: bucket
+- name: level2-bucket
   type: bucket_acl.jinja
   properties:
     nonce: "//nonce//"
     acl_entries:
-    - service_account: access-level2
+    - service_account_id: level2-access
       role: READER
-- name: log-instance
+- name: level2-logging-instance
   type: instance.jinja
   properties:
     zone: us-west1-b
@@ -33,10 +28,13 @@ resources:
   type: set_iam_policy.jinja
   properties:
     bindings:
-    - service_account_id: 
-      access:
-        role: 
-        role_nonce:
+    - service_account_id: level2-access
+      role:
+        name: custom
+        custom_nonce: "//nonce//"
         permissions:
-        - 
-      
+        - compute.instances.get
+        - compute.instances.list
+    - service_account_id: level2-logging-instance-sa
+      role:
+        name: roles/logging.viewer

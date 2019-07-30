@@ -1,9 +1,8 @@
+resources:
 {% for binding in properties['bindings'] %}
-{% if binding['access']['role'] == 'custom' %}
-
-{% set role_name = binding['service_account_id'] + "-role-" + binding['access']['role_nonce'] %}
+{% if binding['role']['name'] == 'custom' %}
+{% set role_name = binding['service_account_id'] + "-role-" + binding['role']['custom_nonce'] %}
 {% set role_id = ROLE_NAME|replace('-','_') %}
-
 - name: {{ role_name }}
   type: gcp-types/iam-v1:projects.roles
   properties:
@@ -12,17 +11,15 @@
     role:
       title: {{ binding['service_account_id'] }} role
       includedPermissions:
-      {% for permission in binding['access']['permissions'] %}
+      {% for permission in binding['role']['permissions'] %}
       - {{ permission }}
       {% endfor %}
 {% endif %}
 {% endfor %}
-
 - name: {{ env['project'] }}-get-iam
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
   properties:
     resource: {{ env['project'] }}
-
 - name: {{ env['project'] }}-set-iam
   action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
   properties:
@@ -31,10 +28,10 @@
     gcpIamPolicyPatch:
       add:
       {% for binding in properties['bindings'] %}
-        {% if binding['access']['role'] == 'custom' %}
-      - role: $(ref.{{ binding['service_account_id'] + "-role-" + binding['access']['role_nonce'] }}.name)
+        {% if binding['role']['name'] == 'custom' %}
+      - role: $(ref.{{ binding['service_account_id'] + "-role-" + binding['role']['custom_nonce'] }}.name)
         {% else %}
-      - role: {{ binding['access']['role'] }}
+      - role: {{ binding['role']['name'] }}
         {% endif %}
         members:
         - serviceAccount:$(ref.{{ binding['service_account_id'] }}.email)

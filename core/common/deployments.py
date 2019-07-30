@@ -2,7 +2,6 @@ import random
 import os
 import time
 
-from google.cloud import storage
 import google.auth
 import googleapiclient.discovery
 
@@ -66,7 +65,7 @@ def delete(level_name):
     deployment_api = googleapiclient.discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
     # Send delete request
-    op_name = deployment_api.deployments().delete(
+    operation = deployment_api.deployments().delete(
         project=project_id, deployment=level_name).execute()
     op_name = operation['name']
     # If error occurred in deployment, raise it
@@ -130,17 +129,3 @@ def list_deployments():
     for deployment in deployments_list:
         deployed_level_names.append(deployment['name'])
     return deployed_level_names
-
-def upload_directory_recursive(dir_path, top_dir, bucket):
-    for subitem in os.listdir(dir_path):
-        subitem_path = dir_path + "/" + subitem
-        if os.path.isdir(subitem_path):
-            upload_directory_recursive(subitem_path, top_dir, bucket)
-        else:
-            relative_file_path = subitem_path.replace(top_dir + '/', '', 1)
-            blob = storage.Blob(relative_file_path, bucket)
-            with open(subitem_path, 'rb') as f:
-                blob.upload_from_file(f)
-
-def clear_bucket():
-    pass

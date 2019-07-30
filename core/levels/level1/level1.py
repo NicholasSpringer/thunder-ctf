@@ -15,7 +15,7 @@ def create():
         
     # Create randomized bucket name to avoid namespace conflict
     bucket_nonce = str(random.randint(100000000000, 999999999999))
-    bucket_name = f'bucket-{LEVEL_NAME}-{bucket_nonce}'
+    bucket_name = f'bucket-{bucket_nonce}'
     # Insert deployment
     config_properties = {'bucket_nonce': bucket_nonce}
     labels = {'bucket_nonce': bucket_nonce}
