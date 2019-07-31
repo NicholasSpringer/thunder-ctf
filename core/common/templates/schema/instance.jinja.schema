@@ -1,0 +1,43 @@
+info:
+  title: Instance template
+  author: Nicholas Springer
+  description: Creates a new instance with ubuntu 18.04. Creates a service account for the instance called [instance-name]-sa 
+
+imports:
+- path: service_account.jinja
+
+required:
+- zone
+
+properties:
+  zone:
+    description: Zone of compute instance
+    type: string
+
+  sa_scopes:
+    description: Authentication scopes of service account
+    minItems: 1
+    items:
+      type: string
+    
+  ssh_credentials:
+    description: SSH credentials to access instance
+    required:
+    - username
+    - public_key
+    properties:
+      username:
+        description: SSH username
+        type: string
+      public_key:
+        description: SSH public key
+        type: strings
+  
+  startup_script:
+    description: Script to run on instance startup
+    type: string
+
+
+  
+
+  

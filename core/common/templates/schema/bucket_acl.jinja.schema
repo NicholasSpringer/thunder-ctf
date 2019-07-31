@@ -1,0 +1,45 @@
+info:
+  title: Bucket with Acl list
+  author: Nicholas Springer
+  description: Creates a bucket with the given predefined acl or 
+
+oneOf:
+  required:
+  - predefined_acl
+  required:
+  - nonce
+  - acl_entries
+
+properties:
+  nonce:
+    description: Nonce to add to end of bucket name to avoid namespace conflicts
+    type: string
+
+  predefined_acl:
+    description: A canned bucket acl
+    type: string
+    enum:
+    - private
+    - projectPrivate
+    - authenticatedRead
+    - publicRead
+
+  acl_entries:
+    description: Custom acl list
+    minlength: 1
+    items:
+      required:
+      - service_account_id
+      - role
+      properties:
+        service_account_id:
+          type: string
+          description: The service account ID for the given entry
+        role:
+          type: string
+          enum:
+          - READER
+          - WRITER
+          - OWNER
+          description: The acl role given to the service account
+    

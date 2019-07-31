@@ -1,0 +1,47 @@
+info:
+  title: IAM policy
+  author: Nicholas Springer
+  description: Creates an iam policy for accounts created by the deployment
+
+required:
+- bindings
+
+properties:
+  bindings:
+    description: List of iam bindings
+    minItems: 1
+    items:
+      required:
+      - service_account_id
+      - role
+      properties:
+        service_account_id:
+          description: Service account of binding
+          type: string
+
+        role:
+          description: Role to give to service account, name should be 'custom' to create roles
+          required:
+          - name
+          if:
+            properties:
+              name:
+                const: custom
+          then:
+            required:
+            - custom_nonce
+            - permissions
+          properties:
+            name:
+              description: Name of role, either an existing role or 'custom' for custom new roles
+              type: string
+            custom_nonce:
+              description: For custom roles, the nonce is added to the end of the name to avoid namespace conflicts
+              type: string
+            permissions:
+              description: Permissions given to service account for custom role
+              minItems: 1
+              items:
+                type: string
+
+
