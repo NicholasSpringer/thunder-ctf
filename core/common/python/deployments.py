@@ -14,21 +14,20 @@ def read_config(file_name, config_properties={}):
     return content
 
 
-def insert(level_name, config_file, template_files=[],
+def insert(level_name, template_files=[],
            config_properties={}, labels={}):
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = googleapiclient.discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
 
-    level_directory = 'core/levels/'+level_name+'/'
     # Create request to insert deployment
     request_body = {
         "name": level_name,
         "target": {
             "config": {
                 "content": read_config(
-                    level_directory + config_file,
+                    f'core/levels/{level_name}/{level_name}.yaml',
                     config_properties=config_properties)
             },
             "imports": []
@@ -39,7 +38,7 @@ def insert(level_name, config_file, template_files=[],
     for template in template_files:
         request_body['target']['imports'].append({
             "name": os.path.basename(template),
-            "content": read_config(level_directory + template)
+            "content": read_config('core/' + template)
         })
     # Add labels to deployment json
     for key in labels.keys():

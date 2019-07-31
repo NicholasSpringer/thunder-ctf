@@ -2,7 +2,7 @@ import random
 
 from google.cloud import storage
 
-from ...common import deployments, secrets
+from ...common.python import deployments, secrets
 
 LEVEL_NAME = 'level1'
 
@@ -19,7 +19,7 @@ def create():
     # Insert deployment
     config_properties = {'bucket_nonce': bucket_nonce}
     labels = {'bucket_nonce': bucket_nonce}
-    deployments.insert(LEVEL_NAME, 'config/level1.yaml', template_files=['config/bucket.jinja'],
+    deployments.insert(LEVEL_NAME,template_files=['common/templates/bucket.jinja'],
                        config_properties=config_properties, labels=labels)
     
     print("Level setup started for: " + LEVEL_NAME)

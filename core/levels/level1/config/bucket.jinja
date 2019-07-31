@@ -1,8 +1,0 @@
-resources:
-- type: storage.v1.bucket
-  name: bucket-{{ env['deployment'] }}-{{ properties['randomSeed'] }}
-  properties:
-    predefinedAcl: {{ properties['predefinedAcl'] }}
-    projection: full
-    location: US
-    storageClass: STANDARD

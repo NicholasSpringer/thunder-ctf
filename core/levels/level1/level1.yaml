@@ -1,0 +1,9 @@
+imports:
+- path: bucket_acl.jinja
+
+resources:
+- name: level1-bucket
+  type: bucket_acl.jinja
+  properties:
+    predefined_acl: publicRead
+    nonce: //nonce//

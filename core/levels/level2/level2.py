@@ -5,7 +5,7 @@ import shutil
 
 from google.cloud import storage
 
-from ...common import deployments, secrets, keys, storage
+from ...common.python import deployments, secrets, keys, storage
 
 LEVEL_NAME = 'level2'
 
@@ -58,12 +58,11 @@ def create():
                          'ssh_username': ssh_username}
     labels = {'nonce': nonce}
     deployments.insert(LEVEL_NAME,
-                       'config/level2.yaml',
                        template_files=[
-                           'config/bucket_acl.jinja',
-                           'config/instance.jinja',
-                           'config/service_account.jinja',
-                           'config/set_iam_policy.jinja'],
+                           'common/templates/bucket_acl.jinja',
+                           'common/templates/instance.jinja',
+                           'common/templates/service_account.jinja',
+                           'common/templates/iam_policy.jinja'],
                        config_properties=config_properties, labels=labels)
 
     print("Level setup started for: " + LEVEL_NAME)

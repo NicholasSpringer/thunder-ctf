@@ -1,8 +1,8 @@
 import warnings
 import sys
 
-from core.common import secrets, deployments
-from core.common.importlevels import import_level
+from core.common.python import secrets, deployments
+from core.common.python.importlevels import import_level
 
 warnings.filterwarnings("ignore", module="google.auth")
 
@@ -54,11 +54,11 @@ def new_seeds(*args):
 
 def help():
     print("""Available commands:
-    python3 gcp-vulnerable.py create [level]
-    python3 gcp-vulnerable.py destroy [level]
-    python3 gcp-vulnerable.py help
-    python3 gcp-vulnerable.py list_levels
-    python3 gcp-vulnerable.py list_active_levels""")
+    python3 thunder.py create [level]
+    python3 thunder.py destroy [level]
+    python3 thunder.py help
+    python3 thunder.py list_levels
+    python3 thunder.py list_active_levels""")
     exit()
 
 

@@ -4,8 +4,8 @@ resources:
 - type: storage.v1.bucket
   name: {{ BUCKET_NAME }}
   properties:
-    {% if properties['predefinedAcl'] %}
-    predefinedAcl: {{ properties['predefinedAcl'] }}
+    {% if properties['predefined_acl'] %}
+    predefinedAcl: {{ properties['predefined_acl'] }}
     {% elif properties['acl_entries'] %}
     acl: 
     {% for acl_entry in properties['acl_entries'] %}

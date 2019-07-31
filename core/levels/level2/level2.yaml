@@ -2,7 +2,7 @@ imports:
 - path: bucket.jinja
 - path: service_account.jinja
 - path: instance.jinja
-- path: set_iam_policy.jinja
+- path: iam_policy.jinja
 
 resources:
 - name: level2-access
@@ -25,7 +25,7 @@ resources:
     sa_scopes:
     - https://www.googleapis.com/auth/logging.read
 - name: iam_policy
-  type: set_iam_policy.jinja
+  type: iam_policy.jinja
   properties:
     bindings:
     - service_account_id: level2-access
