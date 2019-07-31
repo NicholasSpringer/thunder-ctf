@@ -1,8 +1,8 @@
 resources:
 {% for binding in properties['bindings'] %}
 {% if binding['role']['name'] == 'custom' %}
-{% set role_name = binding['service_account_id'] + "-role-" + binding['role']['custom_nonce'] %}
-{% set role_id = ROLE_NAME|replace('-','_') %}
+{% set role_name = binding['service_account_id'] + "-role-" + binding['role']['custom_nonce']|string %}
+{% set role_id = role_name|replace('-','_') %}
 - name: {{ role_name }}
   type: gcp-types/iam-v1:projects.roles
   properties:
@@ -29,7 +29,7 @@ resources:
       add:
       {% for binding in properties['bindings'] %}
         {% if binding['role']['name'] == 'custom' %}
-      - role: $(ref.{{ binding['service_account_id'] + "-role-" + binding['role']['custom_nonce'] }}.name)
+      - role: $(ref.{{ binding['service_account_id'] + "-role-" + binding['role']['custom_nonce']|string }}.name)
         {% else %}
       - role: {{ binding['role']['name'] }}
         {% endif %}

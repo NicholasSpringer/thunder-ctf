@@ -3,17 +3,18 @@ info:
   author: Nicholas Springer
   description: Creates a bucket with the given predefined acl or 
 
+required:
+- nonce
 oneOf:
-  required:
+- required:
   - predefined_acl
-  required:
-  - nonce
+- required:
   - acl_entries
 
 properties:
   nonce:
     description: Nonce to add to end of bucket name to avoid namespace conflicts
-    type: string
+    type: integer
 
   predefined_acl:
     description: A canned bucket acl

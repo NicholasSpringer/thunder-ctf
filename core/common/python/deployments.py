@@ -41,7 +41,7 @@ def insert(level_name, template_files=[],
         request_body['target']['imports'].extend([
             {"name": os.path.basename(template),
              "content": read_config(template_file)},
-            {"name": os.path.basename(template),
+            {"name": os.path.basename(template)+ '.schema',
              "content": read_config(schema_file)}])
     # Add labels to deployment json
     for key in labels.keys():

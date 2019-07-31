@@ -1,4 +1,4 @@
-{% set BUCKET_NAME = env['name'] +  "-" + properties["nonce"] %}
+{% set BUCKET_NAME = env['name'] +  "-" + properties["nonce"]|string %}
 
 resources:
 - type: storage.v1.bucket

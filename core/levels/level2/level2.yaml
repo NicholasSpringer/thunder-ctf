@@ -10,7 +10,7 @@ resources:
 - name: level2-bucket
   type: bucket_acl.jinja
   properties:
-    nonce: "//nonce//"
+    nonce: //nonce//
     acl_entries:
     - service_account_id: level2-access
       role: READER
@@ -31,7 +31,7 @@ resources:
     - service_account_id: level2-access
       role:
         name: custom
-        custom_nonce: "//nonce//"
+        custom_nonce: //nonce//
         permissions:
         - compute.instances.get
         - compute.instances.list

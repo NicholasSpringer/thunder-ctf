@@ -31,7 +31,7 @@ properties:
         type: string
       public_key:
         description: SSH public key
-        type: strings
+        type: string
   
   startup_script:
     description: Script to run on instance startup
