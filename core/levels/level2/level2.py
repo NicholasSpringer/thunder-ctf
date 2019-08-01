@@ -56,16 +56,16 @@ def create():
 
         # Insert deployment
         config_properties = {'nonce': nonce,
-                            'ssh_public_key': ssh_public_key,
-                            'ssh_username': ssh_username}
+                             'ssh_public_key': ssh_public_key,
+                             'ssh_username': ssh_username}
         labels = {'nonce': nonce}
         deployments.insert(LEVEL_NAME,
-                        template_files=[
-                            'common/templates/bucket_acl.jinja',
-                            'common/templates/instance.jinja',
-                            'common/templates/service_account.jinja',
-                            'common/templates/iam_policy.jinja'],
-                        config_properties=config_properties, labels=labels)
+                           template_files=[
+                               'common/templates/bucket_acl.jinja',
+                               'common/templates/instance.jinja',
+                               'common/templates/service_account.jinja',
+                               'common/templates/iam_policy.jinja'],
+                           config_properties=config_properties, labels=labels)
 
         print("Level setup started for: " + LEVEL_NAME)
         # Upload repository to bucket
@@ -77,6 +77,7 @@ def create():
         # If there is an error, delete the temporary repository before exiting
         shutil.rmtree(repo_path)
 
+
 def destroy():
     # Make sure level is deployed
     if not LEVEL_NAME in deployments.list_deployments():
@@ -86,10 +87,11 @@ def destroy():
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
     bucket_name = f'bucket-{LEVEL_NAME}-{nonce}'
-    # Delete secret from bucket
+    # Forcefully delete bucket to also get rid of items inside bucket
     storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
-    storage.Blob('secret.txt', bucket).delete()
+    bucket = storage_client.lookup_bucket(bucket_name)
+    if bucket:
+        bucket.delete(force=True)
     print('Level tear-down finished for: ' + LEVEL_NAME)
     # Delete deployment
     deployments.delete(LEVEL_NAME)

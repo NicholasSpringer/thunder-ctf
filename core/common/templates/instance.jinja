@@ -35,5 +35,5 @@ resources:
       {% endif %}
       {% if properties['startup_script'] %}
       - key: startup-script
-        value: "{{properties['startup_script']}}"
+        value: {{properties['startup_script']}}
       {% endif %}

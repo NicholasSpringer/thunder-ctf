@@ -11,6 +11,3 @@ def upload_directory_recursive(dir_path, top_dir, bucket):
             blob = storage.Blob(relative_file_path, bucket)
             with open(subitem_path, 'rb') as f:
                 blob.upload_from_file(f)
-
-def clear_bucket():
-    pass
