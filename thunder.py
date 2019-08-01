@@ -9,9 +9,15 @@ warnings.filterwarnings("ignore", module="google.auth")
 
 def create(*args):
     if len(args) != 1:
-        raise Exception(
+        exit(
             'Incorrect number of arguments supplied, create requires 1 argument:\n'
             'python3 gcp-vulnerable.py remove [level]')
+
+    level_name = args[0]
+    # Make sure level isn't already deployed
+    if level_name in deployments.list_deployments():
+        exit(f'Level {level_name} has already been deployed. '
+             'To reload the level, first destroy the running deployment.')
 
     level_name = args[0]
     level_module = import_level(level_name)
@@ -20,23 +26,34 @@ def create(*args):
 
 def destroy(*args):
     if len(args) != 1:
-        raise Exception(
+        exit(
             'Incorrect number of arguments supplied, destroy requires 1 argument:\n'
             '   python3 gcp-vulnerable.py destroy [level]')
-
     level_name = args[0]
+    # Make sure level is deployed
+    if not level_name in deployments.list_deployments():
+        raise Exception(f'Level {level_name} is not currently deployed')
+
     level_module = import_level(level_name)
     level_module.destroy()
 
 
-def list_levels():
+def list_levels(*args):
     with open('core/levels/level-list.txt') as f:
         print(f.read())
 
 
-def list_active_levels():
+def list_active_levels(*args):
     print(deployments.list_deployments())
 
+def get_start_info(*args):
+    if len(args) != 1:
+        exit(
+            'Incorrect number of arguments supplied, get_start_info requires 1 argument:\n'
+            '   python3 gcp-vulnerable.py get_start_info [level]')
+    level_name = args[0]
+    if not level_name in deployments.list_deployments():
+        exit()
 
 def new_seeds(*args):
     confirmed = False
@@ -52,7 +69,7 @@ def new_seeds(*args):
         secrets.generate_seeds(level_names=list(args))
 
 
-def help():
+def help(*args):
     print("""Available commands:
     python3 thunder.py create [level]
     python3 thunder.py destroy [level]

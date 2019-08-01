@@ -8,11 +8,6 @@ LEVEL_NAME = 'level1'
 
 
 def create():
-    # Make sure level isn't already deployed
-    if LEVEL_NAME in deployments.list_deployments():
-        raise Exception(f'Level {LEVEL_NAME} has already been deployed. '
-                        'To reload the level, first destroy the running instance.')
-
     # Create randomized bucket name to avoid namespace conflict
     nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
@@ -33,9 +28,6 @@ def create():
 
 
 def destroy():
-    # Make sure level is deployed
-    if not LEVEL_NAME in deployments.list_deployments():
-        raise Exception(f'Level {LEVEL_NAME} is not currently deployed')
     print('Level tear-down started for: ' + LEVEL_NAME)
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
