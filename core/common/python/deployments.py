@@ -4,7 +4,7 @@ import time
 
 import google.auth
 import googleapiclient.discovery
-
+from . import cloudresources
 
 def read_config(file_name, config_properties={}):
     with open(file_name) as f:
@@ -41,7 +41,7 @@ def insert(level_name, template_files=[],
         request_body['target']['imports'].extend([
             {"name": os.path.basename(template),
              "content": read_config(template_file)},
-            {"name": os.path.basename(template)+ '.schema',
+            {"name": os.path.basename(template) + '.schema',
              "content": read_config(schema_file)}])
     # Add labels to deployment json
     for key in labels.keys():
@@ -61,7 +61,15 @@ def insert(level_name, template_files=[],
     print('Deployment insertion finished.')
 
 
-def delete(level_name):
+def delete(level_name, buckets=[], service_accounts=[]):
+    print('Level destruction started for: ' + level_name)
+    # Delete iam entries
+    if not service_accounts == []:
+        cloudresources.remove_accounts_iam(service_accounts)
+    # Force delete buckets
+    for bucket_name in buckets:
+        cloudresources.delete_bucket(bucket_name)
+
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = googleapiclient.discovery.build(

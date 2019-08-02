@@ -30,25 +30,26 @@ def generate_ssh_key():
     return private_key, public_key
 
 
-def generate_service_account_key(service_account_email):
+def generate_service_account_key(service_account_id):
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
+    service_account_email = f'{service_account_id}@{project_id}.iam.gserviceaccount.com'
     iam_api = googleapiclient.discovery.build(
         'iam', 'v1', credentials=credentials)
     # Create new key
     key = iam_api.projects().serviceAccounts().keys().create(
         name=f'projects/{project_id}/serviceAccounts/{service_account_email}', body={}).execute()
     # Get service account ID
-    account_ID = iam_api.projects().serviceAccounts().get(
-        name=f'projects/{project_id}/serviceAccounts/{service_account_email}')['uniqueID']
+    unique_id = iam_api.projects().serviceAccounts().get(
+        name=f'projects/{project_id}/serviceAccounts/{service_account_email}').execute['uniqueId']
     # Assemble object in key file format
     key_file = {
         "type": "service_account",
         "project_id": project_id,
         "private_key_id": os.path.basename(key['name']),
-        "private_key": key['privateKeyData'],
+        "private_key": f'-----BEGIN PRIVATE KEY-----\n{key['privateKeyData']}\n-----END PRIVATE KEY-----\n',
         "client_email": service_account_email,
-        "client_id": account_ID,
+        "client_id": unique_id,
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://accounts.google.com/o/oauth2/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",

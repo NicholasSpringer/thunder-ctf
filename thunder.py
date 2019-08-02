@@ -20,7 +20,7 @@ def create(*args):
              'To reload the level, first destroy the running deployment.')
 
     level_name = args[0]
-    level_module = import_level(level_name)
+    level_module = levels.import_level(level_name)
     level_module.create()
 
 
@@ -34,7 +34,7 @@ def destroy(*args):
     if not level_name in deployments.list_deployments():
         exit(f'Level {level_name} is not currently deployed')
 
-    level_module = import_level(level_name)
+    level_module = levels.import_level(level_name)
     level_module.destroy()
 
 
