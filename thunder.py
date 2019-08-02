@@ -1,8 +1,8 @@
 import warnings
 import sys
 
-from core.common.python import secrets, deployments
-from core.common.python.importlevels import import_level
+from core.common.python import secrets, deployments, levels
+
 
 warnings.filterwarnings("ignore", module="google.auth")
 
@@ -32,7 +32,7 @@ def destroy(*args):
     level_name = args[0]
     # Make sure level is deployed
     if not level_name in deployments.list_deployments():
-        raise Exception(f'Level {level_name} is not currently deployed')
+        exit(f'Level {level_name} is not currently deployed')
 
     level_module = import_level(level_name)
     level_module.destroy()
@@ -53,7 +53,9 @@ def get_start_info(*args):
             '   python3 gcp-vulnerable.py get_start_info [level]')
     level_name = args[0]
     if not level_name in deployments.list_deployments():
-        exit()
+        exit(f'Level {level_name} is not currently deployed')
+    
+
 
 def new_seeds(*args):
     confirmed = False

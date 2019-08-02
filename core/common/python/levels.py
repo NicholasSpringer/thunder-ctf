@@ -1,5 +1,6 @@
 import json
 import importlib
+import os
 
 
 def import_level(level_name):
@@ -28,3 +29,29 @@ def import_level(level_name):
                           'core/levels/[level-name]/[level-name].py')
 
     return level_module
+
+
+def get_start_info(level_name):
+    file_path = f'start-info/{level_name}.txt'
+    if not os.path.exists(file_path):
+        exit('Start info file cannot be found. Reload the level to get a new file.')
+    with open(file_path) as f:
+        info = f.read()
+    print(f'Starting information for {level_name}:\n\n' + info)
+
+
+def log_start_info(level_name, info):
+    file_path = f'start-info/{level_name}.txt'
+    print(f'Starting information for {level_name}:\n\n' + info +
+          f'\n\nStarting information can always be retrieved from /{file_path}, or by running:\n',
+          f'  python3 thunder.py get_start_info {level_name}')
+
+    with open(file_path, 'w+') as f:
+        f.write(info)
+    os.chmod(file_path, 0o400)
+
+
+def delete_start_info(level_name):
+    file_path = f'start-info/{level_name}.txt'
+    os.chmod(file_path, 0o700)
+    os.remove(file_path)
