@@ -1,10 +1,8 @@
 import warnings
 import sys
+import os
 
 from core.common.python import secrets, deployments, levels
-
-
-warnings.filterwarnings("ignore", module="google.auth")
 
 
 def create(*args):
@@ -46,6 +44,7 @@ def list_levels(*args):
 def list_active_levels(*args):
     print(deployments.list_deployments())
 
+
 def get_start_info(*args):
     if len(args) != 1:
         exit(
@@ -54,7 +53,6 @@ def get_start_info(*args):
     level_name = args[0]
     if not level_name in deployments.list_deployments():
         exit(f'Level {level_name} is not currently deployed')
-    
 
 
 def new_seeds(*args):
@@ -82,6 +80,8 @@ def help(*args):
 
 
 if __name__ == '__main__':
+    warnings.filterwarnings("ignore", module="google.auth")
+    os.chdir(os.getcwd()+'/'+os.path.dirname(__file__))
     # python3 gcp-vulnerable.py action [args]
     args = sys.argv[1:]
     if len(args) == 0:
