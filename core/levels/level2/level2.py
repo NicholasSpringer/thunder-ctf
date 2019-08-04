@@ -126,7 +126,7 @@ def destroy():
     levels.delete_start_file('level2-access.json')
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
-    bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'Î
+    bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
     print('Level tear-down finished for: ' + LEVEL_NAME)
     # Delete deployment
     deployments.delete(LEVEL_NAME,
