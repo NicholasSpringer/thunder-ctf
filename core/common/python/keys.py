@@ -27,7 +27,6 @@ def generate_ssh_key():
         crypto_serialization.PublicFormat.OpenSSH)
     # Add username to public key
     public_key = public_key.decode('utf-8')
-
     return private_key, public_key
 
 
@@ -40,10 +39,7 @@ def generate_service_account_key(service_account_id):
     # Create new key
     key = iam_api.projects().serviceAccounts().keys().create(
         name=f'projects/{project_id}/serviceAccounts/{service_account_email}', body={}).execute()
-    # Get service account ID
-    unique_id = iam_api.projects().serviceAccounts().get(
-        name=f'projects/{project_id}/serviceAccounts/{service_account_email}').execute['uniqueId']
-    # Assemble object in key file format
+    # Decode private key data to key file
     key_file_content = base64.b64decode(key['privateKeyData']).decode('unicode-escape')
     # Return json string
     return key_file_content
