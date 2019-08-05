@@ -6,6 +6,7 @@ from core.common.python import secrets, deployments, levels, cloudresources
 
 
 def create(*args):
+    cloudresources.test_application_default_credentials()
     if len(args) != 1:
         exit(
             'Incorrect number of arguments supplied, create requires 1 argument:\n'
@@ -23,6 +24,7 @@ def create(*args):
 
 
 def destroy(*args):
+    cloudresources.test_application_default_credentials()
     if len(args) != 1:
         exit(
             'Incorrect number of arguments supplied, destroy requires 1 argument:\n'
@@ -42,6 +44,7 @@ def list_levels(*args):
 
 
 def list_active_levels(*args):
+    cloudresources.test_application_default_credentials()
     print(deployments.list_deployments())
 
 
@@ -73,8 +76,10 @@ def set_project(*args):
     if(confirmed):
         with open('common/core/config/project.txt','w+') as f:
             f.write(project_id)
+        # Make sure credentials are set correctly and have owner role
         cloudresources.test_application_default_credentials()
-        # SETUP PROJECT
+        # Enable apis, grant DM owner status, etc
+        cloudresources.setup_project()
     else:
         print('Project not set.')
 
@@ -85,7 +90,8 @@ def help(*args):
     python3 thunder.py destroy [level]
     python3 thunder.py help
     python3 thunder.py list_levels
-    python3 thunder.py list_active_levels""")
+    python3 thunder.py list_active_levels
+    python3 thunder.py set_project [project-id]""")
     exit()
 
 

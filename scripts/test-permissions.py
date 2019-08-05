@@ -1,4 +1,4 @@
-import googleapiclient.discovery
+from googleapiclient import discovery
 import google.oauth2.service_account
 import os
 
@@ -15,10 +15,11 @@ chunked_permissions = (
     [testable_permissions[i * 100:(i + 1) * 100] for i in range((len(testable_permissions)+99) // 100)])
 
 # Create credentials using service account key file
-credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
+credentials = google.oauth2.service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_KEY_FILE)
 # Build cloudresourcemanager REST API python object
-crm_api = googleapiclient.discovery.build(
-    'cloudresourcemanager', 'v1', credentials=credentials)
+crm_api = discovery.build('cloudresourcemanager',
+                          'v1', credentials=credentials)
 
 # For each list of 100 permissions, query the api to see if the service account has any of the permissions
 given_permissions = []

@@ -2,7 +2,7 @@ import os
 
 from google.cloud import storage
 import google.auth
-import googleapiclient.discovery
+from googleapiclient import discovery
 
 
 def upload_directory_recursive(dir_path, top_dir, bucket):
@@ -25,10 +25,32 @@ def delete_bucket(bucket_name):
         bucket.delete(force=True)
 
 
-def remove_accounts_iam(accounts):
+def service_account_email(account):
     credentials, project_id = google.auth.default()
-    crm_api = googleapiclient.discovery.build(
-        'cloudresourcemanager', 'v1', credentials=credentials)
+    return f'{account}@{project_id}.iam.gserviceaccount.com'
+
+
+def set_account_role(email, role):
+    remove_accounts_iam([email])
+    credentials, project_id = google.auth.default()
+    crm_api = discovery.build('cloudresourcemanager',
+                              'v1', credentials=email)
+    # Get current iam policy
+    policy = crm_api.projects().getIamPolicy(
+        resource=project_id, body={}).execute()
+    # Add binding to policy
+    for binding in policy['binding']:
+        if binding['role'] == role:
+            binding['members'].append(f'serviceAccount:{email}')
+    # Set as new policy
+    crm_api.projects().setIamPolicy(resource=project_id,
+                                    body={'policy': policy}).execute()
+
+
+def remove_accounts_iam(emails):
+    credentials, project_id = google.auth.default()
+    crm_api = discovery.build('cloudresourcemanager',
+                              'v1', credentials=credentials)
     # Get current iam policy
     policy = crm_api.projects().getIamPolicy(
         resource=project_id, body={}).execute()
@@ -37,7 +59,7 @@ def remove_accounts_iam(accounts):
     for binding in policy['bindings']:
         binding['members'] = (
             [member for member in binding['members']
-             if not member in [f'serviceAccount:{account}@{project_id}.iam.gserviceaccount.com' for account in accounts]])
+             if not member in [f'serviceAccount:{account}' for account in emails]])
 
     # Set as new policy
     crm_api.projects().setIamPolicy(resource=project_id,
@@ -60,8 +82,8 @@ def test_application_default_credentials():
              'To change the Thunder CTF project, run:\n'
              '  python3 thunder.py set_project')
     # Build api object
-    crm_api = googleapiclient.discovery.build(
-        'cloudresourcemanager', 'v1', credentials=credentials)
+    crm_api = discovery.build('cloudresourcemanager',
+                              'v1', credentials=credentials)
     # Check if credentials has permissions
     response = crm_api.projects().testIamPermissions(resource=project_id, body={
         'permissions': check_permissions}).execute()
@@ -77,5 +99,28 @@ def test_application_default_credentials():
 
 
 check_permissions = [
-    'iam.roles.create', 'iam.roles.delete', 'iam.roles.get', 'iam.roles.list', 'iam.roles.undelete', 'iam.roles.update', 'iam.serviceAccounts.actAs', 'iam.serviceAccounts.create', 'iam.serviceAccounts.delete', 'iam.serviceAccounts.get', 'iam.serviceAccounts.getIamPolicy', 'iam.serviceAccounts.list', 'iam.serviceAccounts.setIamPolicy', 'iam.serviceAccounts.update', 'logging.logs.delete', 'logging.logs.list', 'resourcemanager.projects.createBillingAssignment', 'resourcemanager.projects.delete', 'resourcemanager.projects.deleteBillingAssignment', 'resourcemanager.projects.get', 'resourcemanager.projects.getIamPolicy', 'resourcemanager.projects.setIamPolicy', 'resourcemanager.projects.undelete', 'resourcemanager.projects.update', 'resourcemanager.projects.updateLiens', 'storage.buckets.create', 'storage.buckets.delete', 'storage.buckets.list'
+    'iam.roles.create', 'iam.roles.delete', 'iam.roles.get', 'iam.roles.list', 'iam.roles.undelete', 'iam.roles.update', 'iam.serviceAccounts.actAs', 'iam.serviceAccounts.create', 'iam.serviceAccounts.delete', 'iam.serviceAccounts.get', 'iam.serviceAccounts.getIamPolicy', 'iam.serviceAccounts.list', 'iam.serviceAccounts.setIamPolicy', 'iam.serviceAccounts.update', 'logging.logs.delete', 'logging.logs.list', 'resourcemanager.projects.createBillingAssignment', 'resourcemanager.projects.delete', 'resourcemanager.projects.deleteBillingAssignment', 'resourcemanager.projects.get', 'resourcemanager.projects.getIamPolicy', 'resourcemanager.projects.setIamPolicy', 'resourcemanager.projects.undelete', 'resourcemanager.projects.update', 'resourcemanager.projects.updateLiens', 'storage.buckets.create', 'storage.buckets.delete', 'storage.buckets.list', 'serviceusage.services.enable'
 ]
+
+
+def setup_project():
+    credentials, project_id = google.auth.default()
+    # Build api object
+    crm_api = discovery.build('cloudresourcemanager',
+                              'v1', credentials=credentials)
+    # Get project number
+    project_num = crm_api.projects().get(
+        project_id=project_id)['projectNumber']
+    # Build api object
+    services_api = discovery.build(
+        'serviceusage', 'v1', credentials=credentials)
+    # Enable apis
+    apis = [
+        'deploymentmanager.googleapis.com',
+        'cloudresourcemanager.googleapis.com'
+    ]
+    request_body = {'serviceIds': apis}
+    services_api.services().batchEnable(
+        parent=f'projects/{project_num}', body=request_body)
+    # Set deployment manager service account as owner
+    set_account_role(f'{project_num}@cloudservices.gserviceaccount.com','roles/owner')

@@ -3,8 +3,9 @@ import os
 import time
 
 import google.auth
-import googleapiclient.discovery
+from googleapiclient import discovery
 from . import cloudresources
+
 
 def read_config(file_name, config_properties={}):
     with open(file_name) as f:
@@ -18,7 +19,7 @@ def insert(level_name, template_files=[],
            config_properties={}, labels={}):
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
-    deployment_api = googleapiclient.discovery.build(
+    deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
 
     # Create request to insert deployment
@@ -72,7 +73,7 @@ def delete(level_name, buckets=[], service_accounts=[]):
 
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
-    deployment_api = googleapiclient.discovery.build(
+    deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
     # Send delete request
     operation = deployment_api.deployments().delete(
@@ -89,7 +90,7 @@ def delete(level_name, buckets=[], service_accounts=[]):
 def get_labels(level_name):
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
-    deployment_api = googleapiclient.discovery.build(
+    deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
     # Get deployment information
     deployment = deployment_api.deployments().get(
@@ -127,7 +128,7 @@ def wait_for_operation(op_name, deployment_api, project_id):
 def list_deployments():
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
-    deployment_api = googleapiclient.discovery.build(
+    deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
     # Get list of deployments
     try:

@@ -128,7 +128,11 @@ def destroy():
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
     bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
     print('Level tear-down finished for: ' + LEVEL_NAME)
+    service_accounts = [
+        cloudresources.service_account_email('level2-access'),
+        cloudresources.service_account_email('level2-logging-instance-sa')
+    ]
     # Delete deployment
     deployments.delete(LEVEL_NAME,
                        buckets=[bucket_name],
-                       service_accounts=['level2-access', 'level2-logging-instance-sa'])
+                       service_accounts=service_accounts)
