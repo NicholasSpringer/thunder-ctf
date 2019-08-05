@@ -12,7 +12,7 @@ def import_level(level_name):
             f'Level: {level_name} not found in levels list. If the spelling is correct, '
             'make sure the level is present in core/common/config/level-list.txt')
     # Check if level secret has been generated
-    with open('core/common/seeds.json') as f:
+    with open('core/common/config/seeds.json') as f:
         seeds = json.loads(f.read())
     if not level_name in seeds.keys():
         raise Exception(
@@ -31,18 +31,27 @@ def import_level(level_name):
     return level_module
 
 
-def write_start_file(file_name, file_content):
-    file_path = f'start-info/{file_name}'
-    print(
-        f'\nStarting file: {file_name} has been written to {file_path}\n')
-
+def write_start_info(level_name, message, file_name=None, file_content=None):
+    if not os.path.exists('start-info'):
+            os.makedirs('start-info')
+    if file_name and file_content:
+        file_path = f'start-info/{file_name}'
+        with open(file_path, 'w+') as f:
+            f.write(file_content)
+        os.chmod(file_path, 0o400)
+        print(
+            f'Starting file: {file_name} has been written to {file_path}')
+    file_path = f'start-info/{level_name}'
     with open(file_path, 'w+') as f:
         f.write(file_content)
     os.chmod(file_path, 0o400)
+    print(
+        f'Starting message for {level_name} has been written to {file_path}')
+    print(f'Start Message: {message}')
 
-
-def delete_start_file(file_name):
-    file_path = f'start-info/{file_name}'
-    if os.path.exists(file_path):
-        os.chmod(file_path, 0o700)
-        os.remove(file_path)
+def delete_start_files(level_name, files=[]):
+    for f in files:
+        file_path = f'start-info/{f}'
+        if os.path.exists(file_path):
+            os.chmod(file_path, 0o700)
+            os.remove(file_path)

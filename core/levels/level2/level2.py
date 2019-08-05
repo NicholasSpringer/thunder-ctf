@@ -48,14 +48,18 @@ def create():
         cloudresources.upload_directory_recursive(repo_path, repo_path, bucket)
 
         # Create logs
-        create_logs()
+        secret_name = create_logs()
 
         # Create service account key file
         sa_key = keys.generate_service_account_key('level2-access')
-        levels.write_start_file('level2-access.json', sa_key)
-
-        print(f'Level creation complete for: {LEVEL_NAME}\n'
-              f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
+        print(f'Level creation complete for: {LEVEL_NAME}')
+        start_message = (
+            f'Use the compromised service account credentials to find the credit card number of {secret_name}, '
+            'which is hidden somewhere in the GCP project')
+        levels.start_message_file(
+            LEVEL_NAME, start_message, file_name='level2-access.json', file_content=sa_key)
+        print(
+            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
     finally:
         # If there is an error, make sure to delete the temporary repository before exiting
         if os.path.exists(repo_path):
@@ -95,14 +99,14 @@ def create_logs():
         first_names = f.read().split('\n')
     with open('core/levels/level2/last-names.txt') as f:
         last_names = f.read().split('\n')
-    name_secret = (first_names[random.randint(0, 199)] +
+    secret_name = (first_names[random.randint(0, 199)] + ' ' +
                    last_names[random.randint(0, 299)])
     secret_position = random.randint(0, 99)
     for i in range(0, 100):
         if i == secret_position:
             logger.log_struct(
                 {'name': name_secret,
-                 'transaction-total': f'${random.randint(1,150)}.{random.randint(1,99)}',
+                 'transaction-total': f'${random.randint(1,300)}.{random.randint(0,9)}{random.randint(0,9)}',
                  'credit-card-number': secrets.make_secret(LEVEL_NAME, 16)})
         else:
             name = (first_names[random.randint(0, 199)] +
@@ -112,6 +116,7 @@ def create_logs():
                     {'name': name,
                      'transaction-total': f'${random.randint(1,150)}.{random.randint(1,99)}',
                      'credit-card-number': str(random.randint(1000000000000000, 9999999999999999))})
+    return secret_name
 
 
 def destroy():
@@ -121,13 +126,14 @@ def destroy():
     if len([entry for entry in client.list_entries(filter_=f'logName:{LOG_NAME}')]) > 0:
         logger = client.logger(LOG_NAME)
         logger.delete()
+    # Delete starting files
+    levels.delete_start_files(LEVEL_NAME, files=['level2-access.json'])
+    print('Level tear-down finished for: ' + LEVEL_NAME)
 
-    # Delete starting key file
-    levels.delete_start_file('level2-access.json')
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
     bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
-    print('Level tear-down finished for: ' + LEVEL_NAME)
+
     service_accounts = [
         cloudresources.service_account_email('level2-access'),
         cloudresources.service_account_email('level2-logging-instance-sa')

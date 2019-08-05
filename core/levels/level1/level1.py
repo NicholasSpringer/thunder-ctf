@@ -2,7 +2,7 @@ import random
 
 from google.cloud import storage
 
-from ...common.python import deployments, secrets
+from ...common.python import deployments, secrets, levels
 
 LEVEL_NAME = 'level1'
 
@@ -26,18 +26,17 @@ def create():
     secret_blob.upload_from_string(secret)
     print(f'Level creation complete for: {LEVEL_NAME}\n'
           f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
+    start_message = f'The secret for this level can be found in the Google Cloud Storage (GCS) bucket {bucket_name}'
+    levels.write_start_info(LEVEL_NAME, start_message)
 
 
 def destroy():
     print('Level tear-down started for: ' + LEVEL_NAME)
+    # Delete starting files
+    levels.delete_start_files(LEVEL_NAME)
+    print('Level tear-down finished for: ' + LEVEL_NAME)
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
     bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
-    # Forcefully delete bucket to also get rid of items inside bucket
-    storage_client = storage.Client()
-    bucket = storage_client.lookup_bucket(bucket_name)
-    if bucket:
-        bucket.delete(force=True)
-    print('Level tear-down finished for: ' + LEVEL_NAME)
     # Delete deployment
-    deployments.delete(LEVEL_NAME)
+    deployments.delete(LEVEL_NAME, buckets=[bucket_name])

@@ -35,6 +35,7 @@ resources:
         permissions:
         - compute.instances.get
         - compute.instances.list
+        - storage.buckets.list
     - service_account_id: level2-logging-instance-sa
       role:
         name: roles/logging.viewer
