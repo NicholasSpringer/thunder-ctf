@@ -72,14 +72,15 @@ def set_project(*args):
             '   python3 thunder.py set_project [project-id]')
     project_id = args[0]
     confirmed = 'y' == input(
-                f'Set project to {project_id}? If {project_id} has existing cloud infrastructure, it may be disrupted. [y/n]').lower()[0]
+                f'Set project to {project_id}? If {project_id} has existing cloud infrastructure, it may be disrupted. [y/n]: ').lower()[0]
     if(confirmed):
-        with open('common/core/config/project.txt','w+') as f:
-            f.write(project_id)
         # Make sure credentials are set correctly and have owner role
-        cloudresources.test_application_default_credentials()
+        cloudresources.test_application_default_credentials(set_project=project_id)
         # Enable apis, grant DM owner status, etc
         cloudresources.setup_project()
+        with open('core/common/config/project.txt','w+') as f:
+            f.write(project_id)
+        print('Project has been set.')
     else:
         print('Project not set.')
 

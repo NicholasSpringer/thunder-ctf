@@ -1,4 +1,5 @@
 import os
+import time
 
 from google.cloud import storage
 import google.auth
@@ -32,14 +33,15 @@ def service_account_email(account):
 
 def set_account_role(email, role):
     remove_accounts_iam([email])
+    time.sleep(5)
     credentials, project_id = google.auth.default()
     crm_api = discovery.build('cloudresourcemanager',
-                              'v1', credentials=email)
+                              'v1', credentials=credentials)
     # Get current iam policy
     policy = crm_api.projects().getIamPolicy(
         resource=project_id, body={}).execute()
     # Add binding to policy
-    for binding in policy['binding']:
+    for binding in policy['bindings']:
         if binding['role'] == role:
             binding['members'].append(f'serviceAccount:{email}')
     # Set as new policy
@@ -54,19 +56,18 @@ def remove_accounts_iam(emails):
     # Get current iam policy
     policy = crm_api.projects().getIamPolicy(
         resource=project_id, body={}).execute()
-
+    
     # Remove given accounts from policy
     for binding in policy['bindings']:
         binding['members'] = (
             [member for member in binding['members']
              if not member in [f'serviceAccount:{account}' for account in emails]])
-
     # Set as new policy
     crm_api.projects().setIamPolicy(resource=project_id,
                                     body={'policy': policy}).execute()
 
 
-def test_application_default_credentials():
+def test_application_default_credentials(set_project=None):
     # Try to extract application default credentials
     try:
         credentials, project_id = google.auth.default()
@@ -74,13 +75,26 @@ def test_application_default_credentials():
         exit('Application default credentials not set. To set credentials, run:\n'
              '  gcloud auth application-default login')
     # Make sure application default project is the same as the project in thunder ctf config
-    with open('core/common/config/project.txt') as f:
-        set_project = f.read()
+    if not set_project:
+        with open('core/common/config/project.txt') as f:
+            set_project = f.read()
+    if set_project == '':
+        exit('You must set the Thunder CTF project to your GCP project id:\n'
+             '  python3 thunder.py set_project [project-id]')
+    if not project_id:
+        exit('You must the set the gcloud config account and project '
+             'to your application default account and the desired project \n'
+             '  gcloud config set account=[email]\n'
+             '  gcloud config set project=[project-id]\n'
+             'If you wish to reset the application default credentials, run:\n'
+             '  gcloud auth application-default login')
     if not set_project == project_id:
-        exit(f'Application default project: {project_id} is not equal to Thunder CTF project: {set_project}. To change application default project, run:\n'
+        exit(f'Application default project id: {project_id} '
+             f'is not equal to Thunder CTF project id: {set_project}. '
+             'To change application default project, run:\n'
              '  gcloud config set project=[project-id]\n'
              'To change the Thunder CTF project, run:\n'
-             '  python3 thunder.py set_project')
+             '  python3 thunder.py set_project [project-id]')
     # Build api object
     crm_api = discovery.build('cloudresourcemanager',
                               'v1', credentials=credentials)
@@ -92,7 +106,8 @@ def test_application_default_credentials():
             return True
     # If credentials don't have necessary permissions, exit
     exit(f'Application default account should have owner role on project {project_id}.\n'
-         'If you are trying to use a user account, make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is not set:\n'
+         'If you are trying to use a user account, '
+         'make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is not set:\n'
          '  unset GOOGLE_APPLICATION_CREDENTIALS\n'
          'Set application default credentials with:\n'
          '  gcloud auth application-default login')
@@ -104,13 +119,14 @@ check_permissions = [
 
 
 def setup_project():
+    print('Setting up project.')
     credentials, project_id = google.auth.default()
     # Build api object
     crm_api = discovery.build('cloudresourcemanager',
                               'v1', credentials=credentials)
     # Get project number
     project_num = crm_api.projects().get(
-        project_id=project_id)['projectNumber']
+        projectId=project_id).execute()['projectNumber']
     # Build api object
     services_api = discovery.build(
         'serviceusage', 'v1', credentials=credentials)
@@ -120,7 +136,26 @@ def setup_project():
         'cloudresourcemanager.googleapis.com'
     ]
     request_body = {'serviceIds': apis}
-    services_api.services().batchEnable(
-        parent=f'projects/{project_num}', body=request_body)
+    op_name = services_api.services().batchEnable(
+        parent=f'projects/{project_num}', body=request_body).execute()['name']
+    wait_for_operation(op_name,services_api)
     # Set deployment manager service account as owner
     set_account_role(f'{project_num}@cloudservices.gserviceaccount.com','roles/owner')
+
+def wait_for_operation(op_name, services_api):
+    # Wait till  operation finishes, giving updates every 5 seconds
+    op_done = False
+    t = 0
+    while not op_done:
+        print(f'[{int(t/60)}m {t%60}s] '
+              f'API activation in progress. Status: RUNNING')
+        time.sleep(5)
+        t += 5
+        response = services_api.operations().get(
+            name=op_name).execute()
+        if not 'done' in response:
+            op_done = False
+        else:
+            op_done = response['done']
+    print(f'[{int(t/60)}m {t%60}s] '
+          f'API activation finished. Status: DONE')
