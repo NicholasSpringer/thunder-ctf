@@ -56,7 +56,7 @@ def create():
         start_message = (
             f'Use the compromised service account credentials to find the credit card number of {secret_name}, '
             'which is hidden somewhere in the GCP project')
-        levels.start_message_file(
+        levels.write_start_info(
             LEVEL_NAME, start_message, file_name='level2-access.json', file_content=sa_key)
         print(
             f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
@@ -105,13 +105,13 @@ def create_logs():
     for i in range(0, 100):
         if i == secret_position:
             logger.log_struct(
-                {'name': name_secret,
+                {'name': secret_name,
                  'transaction-total': f'${random.randint(1,300)}.{random.randint(0,9)}{random.randint(0,9)}',
                  'credit-card-number': secrets.make_secret(LEVEL_NAME, 16)})
         else:
             name = (first_names[random.randint(0, 199)] +
                     last_names[random.randint(0, 299)])
-            if not name == name_secret:
+            if not name == secret_name:
                 logger.log_struct(
                     {'name': name,
                      'transaction-total': f'${random.randint(1,150)}.{random.randint(1,99)}',
