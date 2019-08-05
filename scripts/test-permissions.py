@@ -1,9 +1,24 @@
 from googleapiclient import discovery
 import google.oauth2.service_account
+from google.oauth2.credentials import Credentials
 import os
 
-SERVICE_ACCOUNT_KEY_FILE = 'start-info/level2-access.json'
-PROJECT_ID = 'gcp-vulnerable'
+# If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
+use_access_token = True
+# Only one of the following need to be set:
+SERVICE_ACCOUNT_KEY_FILE = ''
+ACCESS_TOKEN = ''
+# Set the project ID
+PROJECT_ID = ''
+
+
+if use_access_token:
+    # Create credentials using access token
+    credentials = Credentials(token=ACCESS_TOKEN)
+else:
+    # Create credentials using service account key file
+    credentials = google.oauth2.service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_KEY_FILE)
 
 # Change current working directory to top level of repo
 os.chdir(os.path.dirname(os.getcwd()+'/'+os.path.dirname(__file__)))
@@ -14,9 +29,6 @@ with open('scripts/testable-permissions.txt') as f:
 chunked_permissions = (
     [testable_permissions[i * 100:(i + 1) * 100] for i in range((len(testable_permissions)+99) // 100)])
 
-# Create credentials using service account key file
-credentials = google.oauth2.service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_KEY_FILE)
 # Build cloudresourcemanager REST API python object
 crm_api = discovery.build('cloudresourcemanager',
                           'v1', credentials=credentials)
