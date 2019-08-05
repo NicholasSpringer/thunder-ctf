@@ -42,3 +42,40 @@ def remove_accounts_iam(accounts):
     # Set as new policy
     crm_api.projects().setIamPolicy(resource=project_id,
                                     body={'policy': policy}).execute()
+
+
+def test_application_default_credentials():
+    # Try to extract application default credentials
+    try:
+        credentials, project_id = google.auth.default()
+    except google.auth.exceptions.DefaultCredentialsError:
+        exit('Application default credentials not set. To set credentials, run:\n'
+             '  gcloud auth application-default login')
+    # Make sure application default project is the same as the project in thunder ctf config
+    with open('core/common/config/project.txt') as f:
+        set_project = f.read()
+    if not set_project == project_id:
+        exit(f'Application default project: {project_id} is not equal to Thunder CTF project: {set_project}. To change application default project, run:\n'
+             '  gcloud config set project=[project-id]\n'
+             'To change the Thunder CTF project, run:\n'
+             '  python3 thunder.py set_project')
+    # Build api object
+    crm_api = googleapiclient.discovery.build(
+        'cloudresourcemanager', 'v1', credentials=credentials)
+    # Check if credentials has permissions
+    response = crm_api.projects().testIamPermissions(resource=project_id, body={
+        'permissions': check_permissions}).execute()
+    if 'permissions' in response:
+        if len(response['permissions']) == len(check_permissions):
+            return True
+    # If credentials don't have necessary permissions, exit
+    exit(f'Application default account should have owner role on project {project_id}.\n'
+         'If you are trying to use a user account, make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is not set:\n'
+         '  unset GOOGLE_APPLICATION_CREDENTIALS\n'
+         'Set application default credentials with:\n'
+         '  gcloud auth application-default login')
+
+
+check_permissions = [
+    'iam.roles.create', 'iam.roles.delete', 'iam.roles.get', 'iam.roles.list', 'iam.roles.undelete', 'iam.roles.update', 'iam.serviceAccounts.actAs', 'iam.serviceAccounts.create', 'iam.serviceAccounts.delete', 'iam.serviceAccounts.get', 'iam.serviceAccounts.getIamPolicy', 'iam.serviceAccounts.list', 'iam.serviceAccounts.setIamPolicy', 'iam.serviceAccounts.update', 'logging.logs.delete', 'logging.logs.list', 'resourcemanager.projects.createBillingAssignment', 'resourcemanager.projects.delete', 'resourcemanager.projects.deleteBillingAssignment', 'resourcemanager.projects.get', 'resourcemanager.projects.getIamPolicy', 'resourcemanager.projects.setIamPolicy', 'resourcemanager.projects.undelete', 'resourcemanager.projects.update', 'resourcemanager.projects.updateLiens', 'storage.buckets.create', 'storage.buckets.delete', 'storage.buckets.list'
+]

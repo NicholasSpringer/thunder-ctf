@@ -5,12 +5,12 @@ import os
 
 def import_level(level_name):
     # Check if level is in level-list.txt
-    with open('core/levels/level-list.txt') as f:
+    with open('core/common/config/level-list.txt') as f:
         level_names = f.read().split('\n')
     if not level_name in level_names:
         raise Exception(
             f'Level: {level_name} not found in levels list. If the spelling is correct, '
-            'make sure the level is present in levels/level-list.txt')
+            'make sure the level is present in core/common/config/level-list.txt')
     # Check if level secret has been generated
     with open('core/common/seeds.json') as f:
         seeds = json.loads(f.read())

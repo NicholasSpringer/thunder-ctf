@@ -25,7 +25,7 @@ def generate_seeds(level_names=[]):
 
 def make_secret(level_name, chars=0):
     credentials, project_id = google.auth.default()
-    with open('core/common/seeds.json') as f:
+    with open('core/common/config/seeds.json') as f:
         seeds = json.loads(f.read())
     seed = seeds[level_name]
     if(chars == 0):
