@@ -37,7 +37,7 @@ p {
 }
 
 .accordion {
-    background-color: #eee;
+    background-color: #ccc;
     border: 1px solid black;
     color: #444;
     cursor: pointer;
@@ -51,7 +51,11 @@ p {
 }
 
 .active, .accordion:hover {
-    background-color: #ccc; 
+    background-color: #526FAD; 
+}
+
+.prevActive {
+    background-color: #758CBD
 }
 
 .panel {
