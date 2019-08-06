@@ -1,2 +1,2 @@
-open_bucket_1
-finance_2
+1openbucket
+2finance

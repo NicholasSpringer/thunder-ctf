@@ -5,16 +5,16 @@ imports:
 - path: iam_policy.jinja
 
 resources:
-- name: finance_2-access
+- name: 2finance-access
   type: service_account.jinja
-- name: finance_2-bucket
+- name: 2finance-bucket
   type: bucket_acl.jinja
   properties:
     nonce: //nonce//
     acl_entries:
-    - service_account_id: finance_2-access
+    - service_account_id: 2finance-access
       role: READER
-- name: finance_2-logging-instance
+- name: 2finance-logging-instance
   type: instance.jinja
   properties:
     zone: us-west1-b
@@ -27,7 +27,7 @@ resources:
   type: iam_policy.jinja
   properties:
     bindings:
-    - service_account_id: finance_2-access
+    - service_account_id: 2finance-access
       role:
         name: custom
         custom_nonce: //nonce//
@@ -37,6 +37,6 @@ resources:
         - compute.zones.list
         - compute.zones.get
         - storage.buckets.list
-    - service_account_id: finance_2-logging-instance-sa
+    - service_account_id: 2finance-logging-instance-sa
       role:
         name: roles/logging.viewer
