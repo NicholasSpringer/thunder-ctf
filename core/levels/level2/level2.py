@@ -54,7 +54,7 @@ def create():
         sa_key = keys.generate_service_account_key('level2-access')
         print(f'Level creation complete for: {LEVEL_NAME}')
         start_message = (
-            f'Use the compromised service account credentials to find the credit card number of {secret_name}, '
+            f'Use the compromised service account credentials stored in level2-access.json to find the credit card number of {secret_name}, '
             'which is hidden somewhere in the GCP project')
         levels.write_start_info(
             LEVEL_NAME, start_message, file_name='level2-access.json', file_content=sa_key)

@@ -32,6 +32,7 @@ def import_level(level_name):
 
 
 def write_start_info(level_name, message, file_name=None, file_content=None):
+    print('\n')
     if not os.path.exists('start-info'):
             os.makedirs('start-info')
     if file_name and file_content:
@@ -41,15 +42,17 @@ def write_start_info(level_name, message, file_name=None, file_content=None):
         os.chmod(file_path, 0o400)
         print(
             f'Starting file: {file_name} has been written to {file_path}')
-    file_path = f'start-info/{level_name}.txt'
-    with open(file_path, 'w+') as f:
-        f.write(file_content)
-    os.chmod(file_path, 0o400)
+    message_file_path = f'start-info/{level_name}.txt'
+    with open(message_file_path, 'w+') as f:
+        f.write(message)
+    os.chmod(message_file_path, 0o400)
     print(
         f'Starting message for {level_name} has been written to {file_path}')
     print(f'Start Message: {message}')
+    print('\n')
 
 def delete_start_files(level_name, files=[]):
+    files.append(f'{level_name}.txt')
     for f in files:
         file_path = f'start-info/{f}'
         if os.path.exists(file_path):
