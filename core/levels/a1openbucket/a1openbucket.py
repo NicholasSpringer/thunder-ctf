@@ -4,7 +4,7 @@ from google.cloud import storage
 
 from ...common.python import deployments, secrets, levels
 
-LEVEL_NAME = '1openbucket'
+LEVEL_NAME = 'a1openbucket'
 
 
 def create():

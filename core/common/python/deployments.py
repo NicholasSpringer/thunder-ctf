@@ -1,6 +1,7 @@
 import random
 import os
 import time
+import sys
 
 import google.auth
 from googleapiclient import discovery
@@ -111,18 +112,19 @@ def get_labels(level_name):
 
 def wait_for_operation(op_name, deployment_api, project_id):
     # Wait till  operation finishes, giving updates every 5 seconds
-    op_status = 'STARTING'
+    op_done = False
     t = 0
-    while op_status != 'DONE':
-        print(f'[{int(t/60)}m {t%60}s] '
-              f'Deployment operation in progress. Status: {op_status}')
+    time_string = ''
+    while not op_done:
+        time_string = f'[{int(t/60)}m {(t%60)/10}{t%10}s]'
+        sys.stdout.write(f'\r{time_string} Deployment operation in progress...')
         time.sleep(5)
         t += 5
         op_status = deployment_api.operations().get(
             project=project_id,
             operation=op_name).execute()['status']
-    print(f'[{int(t/60)}m {t%60}s] '
-          f'Deployment operation finished. Status: {op_status}')
+        op_done = (op_status == 'DONE')
+    sys.stdout.write(f'\r{time_string} Deployment operation in progress... Done')
 
 
 def list_deployments():
