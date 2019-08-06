@@ -146,16 +146,19 @@ def wait_for_operation(op_name, services_api):
     # Wait till  operation finishes, giving updates every 5 seconds
     op_done = False
     t = 0
+    start_time = time.time()
+    time_string = ''
     while not op_done:
-        print(f'[{int(t/60)}m {t%60}s] '
-              f'API activation in progress. Status: RUNNING')
-        time.sleep(5)
+        time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
+        sys.stdout.write(f'\r{time_string} Deployment operation in progress...')
         t += 5
+        while t < time.time()-start_time:
+            t+=5
+        time.sleep(t-(time.time()-start_time))
         response = services_api.operations().get(
             name=op_name).execute()
         if not 'done' in response:
             op_done = False
         else:
             op_done = response['done']
-    print(f'[{int(t/60)}m {t%60}s] '
-          f'API activation finished. Status: DONE')
+    sys.stdout.write(f'\r{time_string} Deployment operation in progress... Done\n')

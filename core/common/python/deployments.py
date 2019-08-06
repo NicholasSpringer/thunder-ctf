@@ -58,9 +58,7 @@ def insert(level_name, template_files=[],
     # If error occurred in deployment, raise it
     if 'error' in operation.keys():
         raise Exception(operation['error'])
-    print('Deployment insertion started.')
     wait_for_operation(op_name, deployment_api, project_id)
-    print('Deployment insertion finished.')
 
 
 def delete(level_name, buckets=[], service_accounts=[]):
@@ -83,9 +81,7 @@ def delete(level_name, buckets=[], service_accounts=[]):
     # If error occurred in deployment, raise it
     if 'error' in operation.keys():
         raise Exception(operation['error'])
-    print('Deployment deletion started.')
     wait_for_operation(op_name, deployment_api, project_id)
-    print('Deployment deletion finished.')
 
 
 def get_labels(level_name):
@@ -114,18 +110,20 @@ def wait_for_operation(op_name, deployment_api, project_id):
     # Wait till  operation finishes, giving updates every 5 seconds
     op_done = False
     t = 0
+    start_time = time.time()
     time_string = ''
     while not op_done:
-        time_string = f'[{int(t/60)}m {(t%60)/10}{t%10}s]'
+        time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
         sys.stdout.write(f'\r{time_string} Deployment operation in progress...')
-        time.sleep(5)
         t += 5
+        while t < time.time()-start_time:
+            t+=5
+        time.sleep(t-(time.time()-start_time))
         op_status = deployment_api.operations().get(
             project=project_id,
             operation=op_name).execute()['status']
         op_done = (op_status == 'DONE')
-    sys.stdout.write(f'\r{time_string} Deployment operation in progress... Done')
-
+    sys.stdout.write(f'\r{time_string} Deployment operation in progress... Done\n')
 
 def list_deployments():
     # Get current credentials from environment variables and build deployment API object

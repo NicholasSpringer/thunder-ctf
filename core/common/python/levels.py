@@ -47,7 +47,7 @@ def write_start_info(level_name, message, file_name=None, file_content=None):
         f.write(message)
     os.chmod(message_file_path, 0o400)
     print(
-        f'Starting message for {level_name} has been written to {file_path}')
+        f'Starting message for {level_name} has been written to {message_file_path}')
     print(f'Start Message: {message}')
     print('\n')
 
