@@ -27,7 +27,6 @@ def generate_ssh_key():
         crypto_serialization.PublicFormat.OpenSSH)
     # Add username to public key
     public_key = public_key.decode('utf-8')
-    print([public_key])
     return private_key, public_key
 
 

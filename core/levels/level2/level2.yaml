@@ -21,7 +21,6 @@ resources:
     ssh_credentials:
       username: //ssh_username//
       public_key: //ssh_public_key//
-    startup_script: //startup_script//
     sa_scopes:
     - https://www.googleapis.com/auth/logging.read
 - name: iam_policy

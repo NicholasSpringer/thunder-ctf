@@ -11,7 +11,7 @@ resources:
   name: {{ INSTANCE_NAME }}
   properties:
     zone: {{ properties["zone"] }}
-    machineType: zones/{{ properties["zone"] }}/machineTypes/f1-micro
+    machineType: zones/{{ properties["zone"] }}/machineTypes/g1-small
     disks:
     - boot: true
       autoDelete: true
