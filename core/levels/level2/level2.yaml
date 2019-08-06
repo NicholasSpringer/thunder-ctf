@@ -35,6 +35,8 @@ resources:
         permissions:
         - compute.instances.get
         - compute.instances.list
+        - compute.zones.list
+        - compute.zones.get
         - storage.buckets.list
     - service_account_id: level2-logging-instance-sa
       role:

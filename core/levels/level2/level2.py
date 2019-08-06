@@ -99,7 +99,7 @@ def create_logs():
         first_names = f.read().split('\n')
     with open('core/levels/level2/last-names.txt') as f:
         last_names = f.read().split('\n')
-    secret_name = (first_names[random.randint(0, 199)] + ' ' +
+    secret_name = (first_names[random.randint(0, 199)] + '_' +
                    last_names[random.randint(0, 299)])
     secret_position = random.randint(0, 99)
     for i in range(0, 100):
@@ -109,7 +109,7 @@ def create_logs():
                  'transaction-total': f'${random.randint(1,300)}.{random.randint(0,9)}{random.randint(0,9)}',
                  'credit-card-number': secrets.make_secret(LEVEL_NAME, 16)})
         else:
-            name = (first_names[random.randint(0, 199)] +
+            name = (first_names[random.randint(0, 199)] + '_' +
                     last_names[random.randint(0, 299)])
             if not name == secret_name:
                 logger.log_struct(

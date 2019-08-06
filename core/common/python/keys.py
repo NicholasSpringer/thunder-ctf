@@ -27,6 +27,7 @@ def generate_ssh_key():
         crypto_serialization.PublicFormat.OpenSSH)
     # Add username to public key
     public_key = public_key.decode('utf-8')
+    print([public_key])
     return private_key, public_key
 
 
@@ -40,6 +41,8 @@ def generate_service_account_key(service_account_id):
         name=f'projects/{project_id}/serviceAccounts/{service_account_email}', body={}).execute()
     # Decode private key data to key file
     key_file_content = base64.b64decode(
-        key['privateKeyData']).decode('unicode-escape')
+        key['privateKeyData']).decode('utf-8')
     # Return json string
     return key_file_content
+
+generate_ssh_key()

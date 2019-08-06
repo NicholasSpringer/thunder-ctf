@@ -19,6 +19,8 @@ resources:
         sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts
     networkInterfaces:
     - network: global/networks/default
+      accessConfigs:
+      - type: ONE_TO_ONE_NAT
     serviceAccounts:
     - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
       {% if properties['sa_scopes'] %}

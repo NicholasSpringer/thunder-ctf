@@ -13,6 +13,11 @@ resources:
       entity: user-$(ref.{{ acl_entry['service_account_id'] }}.email)
       role: {{ acl_entry['role'] }}
     {% endfor %}
+    defaultObjectAcl:
+    {% for acl_entry in properties['acl_entries'] %}
+    - entity: user-$(ref.{{ acl_entry['service_account_id'] }}.email)
+      role: {{ acl_entry['role'] }}
+    {% endfor %}
     {% endif %}
     projection: full
     location: US
