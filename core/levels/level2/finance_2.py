@@ -7,7 +7,7 @@ from google.cloud import storage, logging as glogging
 
 from ...common.python import deployments, secrets, keys, cloudresources, levels
 
-LEVEL_NAME = 'level2'
+LEVEL_NAME = 'finance_2'
 
 LOG_NAME = 'transactions'
 
@@ -16,7 +16,7 @@ def create():
     print("Level initialization started for: " + LEVEL_NAME)
     # Create randomized nonce name to avoid namespace conflicts
     nonce = str(random.randint(100000000000, 999999999999))
-    bucket_name = f'level2-bucket-{nonce}'
+    bucket_name = f'finance_2-bucket-{nonce}'
 
     # Create ssh key
     ssh_private_key, ssh_public_key = keys.generate_ssh_key()
@@ -51,13 +51,13 @@ def create():
         secret_name = create_logs()
 
         # Create service account key file
-        sa_key = keys.generate_service_account_key('level2-access')
+        sa_key = keys.generate_service_account_key('finance_2-access')
         print(f'Level creation complete for: {LEVEL_NAME}')
         start_message = (
-            f'Use the compromised service account credentials stored in level2-access.json to find the credit card number of {secret_name}, '
+            f'Use the compromised service account credentials stored in finance_2-access.json to find the credit card number of {secret_name}, '
             'which is hidden somewhere in the GCP project')
         levels.write_start_info(
-            LEVEL_NAME, start_message, file_name='level2-access.json', file_content=sa_key)
+            LEVEL_NAME, start_message, file_name='finance_2-access.json', file_content=sa_key)
         print(
             f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
     finally:
@@ -95,9 +95,9 @@ def create_repo_files(repo_path, ssh_private_key):
 
 def create_logs():
     logger = glogging.Client().logger(LOG_NAME)
-    with open('core/levels/level2/first-names.txt') as f:
+    with open('core/levels/finance_2/first-names.txt') as f:
         first_names = f.read().split('\n')
-    with open('core/levels/level2/last-names.txt') as f:
+    with open('core/levels/finance_2/last-names.txt') as f:
         last_names = f.read().split('\n')
     secret_name = (first_names[random.randint(0, 199)] + '_' +
                    last_names[random.randint(0, 299)])
@@ -127,7 +127,7 @@ def destroy():
         logger = client.logger(LOG_NAME)
         logger.delete()
     # Delete starting files
-    levels.delete_start_files(LEVEL_NAME, files=['level2-access.json'])
+    levels.delete_start_files(LEVEL_NAME, files=['finance_2-access.json'])
     print('Level tear-down finished for: ' + LEVEL_NAME)
 
     # Find bucket name from deployment label
@@ -135,8 +135,8 @@ def destroy():
     bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
 
     service_accounts = [
-        cloudresources.service_account_email('level2-access'),
-        cloudresources.service_account_email('level2-logging-instance-sa')
+        cloudresources.service_account_email('finance_2-access'),
+        cloudresources.service_account_email('finance_2-logging-instance-sa')
     ]
     # Delete deployment
     deployments.delete(LEVEL_NAME,
