@@ -116,7 +116,7 @@ def create_logs():
                     {'name': name,
                      'transaction-total': f'${random.randint(1,150)}.{random.randint(1,99)}',
                      'credit-card-number': str(random.randint(1000000000000000, 9999999999999999))})
-    return secret_name
+    return secret_name.replace('_', ' ')
 
 
 def destroy():
