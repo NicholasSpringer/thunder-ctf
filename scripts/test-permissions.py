@@ -4,7 +4,7 @@ from google.oauth2.credentials import Credentials
 import os
 
 # If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
-use_access_token = True
+use_access_token = False
 # Only one of the following need to be set:
 SERVICE_ACCOUNT_KEY_FILE = ''
 ACCESS_TOKEN = ''
