@@ -1,20 +1,21 @@
 import os
 import time
+import sys
+import zipfile
 
+import httplib2
 from google.cloud import storage
 import google.auth
 from googleapiclient import discovery
 
 
-def upload_directory_recursive(dir_path, top_dir, bucket):
-    for subitem in os.listdir(dir_path):
-        subitem_path = dir_path + "/" + subitem
-        if os.path.isdir(subitem_path):
-            upload_directory_recursive(subitem_path, top_dir, bucket)
-        else:
-            relative_file_path = subitem_path.replace(top_dir + '/', '', 1)
-            blob = storage.Blob(relative_file_path, bucket)
-            with open(subitem_path, 'rb') as f:
+def upload_directory_recursive(top_dir_path, bucket):
+    for dir_path, subdir_paths, f_names in os.walk(dir_path):
+        for f in f_names:
+            relative_path = dir_path + '/' + f
+            abs_path = top_dir_path + '/' + relative_path
+            blob = storage.Blob(relative_path, bucket)
+            with open(abs_path, 'rb') as f:
                 blob.upload_from_file(f)
 
 
@@ -56,7 +57,7 @@ def remove_accounts_iam(emails):
     # Get current iam policy
     policy = crm_api.projects().getIamPolicy(
         resource=project_id, body={}).execute()
-    
+
     # Remove given accounts from policy
     for binding in policy['bindings']:
         binding['members'] = (
@@ -138,9 +139,11 @@ def setup_project():
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
         parent=f'projects/{project_num}', body=request_body).execute()['name']
-    wait_for_operation(op_name,services_api)
+    wait_for_operation(op_name, services_api)
     # Set deployment manager service account as owner
-    set_account_role(f'{project_num}@cloudservices.gserviceaccount.com','roles/owner')
+    set_account_role(
+        f'{project_num}@cloudservices.gserviceaccount.com', 'roles/owner')
+
 
 def wait_for_operation(op_name, services_api):
     # Wait till  operation finishes, giving updates every 5 seconds
@@ -150,10 +153,11 @@ def wait_for_operation(op_name, services_api):
     time_string = ''
     while not op_done:
         time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
-        sys.stdout.write(f'\r{time_string} Deployment operation in progress...')
+        sys.stdout.write(
+            f'\r{time_string} Deployment operation in progress...')
         t += 5
         while t < time.time()-start_time:
-            t+=5
+            t += 5
         time.sleep(t-(time.time()-start_time))
         response = services_api.operations().get(
             name=op_name).execute()
@@ -161,4 +165,38 @@ def wait_for_operation(op_name, services_api):
             op_done = False
         else:
             op_done = response['done']
-    sys.stdout.write(f'\r{time_string} Deployment operation in progress... Done\n')
+    sys.stdout.write(
+        f'\r{time_string} Deployment operation in progress... Done\n')
+
+
+def upload_cloud_function(function_path, location_id):
+    credentials, project_id = google.auth.default()
+    # Create zip and make request
+    zip_path = os.path.dirname(function_path) + '/' + 'function.zip'
+    try:
+        with zipfile.ZipFile(zip_path, 'w') as z:
+            for dir_path, subdir_paths, f_names in os.walk(function_path):
+                for f in f_names:
+                    file_path = dir_path + '/' + f
+                    arc_path = file_path.replace(function_path+'/', '')
+                    z.write(file_path, arcname=arc_path)
+        # Build api object
+        cf_api = discovery.build('cloudfunctions',
+                                'v1', credentials=credentials)
+        parent = f'projects/{project_id}/locations/{location_id}'
+        # Generate upload URL
+        upload_url = cf_api.projects().locations().functions(
+        ).generateUploadUrl(parent=parent).execute()['uploadUrl']
+        # Make Http object
+        h = httplib2.Http()
+        # Upload to url
+        headers = {'Content-Type': 'application/zip',
+                'x-goog-content-length-range': '0,104857600'}
+        with open(zip_path,'rb') as f:
+            h.request(upload_url, method='PUT', headers=headers, body=f)
+        # Return signed url for creating cloud function
+        return upload_url
+    finally:
+        # Delete zip
+        if os.path.exists(zip_path):
+            os.remove(zip_path)

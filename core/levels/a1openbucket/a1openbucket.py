@@ -5,16 +5,16 @@ from google.cloud import storage
 from ...common.python import deployments, secrets, levels
 
 LEVEL_NAME = 'a1openbucket'
-
+RESOURCE_PREFIX = 'a1'
 
 def create():
     # Create randomized bucket name to avoid namespace conflict
     nonce = str(random.randint(100000000000, 999999999999))
-    bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
+    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Insert deployment
     config_properties = {'nonce': nonce}
     labels = {'nonce': nonce}
-    deployments.insert(LEVEL_NAME, template_files=['common/templates/bucket_acl.jinja'],
+    deployments.insert(LEVEL_NAME, template_files=['core/common/templates/bucket_acl.jinja'],
                        config_properties=config_properties, labels=labels)
 
     print("Level setup started for: " + LEVEL_NAME)
@@ -37,6 +37,6 @@ def destroy():
     print('Level tear-down finished for: ' + LEVEL_NAME)
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
-    bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
+    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Delete deployment
     deployments.delete(LEVEL_NAME, buckets=[bucket_name])

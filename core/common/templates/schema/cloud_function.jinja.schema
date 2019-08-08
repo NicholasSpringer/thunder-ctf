@@ -1,0 +1,27 @@
+info:
+  title: Cloud function
+  author: Nicholas Springer
+  description: Creates an a cloud function with a per-function service account
+
+required:
+- region
+- nonce
+- entry_point
+- upload_url
+
+properties:
+  region:
+    description: Region of cloud function
+    type: string
+  nonce:
+    description: Nonce for avoiding namespace conflicts
+    type: integer
+  entry_point:
+    description: Name of function to run
+    type: string
+  upload_url:
+    description: Signed GCS url source code has been uploaded to
+    type: string
+  env_variables:
+    description: The environment variables of the cloud function
+    minProperties: 1

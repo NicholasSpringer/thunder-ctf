@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "gcp-vulnerable",
+  "private_key_id": "67027bde733780192d962be48e79218ea83ef9db",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCy1YcfGPLWqwQI\nCIxGwRh8FNpRI/6hXrhKbI/PWhieqAVntHp7zzLPWWpNeQU9WT3+95WnsV3T9qgS\niJnCHBd5CdUY1WQMvGGHwgFSMgzbnZ3PxQEGiVKQPavYm56JnPf+PJRpHvF3499l\nc2s5Wtt6/RvU+VzmmDYP2ylNDJde+gAEc9w9oPjAX6Kgk2V1rfAAt2o6HGW+yAn7\nw4aMufOq+/yfPDOPfJoRNGOWZzRr4yuCfsskJfCWUWAZ3rPM+vz+AWtx8QkAU1Ld\niYr+l4RA95f98eyUtNXmJzoBhLbqQf+Qds9PuTuDdIUl4/o4xkYIRipNIY3DCW8M\nNidgfdwrAgMBAAECggEAJAfJVYadRormIQg32vmEiVtaMQbjgnenAbelsc0hMLYB\ngMdn9hHk1snZFQrQ929Hgls3l7WwhcgoTLOg5u7p+8TzXjGAGuDJdaSsx3a2CHlV\nFktGzZ5VOCJ0wQt5gZhSjrJ95EALvm/2zmXWsJORrNHaDarAAOWh3sf1JkTnKoc1\naNPLBc8fF1oMcagVO2vuluWotfizYi3jgicjN3s7LI4XGHK88AyN7HCOSCX+Z0Dx\nq4U+ysSP3cA5xhWcwE1UjegSLwPmplAbLFpf9x3HRouDK9xVdwqA2TGpdHKAjceV\ns+2i3S982YJYQtJpv19FxWoNeIbZUZkIQ8eXCUYSoQKBgQDq+nIg4n7f7zO21uXj\n47yEwRTyz4hEV9sFJLvbKqoiljkz7Yj4Xtnp3u+kY90E15ddOi0AKNpaqOHY5gIV\nSaBX6rdJuhB3Nyzj6bN3OKiq/8mchSgYFgvtG652XcErZpUQh7iYb6lFhHDwqSQC\njuWYwCSGI8yLaTUB4/GPvSaXTQKBgQDC1T93Y59TjcGtrJXfzkGRqN5EUQlc++EL\nCxgBpd9fZMUx4iJ96I9+nwa610Fkchu0movB1IgaV4Z+KWd11q6x4uKFKHFTx1Ag\nsX/BYj6agjEg8RTf/A/6eotTTZqn0MKA14KZn0K324K7PaXmGidOCMZOaowc8VJB\n8egYb4O1VwKBgQC3WDM09YWJtVrkj0lRR6EQ9Jcj3kq1CNgca00o9WFLG2wG2JDH\nOztNAGZ8Hm+WF6JDW+FA/p9hneSbGN0HPyudbccV/9hZLPQZ4X/mxo7U3kCxoDRo\nlss3dyHpub2/34rwGvYt+vJZC74UCeXPGTCMv1/ASq6PGMgDcZhKT4yNAQKBgQCL\nzJoCn8AmIvRTGyBbe9L+om4CFSejybQ7yVULcarq9xKr7XgUYjf8gj1A+c2ZNmt8\n1tvrVAXo6N6/ThRHsKifSY6CP3e5xq1PGC30Y/tJwJth6Lqy0Vnhv+aS+n87ZQb7\njifO9UDZTi/rDJwqlJ+ZVaB9ieRJrDr6yIpiZjnadwKBgQCJzU+j5avduFpLshTt\ns8dDMgo0AANWAcmQxuTgVlytnOUDY6RZQvurysIpg0EjFjLSrdHNwSSDDRlcgds6\n0RqhpQnK4cbXiZ/11FNd5QKe6VB3gWkpOj5C2KI135Pv3E/JMq8cJSceJyj7ewSO\nME0JFtRJQCpIktKufmsjRUtXZg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "a3-access@gcp-vulnerable.iam.gserviceaccount.com",
+  "client_id": "107295981301824154042",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/a3-access%40gcp-vulnerable.iam.gserviceaccount.com"
+}

@@ -10,15 +10,15 @@ def generate_seeds(level_names=[]):
     # Generate new random seeds for each level in level list
     # by default, reset all seeds in level-list
     if level_names == []:
-        with open('core/levels/level-list.txt') as f:
+        with open('core/common/config/level-list.txt') as f:
             level_names = f.read().split('\n')
 
-    with open('core/common/seeds.json') as f:
+    with open('core/common/config/seeds.json') as f:
         seeds = json.loads(f.read())
     for level_name in level_names:
         seeds[level_name] = str(random.randint(100000, 999999))
     # Write to seeds json file
-    with open('core/common/seeds.json', "w+") as f:
+    with open('core/common/config/seeds.json', "w+") as f:
         f.write(json.dumps(seeds))
     print(f'New seeds have been generated for {level_names}')
 

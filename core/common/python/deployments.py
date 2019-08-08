@@ -38,11 +38,10 @@ def insert(level_name, template_files=[],
     }
     # Add imports to deployment json
     for template in template_files:
-        template_file = 'core/' + template
-        schema_file = f'core/{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema'
+        schema_file = f'{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema'
         request_body['target']['imports'].extend([
             {"name": os.path.basename(template),
-             "content": read_config(template_file)},
+             "content": read_config(template)},
             {"name": os.path.basename(template) + '.schema',
              "content": read_config(schema_file)}])
     # Add labels to deployment json

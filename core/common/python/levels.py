@@ -18,7 +18,7 @@ def import_level(level_name):
         raise Exception(
             f'Level seed has not been generated for Level: {level_name}. '
             'If you wish to generate a new seed, run new_seeds:\n'
-            f'  python3 gcp-vulnerable.py new_seeds {level_name}')
+            f'  python3 thunder.py new_seeds {level_name}')
 
     try:
         level_module = importlib.import_module(
@@ -33,16 +33,16 @@ def import_level(level_name):
 
 def write_start_info(level_name, message, file_name=None, file_content=None):
     print('\n')
-    if not os.path.exists('start-info'):
-            os.makedirs('start-info')
+    if not os.path.exists('start'):
+            os.makedirs('start')
     if file_name and file_content:
-        file_path = f'start-info/{file_name}'
+        file_path = f'start/{file_name}'
         with open(file_path, 'w+') as f:
             f.write(file_content)
         os.chmod(file_path, 0o400)
         print(
             f'Starting file: {file_name} has been written to {file_path}')
-    message_file_path = f'start-info/{level_name}.txt'
+    message_file_path = f'start/{level_name}.txt'
     with open(message_file_path, 'w+') as f:
         f.write(message)
     os.chmod(message_file_path, 0o400)
@@ -54,7 +54,7 @@ def write_start_info(level_name, message, file_name=None, file_content=None):
 def delete_start_files(level_name, files=[]):
     files.append(f'{level_name}.txt')
     for f in files:
-        file_path = f'start-info/{f}'
+        file_path = f'start/{f}'
         if os.path.exists(file_path):
             os.chmod(file_path, 0o700)
             os.remove(file_path)

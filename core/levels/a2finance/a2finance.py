@@ -8,7 +8,7 @@ from google.cloud import storage, logging as glogging
 from ...common.python import deployments, secrets, keys, cloudresources, levels
 
 LEVEL_NAME = 'a2finance'
-
+RESOURCE_PREFIX = 'a2'
 LOG_NAME = 'transactions'
 
 
@@ -33,12 +33,12 @@ def create():
                              'ssh_public_key': ssh_public_key,
                              'ssh_username': ssh_username}
         labels = {'nonce': nonce}
-        deployments.insert(LEVEL_NAME,
-                           template_files=[
-                               'common/templates/bucket_acl.jinja',
-                               'common/templates/instance.jinja',
-                               'common/templates/service_account.jinja',
-                               'common/templates/iam_policy.jinja'],
+        template_files = [
+            'core/common/templates/bucket_acl.jinja',
+            'core/common/templates/instance.jinja',
+            'core/common/templates/service_account.jinja',
+            'core/common/templates/iam_policy.jinja']
+        deployments.insert(LEVEL_NAME, template_files=template_files,
                            config_properties=config_properties, labels=labels)
 
         print("Level setup started for: " + LEVEL_NAME)
@@ -51,13 +51,13 @@ def create():
         secret_name = create_logs()
 
         # Create service account key file
-        sa_key = keys.generate_service_account_key('a2finance-access')
+        sa_key = keys.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
         print(f'Level creation complete for: {LEVEL_NAME}')
         start_message = (
-            f'Use the compromised service account credentials stored in a2finance-access.json to find the credit card number of {secret_name}, '
+            f'Use the compromised service account credentials stored in {RESOURCE_PREFIX}-access.json to find the credit card number of {secret_name}, '
             'which is hidden somewhere in the GCP project')
         levels.write_start_info(
-            LEVEL_NAME, start_message, file_name='a2finance-access.json', file_content=sa_key)
+            LEVEL_NAME, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
         print(
             f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
     finally:
@@ -95,9 +95,9 @@ def create_repo_files(repo_path, ssh_private_key):
 
 def create_logs():
     logger = glogging.Client().logger(LOG_NAME)
-    with open('core/levels/a2finance/first-names.txt') as f:
+    with open(f'core/levels/{LEVEL_NAME}/first-names.txt') as f:
         first_names = f.read().split('\n')
-    with open('core/levels/a2finance/last-names.txt') as f:
+    with open(f'core/levels/{LEVEL_NAME}/last-names.txt') as f:
         last_names = f.read().split('\n')
     secret_name = (first_names[random.randint(0, 199)] + '_' +
                    last_names[random.randint(0, 299)])
@@ -127,7 +127,7 @@ def destroy():
         logger = client.logger(LOG_NAME)
         logger.delete()
     # Delete starting files
-    levels.delete_start_files(LEVEL_NAME, files=['a2finance-access.json'])
+    levels.delete_start_files(LEVEL_NAME, files=[f'{RESOURCE_PREFIX}-access.json'])
     print('Level tear-down finished for: ' + LEVEL_NAME)
 
     # Find bucket name from deployment label
@@ -135,8 +135,8 @@ def destroy():
     bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
 
     service_accounts = [
-        cloudresources.service_account_email('a2finance-access'),
-        cloudresources.service_account_email('a2finance-logging-instance-sa')
+        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-access'),
+        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-logging-instance-sa')
     ]
     # Delete deployment
     deployments.delete(LEVEL_NAME,

@@ -2,7 +2,7 @@ imports:
 - path: bucket_acl.jinja
 
 resources:
-- name: a1openbucket-bucket
+- name: a1-bucket
   type: bucket_acl.jinja
   properties:
     predefined_acl: publicRead

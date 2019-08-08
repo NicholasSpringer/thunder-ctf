@@ -1,20 +1,20 @@
 imports:
-- path: bucket.jinja
+- path: bucket_acl.jinja
 - path: service_account.jinja
 - path: instance.jinja
 - path: iam_policy.jinja
 
 resources:
-- name: a2finance-access
+- name: a2-access
   type: service_account.jinja
-- name: a2finance-bucket
+- name: a2-bucket
   type: bucket_acl.jinja
   properties:
     nonce: //nonce//
     acl_entries:
-    - service_account_id: a2finance-access
+    - service_account_id: a2-access
       role: READER
-- name: a2finance-logging-instance
+- name: a2-logging-instance
   type: instance.jinja
   properties:
     zone: us-west1-b
@@ -27,7 +27,7 @@ resources:
   type: iam_policy.jinja
   properties:
     bindings:
-    - service_account_id: a2finance-access
+    - service_account_id: a2-access
       role:
         name: custom
         custom_nonce: //nonce//
@@ -37,6 +37,6 @@ resources:
         - compute.zones.list
         - compute.zones.get
         - storage.buckets.list
-    - service_account_id: a2finance-logging-instance-sa
+    - service_account_id: a2-logging-instance-sa
       role:
         name: roles/logging.viewer

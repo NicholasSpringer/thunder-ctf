@@ -1,0 +1,20 @@
+{% set FUNCTION_NAME = env['name'] + '-' + properties["nonce"]|string %}
+{% set SERVICE_ACCOUNT_NAME = FUNCTION_NAME + "-sa" %}
+
+resources:
+- type: service_account.jinja
+  name: {{ SERVICE_ACCOUNT_NAME }}
+- type: gcp-types/cloudfunctions-v1:projects.locations.functions
+  name: {{ FUNCTION_NAME }}
+  properties:
+    function: {{ FUNCTION_NAME }}
+    parent: projects/{{ env['project'] }}/locations/{{ properties['region'] }}
+    sourceUploadUrl: {{ properties['upload_url'] }}
+    entryPoint: {{ properties['entry_point'] }}
+    runtime: python37
+    serviceAccountEmail: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
+    httpsTrigger: {{ '{}' }}
+    environmentVariables:
+    {% for key, value in properties['env_variables'].iteritems() %}
+      "{{ key }}": "{{ value }}"
+    {% endfor %}
