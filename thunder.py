@@ -15,8 +15,12 @@ def create(*args):
     level_name = args[0]
     # Make sure level isn't already deployed
     if level_name in deployments.list_deployments():
-        exit(f'Level {level_name} has already been deployed. '
-             'To reload the level, first destroy the running deployment.')
+        if 'y' == input(f'Level {level_name} has already been deployed. '
+                        'Would you like to reset the level? [y/n] ').lower()[0]:
+            destroy(level_name)
+            print('')
+        else:
+            exit()
 
     level_name = args[0]
     level_module = levels.import_level(level_name)
@@ -52,11 +56,11 @@ def new_seeds(*args):
     confirmed = False
     if len(args) == 0:
         if 'y' == input(
-                'Generate new seeds for all levels? Level secrets will differ from expected values. [y/n]').lower()[0]:
+                'Generate new seeds for all levels? Level secrets will differ from expected values. [y/n] ').lower()[0]:
             confirmed = True
     else:
         if'y' == input(
-                f'Generate new seeds for {list(args)}? Level secrets will differ from expected values. [y/n]').lower()[0]:
+                f'Generate new seeds for {list(args)}? Level secrets will differ from expected values. [y/n] ').lower()[0]:
             confirmed = True
     if confirmed:
         secrets.generate_seeds(level_names=list(args))
@@ -75,10 +79,11 @@ def set_project(*args):
                 f'Set project to {project_id}? If {project_id} has existing cloud infrastructure, it may be disrupted. [y/n]: ').lower()[0]
     if(confirmed):
         # Make sure credentials are set correctly and have owner role
-        cloudresources.test_application_default_credentials(set_project=project_id)
+        cloudresources.test_application_default_credentials(
+            set_project=project_id)
         # Enable apis, grant DM owner status, etc
         cloudresources.setup_project()
-        with open('core/common/config/project.txt','w+') as f:
+        with open('core/common/config/project.txt', 'w+') as f:
             f.write(project_id)
         print('Project has been set.')
     else:
