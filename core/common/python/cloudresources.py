@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import zipfile
+import shutil
 
 import httplib2
 from google.cloud import storage
@@ -86,8 +87,8 @@ def test_application_default_credentials(set_project=None):
     if not project_id:
         exit('You must the set the gcloud config account and project '
              'to your application default account and the desired project \n'
-             '  gcloud config set account=[email]\n'
-             '  gcloud config set project=[project-id]\n'
+             '  gcloud config set account [email]\n'
+             '  gcloud config set project [project-id]\n'
              'If you wish to reset the application default credentials, run:\n'
              '  gcloud auth application-default login')
     if not set_project == project_id:
@@ -170,20 +171,23 @@ def wait_for_operation(op_name, services_api):
         f'\r{time_string} Deployment operation in progress... Done\n')
 
 
-def upload_cloud_function(function_path, location_id):
-    credentials, project_id = google.auth.default()
-    # Create zip and make request
-    zip_path = os.path.dirname(function_path) + '/' + 'function.zip'
+def upload_cloud_function(function_path, location_id, properties={}):
+    temp_func_path = function_path + '-temp'
+    zip_path = os.path.dirname(temp_func_path) + '/' + 'function.zip'
     try:
+        create_temp_function(function_path, temp_func_path,
+                             properties=properties)
+        credentials, project_id = google.auth.default()
+        # Create zip
         with zipfile.ZipFile(zip_path, 'w') as z:
-            for dir_path, subdir_paths, f_names in os.walk(function_path):
+            for dir_path, subdir_paths, f_names in os.walk(temp_func_path):
                 for f in f_names:
                     file_path = dir_path + '/' + f
-                    arc_path = file_path.replace(function_path+'/', '')
+                    arc_path = file_path.replace(temp_func_path+'/', '')
                     z.write(file_path, arcname=arc_path)
         # Build api object
         cf_api = discovery.build('cloudfunctions',
-                                'v1', credentials=credentials)
+                                 'v1', credentials=credentials)
         parent = f'projects/{project_id}/locations/{location_id}'
         # Generate upload URL
         upload_url = cf_api.projects().locations().functions(
@@ -192,8 +196,8 @@ def upload_cloud_function(function_path, location_id):
         h = httplib2.Http()
         # Upload to url
         headers = {'Content-Type': 'application/zip',
-                'x-goog-content-length-range': '0,104857600'}
-        with open(zip_path,'rb') as f:
+                   'x-goog-content-length-range': '0,104857600'}
+        with open(zip_path, 'rb') as f:
             h.request(upload_url, method='PUT', headers=headers, body=f)
         # Return signed url for creating cloud function
         return upload_url
@@ -201,3 +205,26 @@ def upload_cloud_function(function_path, location_id):
         # Delete zip
         if os.path.exists(zip_path):
             os.remove(zip_path)
+        # Delete temp file
+        if os.path.exists(temp_func_path):
+            shutil.rmtree(temp_func_path)
+
+
+def create_temp_function(function_path, temp_func_path, properties={}):
+    for dir_path, subdir_paths, f_names in os.walk(function_path):
+        for f in f_names:
+            file_path = dir_path + '/' + f
+            temp_path = file_path.replace(function_path, temp_func_path)
+            copy_file_replace_properties(
+                file_path, temp_path, properties=properties)
+
+
+def copy_file_replace_properties(origin_path, dest_path, properties={}):
+    with open(origin_path) as f:
+        content = f.read()
+    for key in properties.keys():
+        content = content.replace('//'+key+'//', properties[key])
+    if not os.path.exists(os.path.dirname(dest_path)):
+        os.makedirs(os.path.dirname(dest_path))
+    with open(dest_path, 'w+') as f:
+        f.write(content)

@@ -13,16 +13,20 @@ def create():
     print("Level initialization started for: " + LEVEL_NAME)
     # Create randomized nonce name to avoid namespace conflicts
     nonce = str(random.randint(100000000000, 999999999999))
+    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Create random function password
-    func_password = str(random.randint(100000000000, 999999999999))
+    func_xor_password = str(random.randint(100000000000, 999999999999))
+    xor_factor = str(random.randint(100000000000, 999999999999))
+    func_properties = {'bucket_name': bucket_name,
+                       'xor_factor': xor_factor}
     # Upload function and get upload url
     func_upload_url = cloudresources.upload_cloud_function(
-        f'core/levels/{LEVEL_NAME}/function', FUNCTION_LOCATION)
+        f'core/levels/{LEVEL_NAME}/function', FUNCTION_LOCATION, properties=func_properties)
     print("Level initialization finished for: " + LEVEL_NAME)
 
     # Insert deployment
     config_properties = {'nonce': nonce,
-                         'func_password': func_password,
+                         'func_xor_password': func_xor_password,
                          'func_upload_url': func_upload_url}
     labels = {'nonce': nonce}
     template_files = [
@@ -35,7 +39,7 @@ def create():
 
     print("Level setup started for: " + LEVEL_NAME)
     # Insert secret into bucket
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
+
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     secret_blob = storage.Blob('secret.txt', bucket)
@@ -56,7 +60,8 @@ def create():
 def destroy():
     print('Level tear-down started for: ' + LEVEL_NAME)
     # Delete starting files
-    levels.delete_start_files(LEVEL_NAME, files=[f'{RESOURCE_PREFIX}-access.json'])
+    levels.delete_start_files(
+        LEVEL_NAME, files=[f'{RESOURCE_PREFIX}-access.json'])
     print('Level tear-down finished for: ' + LEVEL_NAME)
 
     # Find bucket name from deployment label
@@ -64,7 +69,7 @@ def destroy():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     service_accounts = [
-        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-access'),
+        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-access')
     ]
     # Delete deployment
     deployments.delete(LEVEL_NAME,

@@ -8,7 +8,7 @@ from googleapiclient import discovery
 from . import cloudresources
 
 
-def read_config(file_name, config_properties={}):
+def read_config_replace_properties(file_name, config_properties={}):
     with open(file_name) as f:
         content = f.read()
     for key in config_properties.keys():
@@ -28,7 +28,7 @@ def insert(level_name, template_files=[],
         "name": level_name,
         "target": {
             "config": {
-                "content": read_config(
+                "content": read_config_replace_properties(
                     f'core/levels/{level_name}/{level_name}.yaml',
                     config_properties=config_properties)
             },
@@ -41,9 +41,9 @@ def insert(level_name, template_files=[],
         schema_file = f'{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema'
         request_body['target']['imports'].extend([
             {"name": os.path.basename(template),
-             "content": read_config(template)},
+             "content": read_config_replace_properties(template)},
             {"name": os.path.basename(template) + '.schema',
-             "content": read_config(schema_file)}])
+             "content": read_config_replace_properties(schema_file)}])
     # Add labels to deployment json
     for key in labels.keys():
         request_body['labels'].append({
@@ -113,16 +113,19 @@ def wait_for_operation(op_name, deployment_api, project_id):
     time_string = ''
     while not op_done:
         time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
-        sys.stdout.write(f'\r{time_string} Deployment operation in progress...')
+        sys.stdout.write(
+            f'\r{time_string} Deployment operation in progress...')
         t += 5
         while t < time.time()-start_time:
-            t+=5
+            t += 5
         time.sleep(t-(time.time()-start_time))
         op_status = deployment_api.operations().get(
             project=project_id,
             operation=op_name).execute()['status']
         op_done = (op_status == 'DONE')
-    sys.stdout.write(f'\r{time_string} Deployment operation in progress... Done\n')
+    sys.stdout.write(
+        f'\r{time_string} Deployment operation in progress... Done\n')
+
 
 def list_deployments():
     # Get current credentials from environment variables and build deployment API object
