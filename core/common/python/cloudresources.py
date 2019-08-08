@@ -74,6 +74,7 @@ def test_application_default_credentials(set_project=None):
         credentials, project_id = google.auth.default()
     except google.auth.exceptions.DefaultCredentialsError:
         exit('Application default credentials not set. To set credentials, run:\n'
+             '  unset GOOGLE_APPLICATION_CREDENTIALS'
              '  gcloud auth application-default login')
     # Make sure application default project is the same as the project in thunder ctf config
     if not set_project:
