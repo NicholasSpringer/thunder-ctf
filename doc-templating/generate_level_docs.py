@@ -12,5 +12,5 @@ for file_name in os.listdir('level-hints'):
                   'intro': blocks[0],
                   'hints': blocks[1:]}
     render = template.render(**jinja_args)
-    with open(f'{os.path.dirname(os.getcwd())}/docs/levels/{level_name}', 'w+') as f:
+    with open(f'{os.path.dirname(os.getcwd())}/docs/levels/{level_name}.html', 'w+') as f:
         f.write(render)
