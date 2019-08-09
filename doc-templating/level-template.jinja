@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <header>
+    <div id="nav">
+      <center>
+        <h1>Thunder CTF</h1>
+      </center>
+    </div>
+  </header>
+  <section>
+    <div class=page>
+
+      <center>
+        <h2>{{ level_name }}</h2>
+        {{ intro|indent(8) }}
+        {% for i in range(0,(hints|length)) %}
+        <button class="accordion">Hint {{ i+1 }}</button>
+        <div class="panel">
+          {{ hints[i]|indent(10) }}
+        </div>
+        {% endfor %}
+      </center>
+
+    </div>
+  </section>
+  <p>
+    <p>
+      <p>
+        <footer class="clearfix">
+          <center>PSU CTF: Work done under NSF Award #1821841</center>
+        </footer>
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="../static/accordion.js"></script>
+        <script>
+          $(function () {
+            $(window).scroll(function () {
+              var winTop = $(this).scrollTop();
+              if (winTop >= 10) {
+                $("body").addClass("shrink-header");
+              } else {
+                $("body").removeClass("shrink-header");
+              }
+            });
+          });
+        </script>
+</body>
+
+</html>

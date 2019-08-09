@@ -1,0 +1,12 @@
+<p>For each level of this ctf, you will be tasked with exploiting various vulnerable cloud infrastructure in order to find the "secret" of each level, which is a large integer stored somewhere in the infrastructure</p>
+<p>The secret for this level is in a file in a Google Cloud Storage bucket. On level creation, you are given the bucket name and it is written to start/level1.txt</p>
+---
+<p>List the bucket's contents</p>
+---
+<p>The command to do so is:</p>
+<pre>gsutil ls gs://[bucket-name]</pre>
+---
+<p>Download the secret file</p>
+---
+<p>The command to do so is:</p>
+<pre>gsutil cp gs://[bucket-name]/secret.txt</pre>

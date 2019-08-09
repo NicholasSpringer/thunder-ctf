@@ -9,3 +9,6 @@ google-cloud-logging
 # SSH keys
 cryptography
 gitpython
+
+# Configuration templating
+Jinja2
