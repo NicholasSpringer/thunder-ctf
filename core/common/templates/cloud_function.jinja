@@ -18,3 +18,14 @@ resources:
     {% for key, value in properties['env_variables'].iteritems() %}
       "{{ key }}": "{{ value }}"
     {% endfor %}
+- name: {{ FUNCTION_NAME }}-iam
+  action: gcp-types/cloudfunctions-v1:cloudfunctions.projects.locations.functions.setIamPolicy
+  properties:
+    resource: $(ref.{{ FUNCTION_NAME }}.name)
+    policy: 
+      bindings:
+      {% for binding in properties['policyBindings'] %}
+      - role: {{ binding['role'] }}
+        members:
+        - serviceAccount:$(ref.{{ binding['service_account_id'] }}.email)
+      {% endfor %}

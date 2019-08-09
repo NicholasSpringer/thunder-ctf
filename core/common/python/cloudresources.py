@@ -70,12 +70,17 @@ def remove_accounts_iam(emails):
 
 
 def test_application_default_credentials(set_project=None):
+    # Query user to delete environment variable
+    if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+        if 'y' == input(f'GOOGLE_APPLICATION_CREDENTIALS is set, meaning the application default credentials will use a service account. '
+                        'Unless the service account has owner access, the command will fail.'
+                        'Would you like to unset GOOGLE_APPLICATION_CREDENTIALS? [y/n] ').lower()[0]:
+            del os.environ['GOOGLE_APPLICATION_CREDENTIALS']
     # Try to extract application default credentials
     try:
         credentials, project_id = google.auth.default()
     except google.auth.exceptions.DefaultCredentialsError:
         exit('Application default credentials not set. To set credentials, run:\n'
-             '  unset GOOGLE_APPLICATION_CREDENTIALS'
              '  gcloud auth application-default login')
     # Make sure application default project is the same as the project in thunder ctf config
     if not set_project:
@@ -112,7 +117,9 @@ def test_application_default_credentials(set_project=None):
          'If you are trying to use a user account, '
          'make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is not set:\n'
          '  unset GOOGLE_APPLICATION_CREDENTIALS\n'
-         'Set application default credentials with:\n'
+         'make sure the gcloud cli account is set the same account as application default:\n'
+         '  gcloud config set account [email]\n'
+         'Reset application default credentials with:\n'
          '  gcloud auth application-default login')
 
 
