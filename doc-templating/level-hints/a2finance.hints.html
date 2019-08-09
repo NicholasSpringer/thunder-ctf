@@ -1,0 +1,69 @@
+<p>In this level, the secret is the (fake) credit card number of the person assigned to you upon level creation. Use the compromised service account that is given to you to navigate the cloud infrastructure to find the credit card.</p>
+<p>Upon level creation, the name of the target is written to start/a2finance.txt, and the service account key file is written to start/a2-access.json.</p>
+<p></p>
+<p>From this level on, you will need to be able to figure out the project-wide permissions of service account credentials. To do this, we have provided you with a script that repeatedly queries the projects.testIamPermissions REST api function to figure out which permissions given credentials have. The script is stored at scripts/test-permissions.py. We recommend glancing over the script to understand how it works, but to run it just set PROJECT_ID and either SERVICE_ACCOUNT_KEY_FILE or ACCESS_TOKEN, then run the script, and it will output the permissions of the given credentials. By default, it will test the given service account key file, but if USE_ACCESS_TOKEN is set to True, it will test the given access token.</p>
+<pre># If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
+USE_ACCESS_TOKEN = False
+# Only one of the following need to be set:
+SERVICE_ACCOUNT_KEY_FILE = 'path/to/key/file'
+ACCESS_TOKEN = ''
+# Set the project ID
+PROJECT_ID = '[project-id]'</pre>
+---
+<p>Activate the service account in the gcloud cli</p>
+---
+<p>The command to do so is:</p>
+<pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
+---
+<p>Run the permissions testing script on the given service account credentials</p>
+---
+<p>In scripts/test-permissions.py, set PROJECT_ID to your project id and SERVICE_ACCOUNT_KEY_FILE to 'start/a2-access.json', then run:</p>
+<pre>python3 scripts/test-permissions.py</pre>
+---
+<p>One of the permissions you have is storage.buckets.list. Try using this permission.</p>
+---
+<p>The command to do so is:</p>
+<pre>gsutil ls</pre>
+---
+<p>There's a bucket in the project. Check out what's inside of it.</p>
+---
+<p>Download the bucket:</p>
+<pre>gsutil cp -r gs://[bucket-name] .</pre>
+---
+<p>The bucket stores a git repository. There might be something interesting in the git history.</p>
+---
+<p>View the previous git commits:</p>
+<pre>git log</pre>
+---
+<p>The most recent commit mentions a key file getting committed by the first commit.</p>
+---
+<p>Checkout the previous commit:</p>
+<pre>git checkout &ltold commit name&gt</pre>
+---
+<p>There's an ssh key file! It could be used to login to a Google Compute Engine instance.</p>
+---
+<p>List the compute instances in the project:</p>
+<pre>gcloud compute instances list</pre>
+---
+<p>Get more information on the running instance:</p>
+<pre>gcloud compute instances describe [instance-name]</pre>
+---
+<p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance</p>
+---
+<p>SSH into the instance:</p>
+<pre>ssh -i [key-file] clouduser@[instance-external-ip]</pre>
+---
+<p>Based on the name of the instance, it probably has access to Google Cloud's logging service, Stackdriver Logging.</p>
+---
+<p>List the logs on the project:</p>
+<pre>gcloud logging logs list</pre>
+---
+<p>Most of the logs are automatically generated logs of events of other resources, which may not provide much useful information, but one of the logs is named "transactions"</p>
+---
+<p>Read the log named transaction. You will need to specify it's full resource name:</p>
+<pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name]"</pre>
+---
+<p>You won't want to look through all the log entries, so try filtering it to only show the name you are looking for. The documentation for logging filtration can be found <a class="inline" href="cloud.google.com/logging/docs/view/advanced-queries">here</a>.</p>
+---
+<p>The command to get the log entry you want is:</p>
+<pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name] AND jsonPayload.name=[name]"</pre>

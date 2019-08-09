@@ -1,4 +1,4 @@
-a.big_button {
+a.button {
     background-color: #eee;
     border: 1px solid black;
     color: #444;
@@ -12,7 +12,7 @@ a.big_button {
     transition: 0.4s;
     text-decoration: none;
 }
-a.lil_button {
+a.inline {
     background-color: #eee;
     border: 1px solid black;
     color: #444;

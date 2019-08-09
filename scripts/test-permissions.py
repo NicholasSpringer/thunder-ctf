@@ -4,15 +4,15 @@ from google.oauth2.credentials import Credentials
 import os
 
 # If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
-use_access_token = False
+USE_ACCESS_TOKEN = False
 # Only one of the following need to be set:
-SERVICE_ACCOUNT_KEY_FILE = ''
+SERVICE_ACCOUNT_KEY_FILE = 'path/to/key/file'
 ACCESS_TOKEN = ''
 # Set the project ID
-PROJECT_ID = ''
+PROJECT_ID = '[project-id]'
 
 
-if use_access_token:
+if USE_ACCESS_TOKEN:
     # Create credentials using access token
     credentials = Credentials(token=ACCESS_TOKEN)
 else:
