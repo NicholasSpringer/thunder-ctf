@@ -1,19 +1,19 @@
-<p>Run in cloud shell or on a local machine withe the following prerequisites:
-    - Make sure gcloud cli is installed
-    - python3 installed
-    - PATH of shell that is executing python must include git
-    mkdir t-ctf
-    cd t-ctf
-    git clone git@github.com:NicholasSpringer/thunder-ctf.git
-    cd thunder-ctf
-    if running on local machine:
-      virtual env -v thunder-env
-      
-    Make a new google cloud project to run the ctf on.
-    gcloud auth login
-    gcloud config set project [PROJECT-ID]
-    gcloud auth application-default login
-    python3 thunder.py set_project [PROJECT-ID]</p>
+<pre>Run in cloud shell or on a local machine withe the following prerequisites:
+- Make sure gcloud cli is installed
+- python3 installed
+- PATH of shell that is executing python must include git
+mkdir t-ctf
+cd t-ctf
+git clone git@github.com:NicholasSpringer/thunder-ctf.git
+cd thunder-ctf
+if running on local machine:
+  virtual env -v thunder-env
+  
+Make a new google cloud project to run the ctf on.
+gcloud auth login
+gcloud config set project [PROJECT-ID]
+gcloud auth application-default login
+python3 thunder.py set_project [PROJECT-ID]</pre>
 <p></p>
 <a href=./levels/a1openbucket.html>a1openbucket</a>
 <a href=./levels/a2finance.html>a2finance</a>
