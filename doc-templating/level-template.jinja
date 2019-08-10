@@ -22,6 +22,9 @@
 
       <center>
         <h2>{{ level_name }}</h2>
+        <pre>python3 thunder.py create {{ level_name }}
+python3 thunder.py destroy {{ level_name }}</pre>
+
         {% for line in intro.split('\n') %}
           {% if line[0]=='<' %}
             {{ (line + '\n')|indent(8) }}
