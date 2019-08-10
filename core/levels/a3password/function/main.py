@@ -1,7 +1,7 @@
 import os
 from google.cloud import storage
 
-XOR_FACTOR = //xor_factor//
+XOR_FACTOR = {{ xor_factor }}
 
 
 def main(request):
@@ -20,7 +20,7 @@ def main(request):
         return 'Password yielded incorrect result\n'
 
     # Read and return secret
-    bucket_name = '//bucket_name//'
+    bucket_name = '{{ bucket_name }}'
     storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
     secret_blob = storage.Blob('secret.txt', bucket)

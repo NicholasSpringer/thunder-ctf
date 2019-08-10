@@ -10,7 +10,7 @@ resources:
 - name: a2-bucket
   type: bucket_acl.jinja
   properties:
-    nonce: //nonce//
+    nonce: {{ nonce }}
     acl_entries:
     - service_account_id: a2-access
       role: READER
@@ -19,8 +19,8 @@ resources:
   properties:
     zone: us-west1-b
     ssh_credentials:
-      username: //ssh_username//
-      public_key: //ssh_public_key//
+      username: {{ ssh_username }}
+      public_key: {{ ssh_public_key }}
     sa_scopes:
     - https://www.googleapis.com/auth/logging.read
 - name: iam_policy
@@ -30,7 +30,7 @@ resources:
     - service_account_id: a2-access
       role:
         name: custom
-        custom_nonce: //nonce//
+        custom_nonce: {{ nonce }}
         permissions:
         - compute.instances.get
         - compute.instances.list

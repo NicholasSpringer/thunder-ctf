@@ -4,6 +4,7 @@ import sys
 import zipfile
 import shutil
 
+import jinja2
 import httplib2
 from google.cloud import storage
 import google.auth
@@ -11,11 +12,12 @@ from googleapiclient import discovery
 
 
 def upload_directory_recursive(top_dir_path, bucket):
-    for dir_path, subdir_paths, f_names in os.walk(dir_path):
+    for dir_path, subdir_paths, f_names in os.walk(top_dir_path):
         for f in f_names:
-            relative_path = dir_path + '/' + f
-            abs_path = top_dir_path + '/' + relative_path
-            blob = storage.Blob(relative_path, bucket)
+            abs_path = dir_path + '/' + f
+            rel_path = abs_path.replace(top_dir_path+'/','')
+            #abs_path = top_dir_path + '/' + relative_path
+            blob = storage.Blob(rel_path, bucket)
             with open(abs_path, 'rb') as f:
                 blob.upload_from_file(f)
 
@@ -178,12 +180,12 @@ def wait_for_operation(op_name, services_api):
         f'\r{time_string} Deployment operation in progress... Done\n')
 
 
-def upload_cloud_function(function_path, location_id, properties={}):
+def upload_cloud_function(function_path, location_id, template_args={}):
     temp_func_path = function_path + '-temp'
     zip_path = os.path.dirname(temp_func_path) + '/' + 'function.zip'
     try:
-        create_temp_function(function_path, temp_func_path,
-                             properties=properties)
+        create_temp_cf_files(function_path, temp_func_path,
+                             template_args=template_args)
         credentials, project_id = google.auth.default()
         # Create zip
         with zipfile.ZipFile(zip_path, 'w') as z:
@@ -217,21 +219,20 @@ def upload_cloud_function(function_path, location_id, properties={}):
             shutil.rmtree(temp_func_path)
 
 
-def create_temp_function(function_path, temp_func_path, properties={}):
-    for dir_path, subdir_paths, f_names in os.walk(function_path):
+def create_temp_cf_files(func_path, temp_func_path, template_args={}):
+    # Iterate recursively through all subfiles
+    for dir_path, subdir_paths, f_names in os.walk(func_path):
         for f in f_names:
             file_path = dir_path + '/' + f
-            temp_path = file_path.replace(function_path, temp_func_path)
-            copy_file_replace_properties(
-                file_path, temp_path, properties=properties)
-
-
-def copy_file_replace_properties(origin_path, dest_path, properties={}):
-    with open(origin_path) as f:
-        content = f.read()
-    for key in properties.keys():
-        content = content.replace('//'+key+'//', properties[key])
-    if not os.path.exists(os.path.dirname(dest_path)):
-        os.makedirs(os.path.dirname(dest_path))
-    with open(dest_path, 'w+') as f:
-        f.write(content)
+            temp_path = file_path.replace(func_path, temp_func_path)
+            # Read and render function template
+            with open(file_path) as f:
+                rendered_template = jinja2.Template(f.read()).render(**template_args)
+            # If temporary path doesn't exist yet, create the directory structure
+            if not os.path.exists(os.path.dirname(temp_path)):
+                os.makedirs(os.path.dirname(temp_path))
+            # Write to temporary file
+            with open(temp_path, 'w+') as f:
+                f.write(rendered_template)
+    
+    

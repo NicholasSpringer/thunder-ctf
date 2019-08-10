@@ -12,10 +12,10 @@ def create():
     nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Insert deployment
-    config_properties = {'nonce': nonce}
+    config_template_args = {'nonce': nonce}
     labels = {'nonce': nonce}
     deployments.insert(LEVEL_NAME, template_files=['core/common/templates/bucket_acl.jinja'],
-                       config_properties=config_properties, labels=labels)
+                       config_template_args=config_template_args, labels=labels)
 
     print("Level setup started for: " + LEVEL_NAME)
     # Insert secret into bucket

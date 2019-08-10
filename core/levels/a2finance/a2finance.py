@@ -16,7 +16,7 @@ def create():
     print("Level initialization started for: " + LEVEL_NAME)
     # Create randomized nonce name to avoid namespace conflicts
     nonce = str(random.randint(100000000000, 999999999999))
-    bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
+    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     # Create ssh key
     ssh_private_key, ssh_public_key = keys.generate_ssh_key()
@@ -29,7 +29,7 @@ def create():
         print("Level initialization finished for: " + LEVEL_NAME)
 
         # Insert deployment
-        config_properties = {'nonce': nonce,
+        config_template_args = {'nonce': nonce,
                              'ssh_public_key': ssh_public_key,
                              'ssh_username': ssh_username}
         labels = {'nonce': nonce}
@@ -39,13 +39,13 @@ def create():
             'core/common/templates/service_account.jinja',
             'core/common/templates/iam_policy.jinja']
         deployments.insert(LEVEL_NAME, template_files=template_files,
-                           config_properties=config_properties, labels=labels)
+                           config_template_args=config_template_args, labels=labels)
 
         print("Level setup started for: " + LEVEL_NAME)
         # Upload repository to bucket
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(bucket_name)
-        cloudresources.upload_directory_recursive(repo_path, repo_path, bucket)
+        cloudresources.upload_directory_recursive(repo_path, bucket)
 
         # Create logs
         secret_name = create_logs()
@@ -132,7 +132,7 @@ def destroy():
 
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
-    bucket_name = f'{LEVEL_NAME}-bucket-{nonce}'
+    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     service_accounts = [
         cloudresources.service_account_email(f'{RESOURCE_PREFIX}-access'),

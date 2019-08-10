@@ -3,21 +3,23 @@ import os
 import time
 import sys
 
+import jinja2
 import google.auth
 from googleapiclient import discovery
 from . import cloudresources
 
 
-def read_config_replace_properties(file_name, config_properties={}):
+def read_render_config(file_name, template_args={}):
     with open(file_name) as f:
         content = f.read()
-    for key in config_properties.keys():
-        content = content.replace('//'+key+'//', config_properties[key])
-    return content
+    if not template_args == {}:
+        return jinja2.Template(content).render(**template_args)
+    else:
+        return content
 
 
 def insert(level_name, template_files=[],
-           config_properties={}, labels={}):
+           config_template_args={}, labels={}):
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = discovery.build(
@@ -28,9 +30,9 @@ def insert(level_name, template_files=[],
         "name": level_name,
         "target": {
             "config": {
-                "content": read_config_replace_properties(
+                "content": read_render_config(
                     f'core/levels/{level_name}/{level_name}.yaml',
-                    config_properties=config_properties)
+                    template_args=config_template_args)
             },
             "imports": []
         },
@@ -41,9 +43,9 @@ def insert(level_name, template_files=[],
         schema_file = f'{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema'
         request_body['target']['imports'].extend([
             {"name": os.path.basename(template),
-             "content": read_config_replace_properties(template)},
+             "content": read_render_config(template)},
             {"name": os.path.basename(template) + '.schema',
-             "content": read_config_replace_properties(schema_file)}])
+             "content": read_render_config(schema_file)}])
     # Add labels to deployment json
     for key in labels.keys():
         request_body['labels'].append({

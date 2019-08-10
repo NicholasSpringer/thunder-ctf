@@ -17,15 +17,15 @@ def create():
     # Create random function password
     func_xor_password = str(random.randint(100000000000, 999999999999))
     xor_factor = str(random.randint(100000000000, 999999999999))
-    func_properties = {'bucket_name': bucket_name,
+    func_template_args = {'bucket_name': bucket_name,
                        'xor_factor': xor_factor}
     # Upload function and get upload url
     func_upload_url = cloudresources.upload_cloud_function(
-        f'core/levels/{LEVEL_NAME}/function', FUNCTION_LOCATION, properties=func_properties)
+        f'core/levels/{LEVEL_NAME}/function', FUNCTION_LOCATION, template_args=func_template_args)
     print("Level initialization finished for: " + LEVEL_NAME)
 
     # Insert deployment
-    config_properties = {'nonce': nonce,
+    config_template_args = {'nonce': nonce,
                          'func_xor_password': func_xor_password,
                          'func_upload_url': func_upload_url}
     labels = {'nonce': nonce}
@@ -35,7 +35,7 @@ def create():
         'core/common/templates/service_account.jinja',
         'core/common/templates/iam_policy.jinja']
     deployments.insert(LEVEL_NAME, template_files=template_files,
-                       config_properties=config_properties, labels=labels)
+                       config_template_args=config_template_args, labels=labels)
 
     print("Level setup started for: " + LEVEL_NAME)
     # Insert secret into bucket

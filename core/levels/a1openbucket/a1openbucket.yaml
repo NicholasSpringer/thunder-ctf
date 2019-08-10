@@ -6,4 +6,4 @@ resources:
   type: bucket_acl.jinja
   properties:
     predefined_acl: publicRead
-    nonce: //nonce//
+    nonce: {{ nonce }}
