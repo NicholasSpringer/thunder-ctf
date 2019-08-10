@@ -22,13 +22,25 @@
 
       <center>
         <h2>{{ level_name }}</h2>
-        {{ intro|indent(8) }}
-        {% for i in range(0,(hints|length)) %}
+        {% for line in intro.split('\n') %}
+          {% if line[0]=='<' %}
+            {{ (line + '\n')|indent(8) }}
+          {%- else -%}
+            {{ line + '\n' }}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- for i in range(0,(hints|length)) -%}
         <button class="accordion">Hint {{ i+1 }}</button>
         <div class="panel">
-          {{ hints[i]|indent(10) }}
+          {%- for line in hints[i].split('\n') -%}
+            {%- if line[0]=='<' -%}
+              {{ line + '\n' }}
+            {%- else -%}
+              {{ line + '\n' }}
+            {%- endif -%}
+          {%- endfor -%}
         </div>
-        {% endfor %}
+      {%- endfor -%}
       </center>
 
     </div>
