@@ -15,7 +15,7 @@ def upload_directory_recursive(top_dir_path, bucket):
     for dir_path, subdir_paths, f_names in os.walk(top_dir_path):
         for f in f_names:
             abs_path = dir_path + '/' + f
-            rel_path = abs_path.replace(top_dir_path+'/','')
+            rel_path = abs_path.replace(top_dir_path+'/', '')
             #abs_path = top_dir_path + '/' + relative_path
             blob = storage.Blob(rel_path, bucket)
             with open(abs_path, 'rb') as f:
@@ -84,13 +84,14 @@ def test_application_default_credentials(set_project=None):
     except google.auth.exceptions.DefaultCredentialsError:
         exit('Application default credentials not set. To set credentials, run:\n'
              '  gcloud auth application-default login')
+    if set_project == '' or not os.path.exists('core/common/config/project.txt'):
+        exit('You must set the Thunder CTF project to your GCP project id:\n'
+             '  python3 thunder.py set_project [project-id]')
     # Make sure application default project is the same as the project in thunder ctf config
     if not set_project:
         with open('core/common/config/project.txt') as f:
             set_project = f.read()
-    if set_project == '':
-        exit('You must set the Thunder CTF project to your GCP project id:\n'
-             '  python3 thunder.py set_project [project-id]')
+
     if not project_id:
         exit('You must the set the gcloud config account and project '
              'to your application default account and the desired project \n'
@@ -227,12 +228,11 @@ def create_temp_cf_files(func_path, temp_func_path, template_args={}):
             temp_path = file_path.replace(func_path, temp_func_path)
             # Read and render function template
             with open(file_path) as f:
-                rendered_template = jinja2.Template(f.read()).render(**template_args)
+                rendered_template = jinja2.Template(
+                    f.read()).render(**template_args)
             # If temporary path doesn't exist yet, create the directory structure
             if not os.path.exists(os.path.dirname(temp_path)):
                 os.makedirs(os.path.dirname(temp_path))
             # Write to temporary file
             with open(temp_path, 'w+') as f:
                 f.write(rendered_template)
-    
-    
