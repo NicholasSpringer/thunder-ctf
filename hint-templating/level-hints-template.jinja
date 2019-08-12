@@ -25,25 +25,13 @@
         <pre>python3 thunder.py create {{ level_name }}
 python3 thunder.py destroy {{ level_name }}</pre>
 
-        {% for line in intro.split('\n') %}
-          {% if line[0]=='<' %}
-            {{ (line + '\n')|indent(8) }}
-          {%- else -%}
-            {{ line + '\n' }}
-          {%- endif -%}
-        {%- endfor -%}
-        {%- for i in range(0,(hints|length)) -%}
+        {{ intro }}
+        {% for i in range(0,(hints|length)) %}
         <button class="accordion">Hint {{ i+1 }}</button>
         <div class="panel">
-          {%- for line in hints[i].split('\n') -%}
-            {%- if line[0]=='<' -%}
-              {{ line + '\n' }}
-            {%- else -%}
-              {{ line + '\n' }}
-            {%- endif -%}
-          {%- endfor -%}
+          {{ hints[i] }}
         </div>
-      {%- endfor -%}
+        {% endfor %}
       </center>
 
     </div>
