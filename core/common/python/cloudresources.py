@@ -152,11 +152,10 @@ def setup_project():
         'datastore.googleapis.com',
         'iam.googleapis.com',
         'iamcredentials.googleapis.com',
-        'logging.googleapis.com'
+        'logging.googleapis.com',
         'deploymentmanager.googleapis.com',
         'storage-api.googleapis.com',
         'storage-component.googleapis.com'
-
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
