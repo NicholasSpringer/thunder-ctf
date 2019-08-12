@@ -145,8 +145,18 @@ def setup_project():
         'serviceusage', 'v1', credentials=credentials)
     # Enable apis
     apis = [
+        'cloudapis.googleapis.com',
+        'cloudfunctions.googleapis.com',
+        'cloudresourcemanager.googleapis.com',
+        'compute.googleapis.com',
+        'datastore.googleapis.com',
+        'iam.googleapis.com',
+        'iamcredentials.googleapis.com',
+        'logging.googleapis.com'
         'deploymentmanager.googleapis.com',
-        'cloudresourcemanager.googleapis.com'
+        'storage-api.googleapis.com',
+        'storage-component.googleapis.com'
+
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
@@ -166,7 +176,7 @@ def wait_for_operation(op_name, services_api):
     while not op_done:
         time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
         sys.stdout.write(
-            f'\r{time_string} Deployment operation in progress...')
+            f'\r{time_string} Enabling APIs...')
         t += 5
         while t < time.time()-start_time:
             t += 5
@@ -178,7 +188,7 @@ def wait_for_operation(op_name, services_api):
         else:
             op_done = response['done']
     sys.stdout.write(
-        f'\r{time_string} Deployment operation in progress... Done\n')
+        f'\r{time_string} Enabling APIs... Done\n')
 
 
 def upload_cloud_function(function_path, location_id, template_args={}):
