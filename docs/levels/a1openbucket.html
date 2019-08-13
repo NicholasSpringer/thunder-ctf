@@ -1,79 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
 <head>
   <title>Thunder CTF</title>
   <link rel="stylesheet" type="text/css" href="../static/style.css">
+  </link>
   <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
 </head>
 
 <body>
-  <header>
+  <header class="banner" style="top: 5px">
     <div id="nav">
-      <center>
-        <h1>Thunder CTF</h1>
-      </center>
+      <h1 style="margin-top:0px;">Thunder CTF</h1>
     </div>
   </header>
   <section>
-    <div class=page>
-
-      <center>
-        <h2>a1openbucket</h2>
-        <pre>python3 thunder.py create a1openbucket
-python3 thunder.py destroy a1openbucket</pre>
-
-        <p>For each level of this ctf, you will be tasked with exploiting various vulnerable cloud infrastructure in order to find the "secret" of each level, which is a large integer stored somewhere in the infrastructure</p>
-        <p>The secret for this level is in a file in a Google Cloud Storage bucket. On level creation, you are given the bucket name and, it is written to start/a1openbucket.txt</p>
-        
-        <button class="accordion">Hint 1</button>
-        <div class="panel">
-          <p>List the bucket's contents</p>
-        </div>
-        
-        <button class="accordion">Hint 2</button>
-        <div class="panel">
-          <p>The command to do so is:</p>
-          <pre>gsutil ls gs://[bucket-name]</pre>
-        </div>
-        
-        <button class="accordion">Hint 3</button>
-        <div class="panel">
-          <p>Download the secret file</p>
-        </div>
-        
-        <button class="accordion">Hint 4</button>
-        <div class="panel">
-          <p>The command to do so is:</p>
-          <pre>gsutil cp gs://[bucket-name]/secret.txt</pre>
-        </div>
-        
-      </center>
-
+    <div class="level">
+      <div style="padding-bottom:10px">
+        <a class="levelbanner levelbackbutton" href="../..">&#8592</a>
+        <h2 class="levelbanner">a1openbucket</h2>
+      </div>
+      <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
+      <pre>python3 thunder.py create a1openbucket</pre>
+      <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
+      <pre>python3 thunder.py destroy a1openbucket</pre>
+    </div>
+    <br>
+    <div class=hints>
+      <div>
+        <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
+        <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+        <span id="next" class="hintbanner hintbutton">Next</span>
+      </div>
+      <div id="hintdisplay" class="hintdisplay">
+        <pre>testpre</pre>
+      </div>
     </div>
   </section>
-  <p>
-    <p>
-      <p>
-        <footer class="clearfix">
-          <center>PSU CTF: Work done under NSF Award #1821841</center>
-        </footer>
-        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="../static/accordion.js"></script>
-        <script>
-          $(function () {
-            $(window).scroll(function () {
-              var winTop = $(this).scrollTop();
-              if (winTop >= 10) {
-                $("body").addClass("shrink-header");
-              } else {
-                $("body").removeClass("shrink-header");
-              }
-            });
-          });
-        </script>
-</body>
+  <section>
+    <footer class="clearfix banner" style="bottom: 10px">
+      <center>PSU CTF: Work done under NSF Award #1821841</center>
+    </footer>
+  </section>
 
+
+  <ul id="hint_content" style="display: none">
+    <li>
+      <span>Intro</span>
+      <p>For each level of this ctf, you will be tasked with exploiting various vulnerable cloud infrastructure in order to find the "secret" of each level, which is a large integer stored somewhere in the infrastructure</p>
+      <p>The secret for this level is in a file in a Google Cloud Storage bucket. On level creation, you are given the bucket name and, it is written to start/a1openbucket.txt</p>
+    </li>
+    
+    <li>
+      <span>Hint 1</span>
+      <p>List the bucket's contents</p>
+    </li>
+    
+    <li>
+      <span>Hint 2</span>
+      <p>The command to do so is:</p>
+      <pre>gsutil ls gs://[bucket-name]</pre>
+    </li>
+    
+    <li>
+      <span>Hint 3</span>
+      <p>Download the secret file</p>
+    </li>
+    
+    <li>
+      <span>Hint 4</span>
+      <p>The command to do so is:</p>
+      <pre>gsutil cp gs://[bucket-name]/secret.txt</pre>
+    </li>
+    
+  </ul>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../static/slideshow.js"></script>
+  <script>
+    $(function () {
+      $(window).scroll(function () {
+        var winTop = $(this).scrollTop();
+        if (winTop >= 10) {
+          $("body").addClass("shrink-header");
+        } else {
+          $("body").removeClass("shrink-header");
+        }
+      });
+    });
+  </script>
+</body>
 </html>

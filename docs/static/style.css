@@ -1,3 +1,11 @@
+.banner {
+    position: fixed; 
+    text-align: center; 
+    left: 5px; 
+    right: 5px;
+    margin-top:0px;
+}
+
 a.button {
     background-color: #eee;
     border: 1px solid black;
@@ -27,64 +35,102 @@ a.inline {
     text-decoration: none;
 }
 
+div.level {
+    margin: auto;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.levelbanner {
+    background-color: #707FFF;
+    color: white;
+    text-align: center;
+    font-size: 24px;
+    padding: 10px;
+    display: inline;
+    border-radius: 5px;
+}
+
+a.levelbackbutton{
+    width: 80px;
+    height: 80px;
+    outline: none;
+    text-decoration: none;
+}
+
+a.levelbackbutton:hover {
+    background-color: #3D51FF;
+}
+
+div.hints {
+    margin: auto;
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+}
+
+.hintbanner {
+    background-color: #6D67CB;
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    padding: 1%;
+    display: inline;
+    border-radius: 5px;
+}
+
+span.hintbutton{
+    width: 10%;
+    min-width: 20px;
+    outline: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+span.hintbutton:hover {
+    background-color: #4841BE;
+    cursor: pointer;
+}
+
+span.buttondisabled {
+    visibility: hidden;
+}
+
+span.buttondisabled:hover {
+    cursor: default;
+}
+
+div.hintbannermid{
+    display: inline-box;
+}
+
+span.hintbannertext{
+    width:70%;
+    display: inline-block;
+}
+
+div.hintdisplay{
+    background-color: #E2FB92;
+    color: black;
+    padding: 10px;
+    background-clip: content-box;
+    border-radius: 20px;
+}
+
+section.page{
+    text-align:center;
+}
 p {
     display: block;
     margin-top: 1em;
     margin-bottom: 1em;
     margin-left: 5px;
     margin-right: 5px;
-    width: 80%;
-}
-
-.accordion {
-    background-color: #C0A674;
-    border: 1px solid black;
-    color: #444;
-    cursor: pointer;
-    padding: 18px;
-    width: 66%;
-    border: none;
-    text-align: center;
-    outline: none;
-    font-size: 18px;
-    transition: 0.4s;
-}
-
-.active, .accordion:hover {
-    background-color: #5171B0; 
-}
-
-.prevActive {
-    background-color: #748EC0
-}
-
-.panel {
-    padding: 0 18px;
-    display: none;
-    background-color: white;
-    /*text-align: center;*/
-    overflow: hidden;
-    width: 100%;
-}
-
-/*:not(center) > pre { */
-.panel p {
-    text-align: center;
-    width: 100%;
-}
-
-.panel pre {
-    background-color: #202020; 
-    color: white;
-    padding: 4px; 
-    border-radius: 5px; 
-    border-color:#ffffff; 
-    border-style: solid;
-    border-width: 1px; 
-    line-height: 120%;
-    text-align: left; 
-    overflow: scroll;
-    width: 60%;
+    width: 97%;
+    margin: auto;
+    padding: 5px;
+    text-align: left;
 }
 
 pre {
@@ -98,7 +144,10 @@ pre {
     line-height: 120%;
     text-align: left; 
     overflow: scroll;
-    width: 60%;
+    width: 97%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
 }
 
 ::-webkit-scrollbar {
@@ -109,14 +158,14 @@ height: 1px;
 body{
     color:#3E4349;
     font-family: 'Roboto', sans-serif;
-    line-height: 150%;
-    padding-top:150px;
+    line-height: 120%;
+    padding-top:165px;
     -webkit-transition:padding-top .5s ease-out;
+    text-align: center;
 }
-header{height:200px;
+header{
+    height:200px;
     position:fixed;
-    top: -15px;
-    width:100%;
     -webkit-transition:all 0.5s ease-out;
     overflow: hidden;
 }
@@ -130,6 +179,7 @@ header{height:200px;
 }
 
 h1{
+    text-align: center;
     font-family: 'Nova Square', cursive;
     color:#fff;
     font-size: 2rem;
@@ -143,7 +193,6 @@ h2{
     color:#59595B;
     font-size:1.5rem;
     margin-bottom:.5rem;
-    text-align: center;
     font-weight:400
 }
 
@@ -151,8 +200,8 @@ h3{
     font-family: 'Roboto', sans-serif;
     color:#59595B;
     font-size:1.25rem;
-    margin-bottom:.5rem;
-    font-weight:400
+    margin-bottom: 0px;
+    font-weight:400;
 }
 
 .shrink-header{
@@ -196,40 +245,10 @@ form{
     font-size: 1.2rem;
     margin-top:-2px;
 }
-input[type = submit]{
-    padding:10px 40px 12px;
-    border:none;
-    font-size:1rem;
-    color:#fff;
-    background-color:#354005;
-    margin:-4px;
-}
-input[type = submit]:hover{
-    background-color:#F0F0F0;
-    color:#2A3F10;
-}
+
 section{
     background-color:#fff;
-    background-color:#0;
     padding-top:3rem;
-}
-p>span{
-    color:#6BB3F2;
-   float:left;
-   margin-left:3rem;
-}
-
-#content>input{
-    margin:5px 10px;
-    font-family: 'Roboto', sans-serif;
-}
-#content>input[type = text]{
-    width:300px;
-    padding:5px 10px;
-    display: block;
-}
-#content>input[type = submit]{
-    width:300px;
 }
 
 footer {
@@ -246,7 +265,7 @@ footer {
         height:266px;
     }
     body{
-        padding-top:266px;
+        padding-top:100px;
     }
 }
 
@@ -272,5 +291,5 @@ footer {
         margin:0;
         width:100%;
     }
-    body{padding-top:207px;}
+    body{padding-top:30px;}
 }

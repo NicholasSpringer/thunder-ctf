@@ -1,3 +1,16 @@
+<pre>python3 thunder.py create a2finance</pre>
+<p>Activate the service account given to you. You MUST do this, as using your google account to complete the level would be considered cheating.</p>
+<pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
+<p>For this level, you must have your git username and email set to some values, but they don't have to correspond to your actual details.</p>
+<pre># Check if "user.email" and "user.name" are set:
+git config --list
+# If they aren't set, run:
+git config --global user.name "John Doe"
+git config --global user.email johndoe@example.com
+</pre>
+---
+<pre>python3 thunder.py destroy a2finance</pre>
+---
 <p>In this level, the secret is the (fake) credit card number of the person assigned to you upon level creation. Use the compromised service account that is given to you to navigate the cloud infrastructure to find the credit card.</p>
 <p>Upon level creation, the name of the target is written to start/a2finance.txt, and the service account key file is written to start/a2-access.json.</p>
 <p></p>
@@ -9,11 +22,6 @@ SERVICE_ACCOUNT_KEY_FILE = 'path/to/key/file'
 ACCESS_TOKEN = ''
 # Set the project ID
 PROJECT_ID = '[project-id]'</pre>
----
-<p>Activate the service account in the gcloud cli</p>
----
-<p>The command to do so is:</p>
-<pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
 ---
 <p>Run the permissions testing script on the given service account credentials</p>
 ---
