@@ -15,7 +15,7 @@ def upload_directory_recursive(top_dir_path, bucket):
     for dir_path, subdir_paths, f_names in os.walk(top_dir_path):
         for f in f_names:
             abs_path = dir_path + '/' + f
-            rel_path = abs_path.replace(top_dir_path+'/','')
+            rel_path = abs_path.replace(top_dir_path+'/', '')
             #abs_path = top_dir_path + '/' + relative_path
             blob = storage.Blob(rel_path, bucket)
             with open(abs_path, 'rb') as f:
@@ -84,13 +84,14 @@ def test_application_default_credentials(set_project=None):
     except google.auth.exceptions.DefaultCredentialsError:
         exit('Application default credentials not set. To set credentials, run:\n'
              '  gcloud auth application-default login')
+    
+    if not os.path.exists('core/common/config/project.txt'):
+        with open('core/common/config/project.txt','w+') as f:
+            f.write('')
     # Make sure application default project is the same as the project in thunder ctf config
     if not set_project:
         with open('core/common/config/project.txt') as f:
             set_project = f.read()
-    if set_project == '':
-        exit('You must set the Thunder CTF project to your GCP project id:\n'
-             '  python3 thunder.py set_project [project-id]')
     if not project_id:
         exit('You must the set the gcloud config account and project '
              'to your application default account and the desired project \n'
@@ -144,8 +145,17 @@ def setup_project():
         'serviceusage', 'v1', credentials=credentials)
     # Enable apis
     apis = [
+        'cloudapis.googleapis.com',
+        'cloudfunctions.googleapis.com',
+        'cloudresourcemanager.googleapis.com',
+        'compute.googleapis.com',
+        'datastore.googleapis.com',
+        'iam.googleapis.com',
+        'iamcredentials.googleapis.com',
+        'logging.googleapis.com',
         'deploymentmanager.googleapis.com',
-        'cloudresourcemanager.googleapis.com'
+        'storage-api.googleapis.com',
+        'storage-component.googleapis.com'
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
@@ -165,7 +175,7 @@ def wait_for_operation(op_name, services_api):
     while not op_done:
         time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
         sys.stdout.write(
-            f'\r{time_string} Deployment operation in progress...')
+            f'\r{time_string} Enabling APIs...')
         t += 5
         while t < time.time()-start_time:
             t += 5
@@ -177,7 +187,7 @@ def wait_for_operation(op_name, services_api):
         else:
             op_done = response['done']
     sys.stdout.write(
-        f'\r{time_string} Deployment operation in progress... Done\n')
+        f'\r{time_string} Enabling APIs... Done\n')
 
 
 def upload_cloud_function(function_path, location_id, template_args={}):
@@ -227,12 +237,11 @@ def create_temp_cf_files(func_path, temp_func_path, template_args={}):
             temp_path = file_path.replace(func_path, temp_func_path)
             # Read and render function template
             with open(file_path) as f:
-                rendered_template = jinja2.Template(f.read()).render(**template_args)
+                rendered_template = jinja2.Template(
+                    f.read()).render(**template_args)
             # If temporary path doesn't exist yet, create the directory structure
             if not os.path.exists(os.path.dirname(temp_path)):
                 os.makedirs(os.path.dirname(temp_path))
             # Write to temporary file
             with open(temp_path, 'w+') as f:
                 f.write(rendered_template)
-    
-    
