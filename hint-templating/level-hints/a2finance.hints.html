@@ -57,6 +57,8 @@ PROJECT_ID = '[project-id]'</pre>
 ---
 <p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance</p>
 ---
+<p>To use the SHH key, you will need to restrict access to the key file:</p>
+<pre>chmod 400 [key-file]</pre>
 <p>SSH into the instance:</p>
 <pre>ssh -i [key-file] clouduser@[instance-external-ip]</pre>
 ---
