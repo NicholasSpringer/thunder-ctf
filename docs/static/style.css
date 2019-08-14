@@ -6,6 +6,14 @@
     margin-top:0px;
 }
 
+.bottombanner{
+
+    text-align: center; 
+    left: 5px;
+    right: 5px;
+
+}
+
 a.button {
     background-color: #eee;
     border: 1px solid black;
@@ -111,7 +119,7 @@ span.hintbannertext{
 }
 
 div.hintdisplay{
-    background-color: #E2FB92;
+    background-color: #F9E97F;
     color: black;
     padding: 10px;
     background-clip: content-box;
@@ -159,7 +167,8 @@ body{
     color:#3E4349;
     font-family: 'Roboto', sans-serif;
     line-height: 120%;
-    padding-top:165px;
+    padding-top:220px;
+    padding-bottom:0px;
     -webkit-transition:padding-top .5s ease-out;
     text-align: center;
 }
@@ -168,14 +177,6 @@ header{
     position:fixed;
     -webkit-transition:all 0.5s ease-out;
     overflow: hidden;
-}
-.clearfix:after {
-    visibility: hidden;
-    display: block;
-    font-size: 0;
-    content: " ";
-    clear: both;
-    height: 0;
 }
 
 h1{
