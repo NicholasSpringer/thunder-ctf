@@ -86,12 +86,11 @@
   <script>
     $(function () {
       $(window).scroll(function () {
+        //var html = document.getElementsByTagName('html')[0];
+        //var remSize = parseInt(window.getComputedStyle(html)['fontSize']);
+
         var winTop = $(this).scrollTop();
-        if (winTop >= 10) {
-          $("body").addClass("shrink-header");
-        } else {
-          $("body").removeClass("shrink-header");
-        }
+        $("header").css("height",190-winTop)
       });
     });
   </script>

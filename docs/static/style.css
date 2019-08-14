@@ -211,7 +211,7 @@ h3{
     height: 41px;
 }
 .shrink-header h1{
-   margin-top:200px;
+   margin-top:10px;
 }
 
 #nav{
@@ -254,42 +254,4 @@ section{
 footer {
     color:#fff;
     background:linear-gradient(135deg,#3540F5,#6A7FF0, #3540F5);
-}
-
-@media only screen and (max-width : 700px){
-    h1{
-        font-size: 2rem;
-        padding:3rem;
-    }
-    header{
-        height:266px;
-    }
-    body{
-        padding-top:100px;
-    }
-}
-
-@media only screen and (max-width: 515px ){
-    h1{
-       font-size: 1.5rem;
-       padding:1rem;
-
-    }
-    header{height:207px;}
-
-    #nav a{
-        font-size: 1rem;
-
-    }
-    #nav li{width:33.3%;}
-    form{
-        width:100%;
-        margin-top:5px;
-    }
-    input{
-        padding:0;
-        margin:0;
-        width:100%;
-    }
-    body{padding-top:30px;}
 }
