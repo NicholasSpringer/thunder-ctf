@@ -17,10 +17,12 @@ resources:
       autoDelete: true
       initializeParams:
         sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts
+    {% if properties['openExternal'] == true %}
     networkInterfaces:
     - network: global/networks/default
       accessConfigs:
       - type: ONE_TO_ONE_NAT
+    {% endif %}
     serviceAccounts:
     - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
       {% if properties['sa_scopes'] %}
