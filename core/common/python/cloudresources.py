@@ -100,9 +100,9 @@ def test_application_default_credentials(set_project=None):
              'If you wish to reset the application default credentials, run:\n'
              '  gcloud auth application-default login')
     if not set_project == project_id:
-        exit(f'Application default project id: {project_id} '
-             f'is not equal to Thunder CTF project id: {set_project}. '
-             'To change application default project, run:\n'
+        exit(f'gcloud cli project id: {project_id if not project_id=="" else "None"}\n'
+             f'is not equal to Thunder CTF project id: {set_project if not set_project=="" else "None"}.\n'
+             'To change gcloud cli project, run:\n'
              '  gcloud config set project=[project-id]\n'
              'To change the Thunder CTF project, run:\n'
              '  python3 thunder.py set_project [project-id]')
