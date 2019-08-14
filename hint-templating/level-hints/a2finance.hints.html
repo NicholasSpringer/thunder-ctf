@@ -1,12 +1,12 @@
-<pre>python3 thunder.py create a2finance</pre>
-<p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
-<pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
-<p>For this level, you must have your git username and email set to some values, but they don't have to correspond to your actual details.</p>
+<p>In order for this level to deploy correctly, you must have your git username and email configuration values set to some values, but they don't have to correspond to your actual details.</p>
 <pre># Check if "user.email" and "user.name" are set:
 git config --list
 # If they aren't set, run:
 git config --global user.name "John Doe"
 git config --global user.email johndoe@example.com</pre>
+<pre>python3 thunder.py create a2finance</pre>
+<p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+<pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
 ---
 <pre>python3 thunder.py destroy a2finance</pre>
 ---
@@ -57,6 +57,8 @@ PROJECT_ID = '[project-id]'</pre>
 ---
 <p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance</p>
 ---
+<p>To use the SHH key, you will need to restrict access to the key file:</p>
+<pre>chmod 400 [key-file]</pre>
 <p>SSH into the instance:</p>
 <pre>ssh -i [key-file] clouduser@[instance-external-ip]</pre>
 ---

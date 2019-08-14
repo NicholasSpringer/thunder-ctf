@@ -13,11 +13,13 @@ def create(*args):
             'python3 thunder.py remove [level]')
 
     level_name = args[0]
-    # Make sure level isn't already deployed
-    if level_name in deployments.list_deployments():
-        if 'y' == input(f'Level {level_name} has already been deployed. '
-                        'Would you like to reset the level? [y/n] ').lower()[0]:
-            destroy(level_name)
+    # Make sure a level isn't already deployed
+    deployed_level = deployments.get_active_deployment()
+    if deployed_level:
+        if 'y' == input(f'Level {deployed_level} is currently deployed. '
+                        f'Would you like to destroy the running instance of {deployed_level} '
+                        f'and create a new instance of {level_name}? [y/n] ').lower()[0]:
+            destroy(deployed_level)
             print('')
         else:
             exit()
@@ -35,7 +37,7 @@ def destroy(*args):
             '   python3 thunder.py destroy [level]')
     level_name = args[0]
     # Make sure level is deployed
-    if not level_name in deployments.list_deployments():
+    if not level_name == deployments.get_active_deployment():
         exit(f'Level {level_name} is not currently deployed')
 
     level_module = levels.import_level(level_name)
@@ -47,9 +49,9 @@ def list_levels(*args):
         print(f.read())
 
 
-def list_active_levels(*args):
+def get_active_level(*args):
     cloudresources.test_application_default_credentials()
-    print(deployments.list_deployments())
+    print(deployments.get_active_deployment())
 
 
 def new_seeds(*args):
@@ -76,7 +78,7 @@ def set_project(*args):
             '   python3 thunder.py set_project [project-id]')
     project_id = args[0]
     confirmed = 'y' == input(
-                f'Set project to {project_id}? If {project_id} has existing cloud infrastructure, it may be disrupted. [y/n]: ').lower()[0]
+                f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower()[0]
     if(confirmed):
         # Make sure credentials are set correctly and have owner role
         cloudresources.test_application_default_credentials(
@@ -96,7 +98,7 @@ def help(*args):
     python3 thunder.py destroy [level]
     python3 thunder.py help
     python3 thunder.py list_levels
-    python3 thunder.py list_active_levels
+    python3 thunder.py get_active_level
     python3 thunder.py set_project [project-id]""")
     exit()
 

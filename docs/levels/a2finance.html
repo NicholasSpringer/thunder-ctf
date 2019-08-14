@@ -19,42 +19,37 @@
       <h1 style="margin-top:0px;">Thunder CTF</h1>
     </div>
   </header>
-  <section>
-    <div class="level">
-      <div style="padding-bottom:10px">
-        <a class="levelbanner levelbackbutton" href="../..">&#8592</a>
-        <h2 class="levelbanner">a2finance</h2>
-      </div>
-      <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
-      <pre>python3 thunder.py create a2finance</pre>
-      <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
-      <pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
-      <p>For this level, you must have your git username and email set to some values, but they don't have to correspond to your actual details.</p>
+  <div class="level">
+    <div style="padding-bottom:10px">
+      <a class="levelbanner levelbutton" href="../..">&#8592</a>
+      <h2 class="levelbanner">a2finance</h2>
+    </div>
+    <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
+    <p>In order for this level to deploy correctly, you must have your git username and email configuration values set to some values, but they don't have to correspond to your actual details.</p>
       <pre># Check if "user.email" and "user.name" are set:
 git config --list
 # If they aren't set, run:
 git config --global user.name "John Doe"
 git config --global user.email johndoe@example.com</pre>
-      <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
-      <pre>python3 thunder.py destroy a2finance</pre>
+      <pre>python3 thunder.py create a2finance</pre>
+      <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+      <pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
+    <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
+    <pre>python3 thunder.py destroy a2finance</pre>
+  </div>
+  <br>
+  <div class=hints>
+    <div>
+      <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
+      <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+      <span id="next" class="hintbanner hintbutton">Next</span>
     </div>
-    <br>
-    <div class=hints>
-      <div>
-        <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
-        <span id="hinttitle" class="hintbanner hintbannertext">test</span>
-        <span id="next" class="hintbanner hintbutton">Next</span>
-      </div>
-      <div id="hintdisplay" class="hintdisplay">
-        <pre>testpre</pre>
-      </div>
+    <div id="hintdisplay" class="hintdisplay">
+      <pre>testpre</pre>
     </div>
-  </section>
-  <section>
-    <footer class="clearfix banner" style="bottom: 10px">
-      <center>PSU CTF: Work done under NSF Award #1821841</center>
-    </footer>
-  </section>
+  </div>
+  <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
+
 
 
   <ul id="hint_content" style="display: none">
@@ -193,17 +188,7 @@ PROJECT_ID = '[project-id]'</pre>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../static/slideshow.js"></script>
-  <script>
-    $(function () {
-      $(window).scroll(function () {
-        var winTop = $(this).scrollTop();
-        if (winTop >= 10) {
-          $("body").addClass("shrink-header");
-        } else {
-          $("body").removeClass("shrink-header");
-        }
-      });
-    });
-  </script>
+  <script src="../static/bannercollapse.js"></script>
 </body>
+
 </html>

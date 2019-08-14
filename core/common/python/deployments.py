@@ -129,7 +129,7 @@ def wait_for_operation(op_name, deployment_api, project_id):
         f'\r{time_string} Deployment operation in progress... Done\n')
 
 
-def list_deployments():
+def get_active_deployment():
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = discovery.build(
@@ -139,8 +139,5 @@ def list_deployments():
         deployments_list = deployment_api.deployments().list(
             project=project_id).execute()['deployments']
     except KeyError:
-        return []
-    deployed_level_names = []
-    for deployment in deployments_list:
-        deployed_level_names.append(deployment['name'])
-    return deployed_level_names
+        return None
+    return deployments_list[0]['name']

@@ -93,23 +93,19 @@ def test_application_default_credentials(set_project=None):
         with open('core/common/config/project.txt') as f:
             set_project = f.read()
     if not project_id:
-        exit('You must the set the gcloud config account and project '
-             'to your application default account and the desired project \n'
-             '  gcloud config set account [email]\n'
-             '  gcloud config set project [project-id]\n'
-             'If you wish to reset the application default credentials, run:\n'
-             '  gcloud auth application-default login')
+        exit('You must the set the gcloud cli project: \n'
+             '  gcloud config set project [project-id]')
     if not set_project == project_id:
-        exit(f'Application default project id: {project_id} '
-             f'is not equal to Thunder CTF project id: {set_project}. '
-             'To change application default project, run:\n'
+        exit(f'gcloud cli project id: {project_id if not project_id=="" else "None"}\n'
+             f'is not equal to Thunder CTF project id: {set_project if not set_project=="" else "None"}.\n'
+             'To change gcloud cli project, run:\n'
              '  gcloud config set project=[project-id]\n'
              'To change the Thunder CTF project, run:\n'
              '  python3 thunder.py set_project [project-id]')
     # Build api object
     crm_api = discovery.build('cloudresourcemanager',
                               'v1', credentials=credentials)
-    # Check if credentials has permissions
+    # Check if credentials have permissions
     response = crm_api.projects().testIamPermissions(resource=project_id, body={
         'permissions': check_permissions}).execute()
     if 'permissions' in response:
@@ -117,13 +113,7 @@ def test_application_default_credentials(set_project=None):
             return True
     # If credentials don't have necessary permissions, exit
     exit(f'Application default account should have owner role on project {project_id}.\n'
-         'If you are trying to use a user account, '
-         'make sure GOOGLE_APPLICATION_CREDENTIALS environment variable is not set:\n'
-         '  unset GOOGLE_APPLICATION_CREDENTIALS\n'
-         'make sure the gcloud cli account is set the same account as application default:\n'
-         '  gcloud config set account [email]\n'
-         'Reset application default credentials with:\n'
-         '  gcloud auth application-default login')
+         'make sure you spelled the project ID correctly and the account')
 
 
 check_permissions = [

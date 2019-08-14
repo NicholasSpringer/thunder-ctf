@@ -1,30 +1,65 @@
-<pre>Run in cloud shell or on a local machine with the following prerequisites:
-- Make sure gcloud cli is installed
-- python3 installed
-- PATH of shell that is executing python must include git
-mkdir t-ctf
-cd t-ctf
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="static/style.css">
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
+</head>
+
+<body>
+  <header class="banner" style="top: 5px">
+    <div id="nav">
+      <h1 style="margin-top:0px;">Thunder CTF</h1>
+    </div>
+  </header>
+  <div style="width:90%; max-width: 800px; text-align: center; margin: auto;">
+    <p>This CTF is based around attacking vulnerable cloud infrastructure on Google Cloud Platform (GCP). In each level,
+      you will be tasked with exploiting various issues with deployed cloud infrastructure in order to find the "secret"
+      of the level, which is a large integer stored somewhere in the infrastructure. The CTF is meant to be used by
+      everyone from beginners to experts, so each level has a set of detailed hints that can help players where they get
+      stuck, so the difficulty of the challenge is decided by the player based on how frequently they use hints. We
+      strongly encourage you to try as hard as you can to solve the levels using the least number of hints possible, as
+      this is how you will learn the most.</p>
+    <p>Thunder CTF works by deploying infrastructure on the fly to a Google Cloud Platform project owned by the player
+      when the player deploys a level. Therefore, to play Thunder CTF, you will need a GCP project with billing enabled.
+      If you are creating an account for the first time, you can get $300 in free credit <a class="inline"
+        href="https://cloud.google.com/free">here</a>. However, Thunder CTF is very cheap to run, costing only about
+      INSERT to play through the whole thing. To save cloud credits, we recommend deploying levels only while you are
+      playing and taking them down when you are done.</p>
+    <p>The CTF is played through Cloud Shell, a command line interface that is already set up for accessing cloud
+      resources. It can be accessed by click the following icon at the top right of the GCP console located <a
+        class="inline" href="https://console.cloud.google.com">here</a>:</p>
+    <img src="img/index/cloudshell.png">
+    <p>Setup steps:</p>
+    <p>1. Create a new GCP project.</p>
+    <p>2. Enable billing on the project. Instructions can be found <a class="inline"
+        href="https://cloud.google.com/billing/docs/how-to/modify-project">here</a>.</p>
+    <p>3. Open cloud shell, and run the following commands:</p>
+    <pre>gcloud config set project [PROJECT-ID]
 git clone https://github.com/NicholasSpringer/thunder-ctf.git
-virtualenv -v thunder-env
-source thunder-env/bin/activate
 cd thunder-ctf
-pip3 install -r requirements.txt 
-  
-You will need to make a new google cloud project to run the ctf on. 
-Enable billing on the project.
-gcloud auth login
-gcloud config set project [PROJECT-ID]
-gcloud auth application-default login
-python3 thunder.py set_project [PROJECT-ID]
-to deploy level instances:
-  python3 thunder.py create [level-name]
-to destroy level instances:
-  python3 thunder.py destroy [level-name]
-full list of commands:
-  python3 thunder.py help</pre>
-<p></p>
-<a href=./levels/a1openbucket.html>a1openbucket</a>
-<p></p>
-<a href=./levels/a2finance.html>a2finance</a>
-<p></p>
-<a href=./levels/a3password.html>a3password</a>
+sudo pip3 install -r requirements.txt
+python3 thunder.py set_project [PROJECT-ID]</pre>
+    <p>You are now ready to play the ctf! A full list of commands can be found by running: </p>
+    <pre>python3 thunder.py help</pre>
+
+    <h2>Levels:</h2>
+    <div><a class="levelbanner levelbutton" style="display: block; margin-bottom: 5px;" href="levels/a1openbucket.html">a1openbucket</a></div>
+    <div><a class="levelbanner levelbutton"  style="display: block; margin-bottom: 5px;" href="levels/a2finance.html">a2finance</a></div>
+    <div><a class="levelbanner levelbutton" style="display: block; margin-bottom: 5px;" href="levels/a3password.html">a3password</a></div>
+  </div>
+  <p></p>
+  <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="static/bannercollapse.js"></script>
+</body>
+
+</html>
