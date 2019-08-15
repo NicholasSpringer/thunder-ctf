@@ -6,7 +6,7 @@ import sys
 import jinja2
 import google.auth
 from googleapiclient import discovery
-from . import cloudresources
+from . import iam, gcstorage
 
 
 def read_render_config(file_name, template_args={}):
@@ -66,10 +66,10 @@ def delete(level_name, buckets=[], service_accounts=[]):
     print('Level destruction started for: ' + level_name)
     # Delete iam entries
     if not service_accounts == []:
-        cloudresources.remove_accounts_iam(service_accounts)
+        iam.remove_iam_entries(service_accounts)
     # Force delete buckets
     for bucket_name in buckets:
-        cloudresources.delete_bucket(bucket_name)
+        gcstorage.delete_bucket(bucket_name)
 
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()

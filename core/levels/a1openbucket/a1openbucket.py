@@ -2,7 +2,8 @@ import random
 
 from google.cloud import storage
 
-from ...common.python import deployments, secrets, levels
+from ...common.python import secrets, levels
+from ...common.python.cloudhelpers import deployments
 
 LEVEL_NAME = 'a1openbucket'
 RESOURCE_PREFIX = 'a1'

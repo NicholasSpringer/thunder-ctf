@@ -2,11 +2,11 @@ import warnings
 import sys
 import os
 
-from core.common.python import secrets, deployments, levels, cloudresources
-
+from core.common.python import secrets, levels
+from core.common.python.cloudhelpers import deployments, projects
 
 def create(*args):
-    cloudresources.test_application_default_credentials()
+    projects.test_application_default_credentials()
     if len(args) != 1:
         exit(
             'Incorrect number of arguments supplied, create requires 1 argument:\n'
@@ -30,7 +30,7 @@ def create(*args):
 
 
 def destroy(*args):
-    cloudresources.test_application_default_credentials()
+    projects.test_application_default_credentials()
     if len(args) != 1:
         exit(
             'Incorrect number of arguments supplied, destroy requires 1 argument:\n'
@@ -50,7 +50,7 @@ def list_levels(*args):
 
 
 def get_active_level(*args):
-    cloudresources.test_application_default_credentials()
+    projects.test_application_default_credentials()
     print(deployments.get_active_deployment())
 
 
@@ -81,10 +81,10 @@ def set_project(*args):
                 f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower()[0]
     if(confirmed):
         # Make sure credentials are set correctly and have owner role
-        cloudresources.test_application_default_credentials(
+        projects.test_application_default_credentials(
             set_project=project_id)
         # Enable apis, grant DM owner status, etc
-        cloudresources.setup_project()
+        projects.setup_project()
         with open('core/common/config/project.txt', 'w+') as f:
             f.write(project_id)
         print('Project has been set.')

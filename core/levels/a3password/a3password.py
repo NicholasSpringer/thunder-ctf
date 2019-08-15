@@ -2,7 +2,8 @@ import random
 import os
 
 from google.cloud import storage
-from ...common.python import deployments, secrets, keys, levels, cloudresources
+from ...common.python import secrets, levels
+from ...common.python.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
 LEVEL_NAME = 'a3password'
 RESOURCE_PREFIX = 'a3'
@@ -20,7 +21,7 @@ def create():
     func_template_args = {'bucket_name': bucket_name,
                        'xor_factor': xor_factor}
     # Upload function and get upload url
-    func_upload_url = cloudresources.upload_cloud_function(
+    func_upload_url = cloudfunctions.upload_cloud_function(
         f'core/levels/{LEVEL_NAME}/function', FUNCTION_LOCATION, template_args=func_template_args)
     print("Level initialization finished for: " + LEVEL_NAME)
 
@@ -47,7 +48,7 @@ def create():
     secret_blob.upload_from_string(secret)
 
     # Create service account key file
-    sa_key = keys.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
+    sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
     print(f'Level creation complete for: {LEVEL_NAME}')
     start_message = (
         f'Use the given compromised credentials to find the secret hidden in the level.')
@@ -69,7 +70,7 @@ def destroy():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     service_accounts = [
-        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-access')
+        iam.service_account_email(f'{RESOURCE_PREFIX}-access')
     ]
     # Delete deployment
     deployments.delete(LEVEL_NAME,
