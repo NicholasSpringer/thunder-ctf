@@ -2,11 +2,11 @@ import warnings
 import sys
 import os
 
-from core.common.python import secrets, deployments, levels, cloudresources
-
+from core.common.python import secrets, levels
+from core.common.python.cloudhelpers import deployments, projects
 
 def create(*args):
-    cloudresources.test_application_default_credentials()
+    projects.test_application_default_credentials()
     if len(args) != 1:
         exit(
             'Incorrect number of arguments supplied, create requires 1 argument:\n'
@@ -18,7 +18,7 @@ def create(*args):
     if deployed_level:
         if 'y' == input(f'Level {deployed_level} is currently deployed. '
                         f'Would you like to destroy the running instance of {deployed_level} '
-                        f'and create a new instance of {level_name}? [y/n] ').lower()[0]:
+                        f'and create a new instance of {level_name}? [y/n] ').lower().strip()[0]:
             destroy(deployed_level)
             print('')
         else:
@@ -30,7 +30,7 @@ def create(*args):
 
 
 def destroy(*args):
-    cloudresources.test_application_default_credentials()
+    projects.test_application_default_credentials()
     if len(args) != 1:
         exit(
             'Incorrect number of arguments supplied, destroy requires 1 argument:\n'
@@ -50,7 +50,7 @@ def list_levels(*args):
 
 
 def get_active_level(*args):
-    cloudresources.test_application_default_credentials()
+    projects.test_application_default_credentials()
     print(deployments.get_active_deployment())
 
 
@@ -58,11 +58,11 @@ def new_seeds(*args):
     confirmed = False
     if len(args) == 0:
         if 'y' == input(
-                'Generate new seeds for all levels? Level secrets will differ from expected values. [y/n] ').lower()[0]:
+                'Generate new seeds for all levels? Level secrets will differ from expected values. [y/n] ').lower().strip()[0]:
             confirmed = True
     else:
         if'y' == input(
-                f'Generate new seeds for {list(args)}? Level secrets will differ from expected values. [y/n] ').lower()[0]:
+                f'Generate new seeds for {list(args)}? Level secrets will differ from expected values. [y/n] ').lower().strip()[0]:
             confirmed = True
     if confirmed:
         secrets.generate_seeds(level_names=list(args))
@@ -78,13 +78,13 @@ def set_project(*args):
             '   python3 thunder.py set_project [project-id]')
     project_id = args[0]
     confirmed = 'y' == input(
-                f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower()[0]
+                f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower().strip()[0]
     if(confirmed):
         # Make sure credentials are set correctly and have owner role
-        cloudresources.test_application_default_credentials(
+        projects.test_application_default_credentials(
             set_project=project_id)
         # Enable apis, grant DM owner status, etc
-        cloudresources.setup_project()
+        projects.setup_project()
         with open('core/common/config/project.txt', 'w+') as f:
             f.write(project_id)
         print('Project has been set.')

@@ -18,6 +18,7 @@ resources:
   type: instance.jinja
   properties:
     zone: us-west1-b
+    openExternal: true
     ssh_credentials:
       username: {{ ssh_username }}
       public_key: {{ ssh_public_key }}

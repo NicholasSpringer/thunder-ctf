@@ -142,11 +142,13 @@ PROJECT_ID = '[project-id]'</pre>
     
     <li>
       <span>Hint 14</span>
-      <p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance</p>
+      <p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance, including the username that the key is for.</p>
     </li>
     
     <li>
       <span>Hint 15</span>
+      <p>To use the SHH key, you will need to restrict access to the key file:</p>
+      <pre>chmod 400 [key-file]</pre>
       <p>SSH into the instance:</p>
       <pre>ssh -i [key-file] clouduser@[instance-external-ip]</pre>
     </li>
@@ -189,6 +191,7 @@ PROJECT_ID = '[project-id]'</pre>
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../static/slideshow.js"></script>
   <script src="../static/bannercollapse.js"></script>
+  <script>$("a, .inline").attr("target","_blank")</script>
 </body>
 
 </html>

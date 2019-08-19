@@ -2,7 +2,8 @@ import random
 
 from google.cloud import storage
 
-from ...common.python import deployments, secrets, levels
+from ...common.python import secrets, levels
+from ...common.python.cloudhelpers import deployments
 
 LEVEL_NAME = 'a1openbucket'
 RESOURCE_PREFIX = 'a1'
@@ -25,7 +26,7 @@ def create():
     secret = secrets.make_secret(LEVEL_NAME)
     secret_blob.upload_from_string(secret)
     print(f'Level creation complete for: {LEVEL_NAME}\n'
-          f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
+          f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}.html')
     start_message = f'The secret for this level can be found in the Google Cloud Storage (GCS) bucket {bucket_name}'
     levels.write_start_info(LEVEL_NAME, start_message)
 

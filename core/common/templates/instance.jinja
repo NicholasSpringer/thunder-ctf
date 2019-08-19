@@ -17,10 +17,12 @@ resources:
       autoDelete: true
       initializeParams:
         sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts
+    {% if properties['openExternal'] == true %}
     networkInterfaces:
     - network: global/networks/default
       accessConfigs:
       - type: ONE_TO_ONE_NAT
+    {% endif %}
     serviceAccounts:
     - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
       {% if properties['sa_scopes'] %}
@@ -29,6 +31,7 @@ resources:
       - {{ scope }}
       {% endfor %}
       {% endif %}
+    {% if properties['ssh_credentials'] or properties['startup_script'] %}
     metadata:
       items:
       {% if properties['ssh_credentials'] %}
@@ -37,5 +40,7 @@ resources:
       {% endif %}
       {% if properties['startup_script'] %}
       - key: startup-script
-        value: {{ properties['startup_script'] }}
+        value: |
+          {{ properties['startup_script']|indent(10) }}
       {% endif %}
+    {% endif %}

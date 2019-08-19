@@ -5,7 +5,8 @@ import shutil
 
 from google.cloud import storage, logging as glogging
 
-from ...common.python import deployments, secrets, keys, cloudresources, levels
+from ...common.python import secrets, ssh_keys, levels
+from ...common.python.cloudhelpers import deployments, iam, gcstorage
 
 LEVEL_NAME = 'a2finance'
 RESOURCE_PREFIX = 'a2'
@@ -19,7 +20,7 @@ def create():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     # Create ssh key
-    ssh_private_key, ssh_public_key = keys.generate_ssh_key()
+    ssh_private_key, ssh_public_key = ssh_keys.generate_ssh_key()
     ssh_username = "clouduser"
 
     try:
@@ -45,13 +46,13 @@ def create():
         # Upload repository to bucket
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(bucket_name)
-        cloudresources.upload_directory_recursive(repo_path, bucket)
+        gcstorage.upload_directory_recursive(repo_path, bucket)
 
         # Create logs
         secret_name = create_logs()
 
         # Create service account key file
-        sa_key = keys.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
+        sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
         print(f'Level creation complete for: {LEVEL_NAME}')
         start_message = (
             f'Use the compromised service account credentials stored in {RESOURCE_PREFIX}-access.json to find the credit card number of {secret_name}, '
@@ -59,7 +60,7 @@ def create():
         levels.write_start_info(
             LEVEL_NAME, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
         print(
-            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
+            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}.html')
     finally:
         # If there is an error, make sure to delete the temporary repository before exiting
         if os.path.exists(repo_path):
@@ -135,8 +136,8 @@ def destroy():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     service_accounts = [
-        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-access'),
-        cloudresources.service_account_email(f'{RESOURCE_PREFIX}-logging-instance-sa')
+        iam.service_account_email(f'{RESOURCE_PREFIX}-access'),
+        iam.service_account_email(f'{RESOURCE_PREFIX}-logging-instance-sa')
     ]
     # Delete deployment
     deployments.delete(LEVEL_NAME,
