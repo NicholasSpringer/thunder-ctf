@@ -18,7 +18,7 @@ def create(*args):
     if deployed_level:
         if 'y' == input(f'Level {deployed_level} is currently deployed. '
                         f'Would you like to destroy the running instance of {deployed_level} '
-                        f'and create a new instance of {level_name}? [y/n] ').lower()[0]:
+                        f'and create a new instance of {level_name}? [y/n] ').lower().strip()[0]:
             destroy(deployed_level)
             print('')
         else:
@@ -58,11 +58,11 @@ def new_seeds(*args):
     confirmed = False
     if len(args) == 0:
         if 'y' == input(
-                'Generate new seeds for all levels? Level secrets will differ from expected values. [y/n] ').lower()[0]:
+                'Generate new seeds for all levels? Level secrets will differ from expected values. [y/n] ').lower().strip()[0]:
             confirmed = True
     else:
         if'y' == input(
-                f'Generate new seeds for {list(args)}? Level secrets will differ from expected values. [y/n] ').lower()[0]:
+                f'Generate new seeds for {list(args)}? Level secrets will differ from expected values. [y/n] ').lower().strip()[0]:
             confirmed = True
     if confirmed:
         secrets.generate_seeds(level_names=list(args))
@@ -78,7 +78,7 @@ def set_project(*args):
             '   python3 thunder.py set_project [project-id]')
     project_id = args[0]
     confirmed = 'y' == input(
-                f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower()[0]
+                f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower().strip()[0]
     if(confirmed):
         # Make sure credentials are set correctly and have owner role
         projects.test_application_default_credentials(

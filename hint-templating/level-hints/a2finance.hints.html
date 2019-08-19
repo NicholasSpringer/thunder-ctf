@@ -55,7 +55,7 @@ PROJECT_ID = '[project-id]'</pre>
 <p>Get more information on the running instance:</p>
 <pre>gcloud compute instances describe [instance-name]</pre>
 ---
-<p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance</p>
+<p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance, including the username that the key is for.</p>
 ---
 <p>To use the SHH key, you will need to restrict access to the key file:</p>
 <pre>chmod 400 [key-file]</pre>

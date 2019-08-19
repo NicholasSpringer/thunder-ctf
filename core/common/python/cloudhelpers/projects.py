@@ -19,7 +19,7 @@ def test_application_default_credentials(set_project=None):
     if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
         if 'y' == input(f'GOOGLE_APPLICATION_CREDENTIALS is set, meaning the application default credentials will use a service account. '
                         'Unless the service account has owner access, the command will fail.'
-                        'Would you like to unset GOOGLE_APPLICATION_CREDENTIALS? [y/n] ').lower()[0]:
+                        'Would you like to unset GOOGLE_APPLICATION_CREDENTIALS? [y/n] ').lower().strip()[0]:
             del os.environ['GOOGLE_APPLICATION_CREDENTIALS']
     # Try to extract application default credentials
     try:

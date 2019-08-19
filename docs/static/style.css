@@ -142,7 +142,7 @@ p {
     text-align: left;
 }
 
-pre {
+pre, textarea {
     background-color: #202020; 
     color: white;
     padding: 4px; 

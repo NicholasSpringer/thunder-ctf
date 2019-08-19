@@ -60,7 +60,7 @@ def create():
         levels.write_start_info(
             LEVEL_NAME, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
         print(
-            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}')
+            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}.html')
     finally:
         # If there is an error, make sure to delete the temporary repository before exiting
         if os.path.exists(repo_path):
