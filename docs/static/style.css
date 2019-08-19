@@ -30,9 +30,10 @@ a.button {
     text-decoration: none;
 }
 a.inline {
-    background-color: #E0EAFD;
+    background-color: #D7E5F9;
     border: 1px solid black;
-    color: #444;
+    border-radius: 2px;
+    color: #201483;
     cursor: pointer;
     padding: none;
     width: 66%;
@@ -143,13 +144,13 @@ p {
 }
 
 pre, textarea {
+    font-family: monospace;
+    white-space: pre;
+    font-size: 1em;
     background-color: #202020; 
     color: white;
     padding: 4px; 
     border-radius: 5px; 
-    border-color:#ffffff; 
-    border-style: solid;
-    border-width: 1px; 
     line-height: 120%;
     text-align: left; 
     overflow: scroll;
@@ -157,6 +158,11 @@ pre, textarea {
     margin-top: 5px;
     margin-bottom: 5px;
     display: inline-block;
+}
+
+textarea {
+    border-width: 3px;
+    border-color: lightblue;
 }
 
 ::-webkit-scrollbar {

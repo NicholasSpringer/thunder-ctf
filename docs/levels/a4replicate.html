@@ -148,9 +148,9 @@ PROJECT_ID = '[project-id]'</pre>
       <p>The "fingerprint" that is needed to make the request can be found under "metadata" when running:</p>
       <pre>gcloud compute instances describe [instance-name]</pre>
       <p>Make a request calling instances.setMetadata to add your SSH key to the instance with the username "ubuntu" using the cloud function's access token</p>
-      <textarea>curl --request POST \
+      <textarea style="min-height: 16.8em">curl --request POST \
   'https://www.googleapis.com/compute/v1/projects/[PROJECT]/zones/[ZONE]/instances/[INSTANCE-NAME]/setMetadata' \
-  -H 'Authorization: Bearer [ACCCESS-TOKEN]' \
+  -H 'Authorization: Bearer [ACCESS-TOKEN]' \
   -H 'Accept: application/json' \
   -H 'Content-Type: application/json' \
   --data '{
@@ -200,6 +200,7 @@ cat secret.txt</pre>
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../static/slideshow.js"></script>
   <script src="../static/bannercollapse.js"></script>
+  <script>$("a, .inline").attr("target","_blank")</script>
 </body>
 
 </html>
