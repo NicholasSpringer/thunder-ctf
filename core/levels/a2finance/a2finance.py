@@ -5,8 +5,8 @@ import shutil
 
 from google.cloud import storage, logging as glogging
 
-from ...common.python import secrets, ssh_keys, levels
-from ...common.python.cloudhelpers import deployments, iam, gcstorage
+from ...common.python import secrets,  levels
+from ...common.python.cloudhelpers import deployments, iam, gcstorage, ssh_keys
 
 LEVEL_NAME = 'a2finance'
 RESOURCE_PREFIX = 'a2'
@@ -95,23 +95,30 @@ def create_repo_files(repo_path, ssh_private_key):
 
 
 def create_logs():
-    logger = glogging.Client().logger(LOG_NAME)
+    # Load list of common names
     with open(f'core/levels/{LEVEL_NAME}/first-names.txt') as f:
         first_names = f.read().split('\n')
     with open(f'core/levels/{LEVEL_NAME}/last-names.txt') as f:
         last_names = f.read().split('\n')
+    # Randomly determine a name associated with the secret
     secret_name = (first_names[random.randint(0, 199)] + '_' +
                    last_names[random.randint(0, 299)])
+    # Randomly determine an index of logging of the secret transaction
     secret_position = random.randint(0, 99)
+
+    logger = glogging.Client().logger(LOG_NAME)
     for i in range(0, 100):
+        # On secret index, log the transaction with the secret as the credit card number of the struct
         if i == secret_position:
             logger.log_struct(
                 {'name': secret_name,
                  'transaction-total': f'${random.randint(1,300)}.{random.randint(0,9)}{random.randint(0,9)}',
                  'credit-card-number': secrets.make_secret(LEVEL_NAME, 16)})
         else:
+            # For the other entities, determine a random name
             name = (first_names[random.randint(0, 199)] + '_' +
                     last_names[random.randint(0, 299)])
+            # If the name is not equal to the secret name, log the transaction with a random credit card number
             if not name == secret_name:
                 logger.log_struct(
                     {'name': name,
