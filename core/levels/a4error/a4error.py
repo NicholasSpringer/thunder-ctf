@@ -8,7 +8,7 @@ from google.cloud import storage
 from ...common.python import secrets, levels
 from ...common.python.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
-LEVEL_NAME = 'a4replicate'
+LEVEL_NAME = 'a4error'
 RESOURCE_PREFIX = 'a4'
 FUNCTION_LOCATION = 'us-central1'
 INSTANCE_ZONE = 'us-west1-b'
@@ -58,15 +58,16 @@ def create():
     metadata_fingerprint = instance_info['metadata']['fingerprint']
     set_metadata_body = {'fingerprint': metadata_fingerprint, 'items': []}
     compute_api.instances().setMetadata(project=project_id,
-                                zone=INSTANCE_ZONE,
-                                instance=f'{RESOURCE_PREFIX}-instance',
-                                body=set_metadata_body).execute()
+                                        zone=INSTANCE_ZONE,
+                                        instance=f'{RESOURCE_PREFIX}-instance',
+                                        body=set_metadata_body).execute()
 
     # Create service account key file
     sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
     print(f'Level creation complete for: {LEVEL_NAME}')
     start_message = (
-        f'Use the given compromised credentials to find the secret hidden in the level.')
+        f'In this level, look for a file named "secret.txt," which is owned by "secretuser." '
+        'Use the given compromised credentials to find it.')
     levels.write_start_info(
         LEVEL_NAME, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
     print(
@@ -82,7 +83,6 @@ def destroy():
 
     # Find bucket name from deployment label
     nonce = deployments.get_labels(LEVEL_NAME)['nonce']
-
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     service_accounts = [
