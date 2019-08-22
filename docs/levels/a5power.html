@@ -25,11 +25,11 @@
       <h2 class="levelbanner">a5power</h2>
     </div>
     <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
-    <pre>python3 thunder.py create a4error</pre>
+    <pre>python3 thunder.py create a5power</pre>
       <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
       <pre>gcloud auth activate-service-account --key-file=start/a5-access.json</pre>
     <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
-    <pre>python3 thunder.py destroy a4error</pre>
+    <pre>python3 thunder.py destroy a5power</pre>
   </div>
   <br>
   <div class=hints>
@@ -137,7 +137,7 @@ def main(request):
     
     <li>
       <span>Hint 14</span>
-      <textarea>curl --request POST \
+      <textarea style="min-height: 7.2em">curl --request POST \
     'https://cloudresourcemanager.googleapis.com/v1/projects/[PROJECT-ID]:getIamPolicy' \
     --header 'Authorization: Bearer [ACCESS_TOKEN]' \
     --header 'Accept: application/json' \
@@ -159,7 +159,7 @@ def main(request):
     <li>
       <span>Hint 17</span>
       <p>Query the API, making sure to put role-name in the same format as it was in the IAM policy: "projects/[project-id]/roles/[role-id]"</p>
-      <textarea>curl --request PATCH \
+      <textarea style="min-height: 15.6em">curl --request PATCH \
     'https://iam.googleapis.com/v1/projects/gcp-vulnerable/roles/a5_access_role_386263537928?updateMask=includedPermissions' \
     --header 'Authorization: Bearer ya29.c.EqEBbAerdibUEho-4AJg94YS9u_asO8q4As4Bso8RLK4HAzFcRiSr0QE4GOdK0xpfOMXDomCI2AqNOU0p4SXKON8RlU9uZth3wMAKRj9W3nYGRcgPftacIhnKXTWapO7IRcyoGCD2buReY2JcSERswZWPQE5f1JBTnHicyykTvPcbxnF5u9DMfh4HjZny1kpF2ZV8jZv7p8eiL2TdeR95LUMz0U' \
     --header 'Accept: application/json' \
