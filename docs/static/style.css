@@ -176,13 +176,14 @@ body{
     line-height: 120%;
     padding-top:220px;
     padding-bottom:0px;
-    -webkit-transition:padding-top .5s ease-out;
     text-align: center;
 }
 header{
     height:200px;
+    top:10px;
+    right:10px;
+    left:10px;
     position:fixed;
-    -webkit-transition:all 0.5s ease-out;
     overflow: hidden;
 }
 
