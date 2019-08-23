@@ -5,16 +5,16 @@ import shutil
 
 from google.cloud import storage, logging as glogging
 
-from ...common.python import secrets,  levels
-from ...common.python.cloudhelpers import deployments, iam, gcstorage, ssh_keys
+from core.common import levels
+from core.common.cloudhelpers import deployments, iam, gcstorage, ssh_keys
 
-LEVEL_NAME = 'a2finance'
+LEVEL_PATH = 'thunder/a2finance'
 RESOURCE_PREFIX = 'a2'
 LOG_NAME = 'transactions'
 
 
 def create():
-    print("Level initialization started for: " + LEVEL_NAME)
+    print("Level initialization started for: " + LEVEL_PATH)
     # Create randomized nonce name to avoid namespace conflicts
     nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
@@ -27,7 +27,7 @@ def create():
         # Construct git repo
         repo_path = os.path.dirname(os.getcwd()) + "/temp-repository-" + nonce
         create_repo_files(repo_path, ssh_private_key)
-        print("Level initialization finished for: " + LEVEL_NAME)
+        print("Level initialization finished for: " + LEVEL_PATH)
 
         # Insert deployment
         config_template_args = {'nonce': nonce,
@@ -39,10 +39,10 @@ def create():
             'core/common/templates/instance.jinja',
             'core/common/templates/service_account.jinja',
             'core/common/templates/iam_policy.jinja']
-        deployments.insert(LEVEL_NAME, template_files=template_files,
+        deployments.insert(LEVEL_PATH, template_files=template_files,
                            config_template_args=config_template_args, labels=labels)
 
-        print("Level setup started for: " + LEVEL_NAME)
+        print("Level setup started for: " + LEVEL_PATH)
         # Upload repository to bucket
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(bucket_name)
@@ -53,14 +53,14 @@ def create():
 
         # Create service account key file
         sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
-        print(f'Level creation complete for: {LEVEL_NAME}')
+        print(f'Level creation complete for: {LEVEL_PATH}')
         start_message = (
             f'Use the compromised service account credentials stored in {RESOURCE_PREFIX}-access.json to find the credit card number of {secret_name}, '
             'which is hidden somewhere in the GCP project')
         levels.write_start_info(
-            LEVEL_NAME, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
+            LEVEL_PATH, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
         print(
-            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_NAME}.html')
+            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
     finally:
         # If there is an error, make sure to delete the temporary repository before exiting
         if os.path.exists(repo_path):
@@ -96,9 +96,9 @@ def create_repo_files(repo_path, ssh_private_key):
 
 def create_logs():
     # Load list of common names
-    with open(f'core/levels/{LEVEL_NAME}/first-names.txt') as f:
+    with open(f'core/levels/{LEVEL_PATH}/first-names.txt') as f:
         first_names = f.read().split('\n')
-    with open(f'core/levels/{LEVEL_NAME}/last-names.txt') as f:
+    with open(f'core/levels/{LEVEL_PATH}/last-names.txt') as f:
         last_names = f.read().split('\n')
     # Randomly determine a name associated with the secret
     secret_name = (first_names[random.randint(0, 199)] + '_' +
@@ -113,7 +113,7 @@ def create_logs():
             logger.log_struct(
                 {'name': secret_name,
                  'transaction-total': f'${random.randint(1,300)}.{random.randint(0,9)}{random.randint(0,9)}',
-                 'credit-card-number': secrets.make_secret(LEVEL_NAME, 16)})
+                 'credit-card-number': levels.make_secret(LEVEL_PATH, 16)})
         else:
             # For the other entities, determine a random name
             name = (first_names[random.randint(0, 199)] + '_' +
@@ -128,18 +128,18 @@ def create_logs():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_NAME)
+    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete logs
     client = glogging.Client()
     if len([entry for entry in client.list_entries(filter_=f'logName:{LOG_NAME}')]) > 0:
         logger = client.logger(LOG_NAME)
         logger.delete()
     # Delete starting files
-    levels.delete_start_files(LEVEL_NAME, files=[f'{RESOURCE_PREFIX}-access.json'])
-    print('Level tear-down finished for: ' + LEVEL_NAME)
+    levels.delete_start_files(LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
+    print('Level tear-down finished for: ' + LEVEL_PATH)
 
     # Find bucket name from deployment label
-    nonce = deployments.get_labels(LEVEL_NAME)['nonce']
+    nonce = deployments.get_labels()['nonce']
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     service_accounts = [
@@ -147,6 +147,6 @@ def destroy():
         iam.service_account_email(f'{RESOURCE_PREFIX}-logging-instance-sa')
     ]
     # Delete deployment
-    deployments.delete(LEVEL_NAME,
+    deployments.delete(LEVEL_PATH,
                        buckets=[bucket_name],
                        service_accounts=service_accounts)

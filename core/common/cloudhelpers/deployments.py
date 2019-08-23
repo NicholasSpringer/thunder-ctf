@@ -6,6 +6,7 @@ import sys
 import jinja2
 import google.auth
 from googleapiclient import discovery
+from googleapiclient.errors import HttpError
 from . import iam, gcstorage
 from .. import levels
 
@@ -19,20 +20,21 @@ def read_render_config(file_name, template_args={}):
         return content
 
 
-def insert(level_name, template_files=[],
+def insert(level_path, template_files=[],
            config_template_args={}, labels={}):
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
 
+    level_name = os.path.basename(level_path)
     # Create request to insert deployment
     request_body = {
-        "name": level_name,
+        "name": "thunder",
         "target": {
             "config": {
                 "content": read_render_config(
-                    f'core/levels/{level_name}/{level_name}.yaml',
+                    f'core/levels/{level_path}/{level_name}.yaml',
                     template_args=config_template_args)
             },
             "imports": []
@@ -56,16 +58,20 @@ def insert(level_name, template_files=[],
             "key": key,
             "value": labels[key]
         })
+    request_body['labels'].append({
+        "key": 'level',
+        "value": level_path.replace('/','-')
+    })
     # Send insert request then wait for operation
     operation = deployment_api.deployments().insert(
         project=project_id, body=request_body).execute()
     op_name = operation['name']
     wait_for_operation(op_name, deployment_api,
-                       project_id, level_name=level_name)
+                       project_id, level_path=level_path)
 
 
-def delete(level_name, buckets=[], service_accounts=[]):
-    print('Level destruction started for: ' + level_name)
+def delete(level_path, buckets=[], service_accounts=[]):
+    print('Level destruction started for: ' + level_path)
     # Delete iam entries
     if not service_accounts == []:
         iam.remove_iam_entries(service_accounts)
@@ -79,37 +85,12 @@ def delete(level_name, buckets=[], service_accounts=[]):
         'deploymentmanager', 'v2', credentials=credentials)
     # Send delete request
     operation = deployment_api.deployments().delete(
-        project=project_id, deployment=level_name).execute()
+        project=project_id, deployment='thunder').execute()
     op_name = operation['name']
-    # If error occurred in deployment, raise it
-    if 'error' in operation.keys():
-        raise Exception(operation['error'])
     wait_for_operation(op_name, deployment_api, project_id)
 
 
-def get_labels(level_name):
-    # Get current credentials from environment variables and build deployment API object
-    credentials, project_id = google.auth.default()
-    deployment_api = discovery.build(
-        'deploymentmanager', 'v2', credentials=credentials)
-    # Get deployment information
-    deployment = deployment_api.deployments().get(
-        project=project_id,
-        deployment=level_name).execute()
-
-    # If deployment has labels, get labels as list of k/v pairs
-    labels_list = []
-    if 'labels' in deployment.keys():
-        labels_list = deployment['labels']
-
-    # Insert all k/v pairs into python dictionary
-    labels_dict = {}
-    for label in labels_list:
-        labels_dict[label['key']] = label['value']
-    return labels_dict
-
-
-def wait_for_operation(op_name, deployment_api, project_id, level_name=None):
+def wait_for_operation(op_name, deployment_api, project_id, level_path=None):
     # Wait till  operation finishes, giving updates every 5 seconds
     op_done = False
     t = 0
@@ -132,24 +113,42 @@ def wait_for_operation(op_name, deployment_api, project_id, level_name=None):
     operation = op_status = deployment_api.operations().get(
         project=project_id,
         operation=op_name).execute()
-    if 'error' in operation and level_name:
+    if 'error' in operation and level_path:
         print("\nDeployment Error:\n" + str(operation['error']))
         if 'y' == input('\nDeployment error caused deployment to fail. '
                         'Would you like to destroy the deployment [y] or continue [n]? [y/n] ').lower().strip()[0]:
-            level_module = levels.import_level(level_name)
+            level_module = levels.import_level(level_path)
             level_module.destroy()
             exit()
 
 
-def get_active_deployment():
+def get_labels():
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
-    # Get list of deployments
+    # Get deployment information
     try:
-        deployments_list = deployment_api.deployments().list(
-            project=project_id).execute()['deployments']
-    except KeyError:
+        deployment = deployment_api.deployments().get(
+            project=project_id,
+            deployment='thunder').execute()
+    except HttpError:
         return None
-    return deployments_list[0]['name']
+
+    # Get labels as list of k/v pairs
+    labels_list = deployment['labels']
+
+    # Insert all k/v pairs into python dictionary
+    labels_dict = {}
+    for label in labels_list:
+        labels_dict[label['key']] = label['value']
+    labels_dict['level'] = labels_dict['level'].replace('-', '/')
+    return labels_dict
+
+
+def get_active_level():
+    labels = get_labels()
+    if labels:
+        return labels['level']
+    else:
+        return None

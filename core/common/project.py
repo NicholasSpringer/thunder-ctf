@@ -1,11 +1,12 @@
 import os
-import time 
+import time
 import sys
 
 import google.auth
 from googleapiclient import discovery
 
-from . import iam
+from . import cfg
+from .cloudhelpers import iam
 
 
 # Permissions to check if account has owner access
@@ -28,23 +29,24 @@ def test_application_default_credentials(set_project=None):
         exit('Application default credentials not set. To set credentials, run:\n'
              '  gcloud auth application-default login')
 
-    if not os.path.exists('core/common/config/project.txt'):
-        with open('core/common/config/project.txt', 'w+') as f:
-            f.write('')
+    config = cfg.get_config()
+    if not 'project' in config:
+        config['project'] = ''
+        cfg.set_config(config)
     # Make sure application default project is the same as the project in thunder ctf config
     if not set_project:
-        with open('core/common/config/project.txt') as f:
-            set_project = f.read()
+        set_project = cfg.get_config()['project']
     if not project_id:
         exit('You must the set the gcloud cli project: \n'
              '  gcloud config set project [project-id]')
     if not set_project == project_id:
-        exit(f'gcloud cli project id: {project_id if not project_id=="" else "None"}\n'
-             f'is not equal to Thunder CTF project id: {set_project if not set_project=="" else "None"}.\n'
+        exit('gcloud CLI project ID is not equal to Thunder CTF config project ID'
+             f'gcloud CLI project id: {project_id if not project_id=="" else "None"}\n'
+             f'Thunder CTF project id: {set_project if not set_project=="" else "None"}.\n'
              'To change gcloud cli project, run:\n'
              '  gcloud config set project=[project-id]\n'
              'To change the Thunder CTF project, run:\n'
-             '  python3 thunder.py set_project [project-id]')
+             '  python3 thunder.py activate_project [project-id]')
     # Build api object
     crm_api = discovery.build('cloudresourcemanager',
                               'v1', credentials=credentials)
