@@ -8,7 +8,7 @@ git config --global user.email johndoe@example.com</pre>
 <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
 <pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
 ---
-<pre>python3 thunder.py destroy thunder/a2finance</pre>
+<pre>python3 thunder.py destroy</pre>
 ---
 <p>In this level, the secret is the (fake) credit card number of the person assigned to you upon level creation. Use the compromised service account that is given to you to navigate the cloud infrastructure to find the credit card.</p>
 <p>Upon level creation, the name of the target is written to start/a2finance.txt, and the service account key file is written to start/a2-access.json.</p>
