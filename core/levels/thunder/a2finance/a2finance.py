@@ -36,7 +36,7 @@ def create():
         labels = {'nonce': nonce}
         template_files = [
             'core/common/templates/bucket_acl.jinja',
-            'core/common/templates/instance.jinja',
+            'core/common/templates/ubuntu_vm.jinja',
             'core/common/templates/service_account.jinja',
             'core/common/templates/iam_policy.jinja']
         deployments.insert(LEVEL_PATH, template_files=template_files,

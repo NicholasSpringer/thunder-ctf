@@ -37,7 +37,7 @@ def create():
         'core/common/templates/cloud_function.jinja',
         'core/common/templates/service_account.jinja',
         'core/common/templates/iam_policy.jinja',
-        'core/common/templates/instance.jinja']
+        'core/common/templates/ubuntu_vm.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
                        config_template_args=config_template_args, labels=labels)
 

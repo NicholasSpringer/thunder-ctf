@@ -1,7 +1,7 @@
 imports:
 - path: bucket_acl.jinja
 - path: service_account.jinja
-- path: instance.jinja
+- path: ubuntu_vm.jinja
 - path: iam_policy.jinja
 
 resources:
@@ -15,15 +15,13 @@ resources:
     - service_account_id: a2-access
       role: READER
 - name: a2-logging-instance
-  type: instance.jinja
+  type: ubuntu_vm.jinja
   properties:
     zone: us-west1-b
     openExternal: true
     ssh_credentials:
       username: {{ ssh_username }}
       public_key: {{ ssh_public_key }}
-    sa_scopes:
-    - https://www.googleapis.com/auth/logging.read
 - name: iam_policy
   type: iam_policy.jinja
   properties:

@@ -19,12 +19,6 @@ properties:
     description: If true, the instance will have an external IP
     type: boolean
     
-  sa_scopes:
-    description: Authentication scopes of service account
-    minItems: 1
-    items:
-      type: string
-    
   ssh_credentials:
     description: SSH credentials to access instance
     required:

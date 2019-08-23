@@ -1,6 +1,6 @@
 imports:
 - path: bucket_acl.jinja
-- path: instance.jinja
+- path: ubuntu_vm.jinja
 - path: service_account.jinja
 - path: cloud_function.jinja
 - path: iam_policy.jinja
@@ -26,7 +26,7 @@ resources:
     - role: roles/cloudfunctions.invoker
       service_account_id: a4-access
 - name: a4-instance
-  type: instance.jinja
+  type: ubuntu_vm.jinja
   properties:
     zone: us-west1-b
     openExternal: true

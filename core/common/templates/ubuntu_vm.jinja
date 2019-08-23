@@ -25,12 +25,8 @@ resources:
     {% endif %}
     serviceAccounts:
     - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
-      {% if properties['sa_scopes'] %}
       scopes:
-      {% for scope in properties['sa_scopes'] %}
-      - {{ scope }}
-      {% endfor %}
-      {% endif %}
+      - https://www.googleapis.com/auth/cloud-platform
     {% if properties['ssh_credentials'] or properties['startup_script'] %}
     metadata:
       items:
