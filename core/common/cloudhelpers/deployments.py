@@ -9,6 +9,7 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from . import iam, gcstorage
 from .. import levels
+import yaml
 
 
 def read_render_config(file_name, template_args={}):
@@ -114,7 +115,7 @@ def wait_for_operation(op_name, deployment_api, project_id, level_path=None):
         project=project_id,
         operation=op_name).execute()
     if 'error' in operation and level_path:
-        print("\nDeployment Error:\n" + str(operation['error']))
+        print("\nDeployment Error:\n" + yaml.dump(operation['error']))
         if 'y' == input('\nDeployment error caused deployment to fail. '
                         'Would you like to destroy the deployment [y] or continue [n]? [y/n] ').lower().strip()[0]:
             level_module = levels.import_level(level_path)

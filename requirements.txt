@@ -12,3 +12,6 @@ gitpython
 
 # Configuration templating
 Jinja2
+
+# Displaying YAML
+pyyaml
