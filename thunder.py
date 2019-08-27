@@ -3,7 +3,8 @@ import sys
 import os
 import string
 
-from core.common import levels, project, cfg
+from core.common.config import cfg
+from core.common import levels, project
 from core.common.cloudhelpers import deployments
 
 def create(*args):
@@ -49,7 +50,7 @@ def destroy(*args, confirmed=False):
 
 
 def list_available_levels(*args):
-    print([key for key in cfg.get_config()['seeds'].keys()])
+    print([key for key in cfg.get_seeds().keys()])
 
 
 def get_active_level(*args):
@@ -82,11 +83,10 @@ def activate_project(*args):
         # Make sure credentials are set correctly and have owner role
         project.test_application_default_credentials(
             set_project=project_id)
-        # Enable apis, grant DM owner status, etc
+        # Enable apis, grant DM service account owner status
         project.setup_project()
-        config = cfg.get_config()
-        config['project'] = project_id
-        cfg.set_config(config)
+        # Set project in thunder ctf config
+        cfg.set_project(project_id)
         print('Project has been set.')
     else:
         print('Project not set.')

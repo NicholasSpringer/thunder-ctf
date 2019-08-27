@@ -5,7 +5,7 @@ import sys
 import google.auth
 from googleapiclient import discovery
 
-from . import cfg
+from .config import cfg
 from .cloudhelpers import iam
 
 
@@ -29,13 +29,9 @@ def test_application_default_credentials(set_project=None):
         exit('Application default credentials not set. To set credentials, run:\n'
              '  gcloud auth application-default login')
 
-    config = cfg.get_config()
-    if not 'project' in config:
-        config['project'] = ''
-        cfg.set_config(config)
     # Make sure application default project is the same as the project in thunder ctf config
     if not set_project:
-        set_project = cfg.get_config()['project']
+        set_project = cfg.get_project()
     if not project_id:
         exit('You must the set the gcloud cli project: \n'
              '  gcloud config set project [project-id]')
