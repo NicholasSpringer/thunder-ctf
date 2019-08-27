@@ -64,9 +64,9 @@ def add_levels(*args):
             '   python3 thunder.py add_levels [level-path] [level-path]...')
     for level_path in args:
         # Check to make sure level path only contains allowed characters
-        allowed = string.ascii_lowercase + string.digits + '_'
+        allowed = string.ascii_lowercase + string.digits + '_' +'/'
         if not all(c in allowed for c in level_path):
-            exit('Level paths can only contain lowercase letters, numeric characters, and underscores.')
+            exit('Level paths can only contain lowercase letters, numeric characters, slashes, and underscores.')
         levels.add_level(level_path)
 
 
