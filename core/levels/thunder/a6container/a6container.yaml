@@ -1,0 +1,53 @@
+imports:
+- path: bucket_acl.jinja
+- path: container_vm.jinja
+- path: service_account.jinja
+- path: iam_policy.jinja
+
+resources:
+- name: a6-access
+  type: service_account.jinja
+- name: a6-bucket
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }} 
+    predefined_acl: private
+- name: a6-container-vm
+  type: container_vm.jinja
+  properties:
+    zone: us-west1-b
+    open_external: true
+    open_http: true
+    container_manifest: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: a6
+      spec:
+        containers:
+          - name: a6
+            image: docker.io/springern/thunder-ctf-a6:latest
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 80
+                hostPort: 80
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: a6-access
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - compute.instances.list
+        - compute.instances.get
+        - compute.zones.list
+        - storage.buckets.list
+        - storage.objects.list
+    - service_account_id: a6-container-vm-sa
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - storage.objects.get

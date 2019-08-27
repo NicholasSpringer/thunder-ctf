@@ -1,0 +1,32 @@
+info:
+  title: COS instance template
+  author: Nicholas Springer
+  description: Creates a new instance with a given container image. Also creates a service account for the instance called [instance-name]-sa 
+
+imports:
+- path: service_account.jinja
+
+required:
+- zone
+- container_manifest
+
+properties:
+  zone:
+    description: Zone of compute instance
+    type: string
+  
+  open_external:
+    description: If true, the instance will have an external IP
+    type: boolean
+
+  open_http:
+    description: If true, the instance will accept traffic on port 80
+    type: boolean
+    
+  container_manifest:
+    description: kubernetes manifest describing what container image to run on the instance
+    type: string
+
+  
+
+  

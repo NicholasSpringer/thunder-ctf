@@ -1,0 +1,39 @@
+imports:
+- path: service_account.jinja
+
+{% set INSTANCE_NAME = env['name'] %}
+{% set SERVICE_ACCOUNT_NAME = env['name'] + "-sa" %}
+
+resources:
+- type: service_account.jinja
+  name: {{ SERVICE_ACCOUNT_NAME }}
+- type: compute.v1.instance
+  name: {{ INSTANCE_NAME }}
+  properties:
+    zone: {{ properties["zone"] }}
+    machineType: zones/{{ properties["zone"] }}/machineTypes/g1-small
+    disks:
+    - boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: projects/cos-cloud/global/images/family/cos-stable
+    {% if properties['open_external'] %}
+    networkInterfaces:
+    - network: global/networks/default
+      accessConfigs:
+      - type: ONE_TO_ONE_NAT
+    {% endif %}
+    {% if properties['open_http'] %}
+    tags:
+      items:
+      - http-server
+    {% endif %}
+    serviceAccounts:
+    - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
+      scopes:
+      - https://www.googleapis.com/auth/cloud-platform
+    metadata:
+      items:
+      - key: gce-container-declaration
+        value: |
+          {{ properties['container_manifest']|indent(10) }}

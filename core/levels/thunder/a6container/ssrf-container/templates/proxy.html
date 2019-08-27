@@ -1,0 +1,14 @@
+<h3>Admin Proxy</h3>
+<p>Enter URL to access by proxy:</p>
+<input id=url_input></input>
+
+<script>
+var input = document.getElementById("url_input");
+input.addEventListener("keyup", function(event) {
+  if (event.keyCode === 13) {
+    event.preventDefault();
+    url = input.value
+    window.location.href = "/admin-proxy-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d?url=" + url;
+  }
+});
+</script>
