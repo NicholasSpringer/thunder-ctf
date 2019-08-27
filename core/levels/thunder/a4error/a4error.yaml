@@ -29,7 +29,7 @@ resources:
   type: ubuntu_vm.jinja
   properties:
     zone: us-west1-b
-    openExternal: true
+    open_external: true
     startup_script: |
       #!/bin/bash
       sudo -i

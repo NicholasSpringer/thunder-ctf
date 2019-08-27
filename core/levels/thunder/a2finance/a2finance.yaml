@@ -18,7 +18,7 @@ resources:
   type: ubuntu_vm.jinja
   properties:
     zone: us-west1-b
-    openExternal: true
+    open_external: true
     ssh_credentials:
       username: {{ ssh_username }}
       public_key: {{ ssh_public_key }}
