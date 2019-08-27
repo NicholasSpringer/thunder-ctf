@@ -4,7 +4,7 @@
 ---
 <pre>python3 thunder.py destroy</pre>
 ---
-<p>Use the compromised service account credentials stored in {RESOURCE_PREFIX}-access.json to find the secret, which is located in a file called secret.txt in a private bucket on the project.</p>
+<p>Use the compromised service account credentials stored in a6-access.json to find the secret, which is located in a file called secret.txt in a private bucket on the project.</p>
 ---
 <p>Test the permissions of the given credentials using the test-permissions.py script.</p>
 ---
@@ -75,4 +75,5 @@ def proxy():
 <pre>gsutil ls
 gsutil ls [bucket-name]</pre>
 ---
+<p>Get secret.txt:</p>
 <pre>curl https://www.googleapis.com/storage/v1/b/[BUCKET-NAME]/o/[OBJECT-NAME]?alt=media -H "Authorization: Bearer [ACCESS-TOKEN]"</pre>

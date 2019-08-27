@@ -44,6 +44,8 @@
         href="https://cloud.google.com/billing/docs/how-to/modify-project">here</a>.</p>
     <p>3. Open cloud shell, and run the following commands:</p>
     <pre>gcloud config set project [PROJECT-ID]
+virtualenv -v env-tctf
+source env-tctf/bin/activate
 git clone https://github.com/NicholasSpringer/thunder-ctf.git
 cd thunder-ctf
 sudo pip3 install -r requirements.txt
