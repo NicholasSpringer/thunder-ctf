@@ -20,12 +20,10 @@ def create():
 
     # Set role of default cloud function account
     credentials, project_id = google.auth.default()
-    iam.set_account_iam_role(
-        f'{project_id}@appspot.gserviceaccount.com', 'roles/iam.roleAdmin')
-    print("Level initialization finished for: " + LEVEL_PATH)
-
+    
     func_upload_url = cloudfunctions.upload_cloud_function(
         f'core/levels/{LEVEL_PATH}/function', FUNCTION_LOCATION)
+    print("Level initialization finished for: " + LEVEL_PATH)
     # Insert deployment
     labels = {'nonce': nonce}
     config_template_args = {'nonce': nonce,
@@ -75,8 +73,6 @@ def destroy():
 
     # Reset role of default cloud function account
     credentials, project_id = google.auth.default()
-    iam.set_account_iam_role(
-        f'{project_id}@appspot.gserviceaccount.com', 'roles/editor')
 
     # Reset IAM policy of default cloud function
     iam_api = discovery.build('iam', 'v1', credentials=credentials)
