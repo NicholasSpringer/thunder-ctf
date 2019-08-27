@@ -64,8 +64,8 @@ def main(request):
 ---
 <p>Query the API, making sure to put role-name in the same format as it was in the IAM policy: "projects/[project-id]/roles/[role-id]"</p>
 <textarea style="min-height: 15.6em">curl --request PATCH \
-    'https://iam.googleapis.com/v1/projects/gcp-vulnerable/roles/a5_access_role_386263537928?updateMask=includedPermissions' \
-    --header 'Authorization: Bearer ya29.c.EqEBbAerdibUEho-4AJg94YS9u_asO8q4As4Bso8RLK4HAzFcRiSr0QE4GOdK0xpfOMXDomCI2AqNOU0p4SXKON8RlU9uZth3wMAKRj9W3nYGRcgPftacIhnKXTWapO7IRcyoGCD2buReY2JcSERswZWPQE5f1JBTnHicyykTvPcbxnF5u9DMfh4HjZny1kpF2ZV8jZv7p8eiL2TdeR95LUMz0U' \
+    'https://iam.googleapis.com/v1/projects/[PROJECT-ID/roles/[ROLE-NAME]?updateMask=includedPermissions' \
+    --header 'Authorization: Bearer [ACCESS-TOKEN]' \
     --header 'Accept: application/json' \
     --header 'Content-Type: application/json' \
     --data '{
