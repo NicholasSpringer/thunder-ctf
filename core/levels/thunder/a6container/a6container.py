@@ -52,21 +52,8 @@ def create():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete starting files
     levels.delete_start_files(
         LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
-
-    service_accounts = [
-        iam.service_account_email(f'{RESOURCE_PREFIX}-access'),
-        iam.service_account_email(f'{RESOURCE_PREFIX}-container-vm-sa')
-    ]
     # Delete deployment
-    deployments.delete(LEVEL_PATH,
-                       buckets=[bucket_name],
-                       service_accounts=service_accounts)
+    deployments.delete()

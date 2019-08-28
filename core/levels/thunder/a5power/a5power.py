@@ -37,7 +37,7 @@ def create():
                        config_template_args=config_template_args, labels=labels)
 
     print("Level setup started for: " + LEVEL_PATH)
-    # Allow user to use default cloud function
+    # Allow player to use cloud function's service account
     iam_api = discovery.build('iam', 'v1', credentials=credentials)
     policy_body = {"policy": {
         "bindings": [{
@@ -66,30 +66,8 @@ def create():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete starting files
     levels.delete_start_files(
         LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
-
-    # Reset role of default cloud function account
-    credentials, project_id = google.auth.default()
-
-    # Reset IAM policy of default cloud function
-    iam_api = discovery.build('iam', 'v1', credentials=credentials)
-    policy_body = {"policy": {"bindings": []}}
-    iam_api.projects().serviceAccounts().setIamPolicy(
-        resource=f'projects/{project_id}/serviceAccounts/{project_id}@appspot.gserviceaccount.com', body=policy_body).execute()
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
-
-    service_accounts = [
-        iam.service_account_email(f'{RESOURCE_PREFIX}-access'),
-        iam.service_account_email(f'{RESOURCE_PREFIX}-func-{nonce}-sa')
-    ]
     # Delete deployment
-    deployments.delete(LEVEL_PATH,
-                       buckets=[bucket_name],
-                       service_accounts=service_accounts)
+    deployments.delete()

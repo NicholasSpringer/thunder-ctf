@@ -61,7 +61,7 @@ def insert(level_path, template_files=[],
         })
     request_body['labels'].append({
         "key": 'level',
-        "value": level_path.replace('/','-')
+        "value": level_path.replace('/', '-')
     })
     # Send insert request then wait for operation
     operation = deployment_api.deployments().insert(
@@ -71,15 +71,8 @@ def insert(level_path, template_files=[],
                        project_id, level_path=level_path)
 
 
-def delete(level_path, buckets=[], service_accounts=[]):
-    print('Level destruction started for: ' + level_path)
-    # Delete iam entries
-    if not service_accounts == []:
-        iam.remove_iam_entries(service_accounts)
-    # Force delete buckets
-    for bucket_name in buckets:
-        gcstorage.delete_bucket(bucket_name)
-
+def delete():
+    delete_resources()
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
     deployment_api = discovery.build(
@@ -89,6 +82,34 @@ def delete(level_path, buckets=[], service_accounts=[]):
         project=project_id, deployment='thunder').execute()
     op_name = operation['name']
     wait_for_operation(op_name, deployment_api, project_id)
+
+
+def delete_resources():
+    print('Deleting buckets and IAM entries')
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        'deploymentmanager', 'v2', credentials=credentials)
+    manifest_url = deployment_api.deployments().get(
+        project=project_id, deployment='thunder').execute()['manifest']
+    manifest_name = os.path.basename(manifest_url)
+    manifest = deployment_api.manifests().get(deployment='thunder', project=project_id,
+                                              manifest=manifest_name).execute()
+    expanded_config = yaml.load(manifest['expandedConfig'], Loader=yaml.Loader)
+    buckets = []
+    service_accounts = []
+    for resource in expanded_config['resources']:
+        if 'type' in resource:
+            if resource['type'] == 'storage.v1.bucket':
+                buckets.append(resource['name'])
+            if resource['type'] == 'iam.v1.serviceAccount':
+                service_accounts.append(iam.service_account_email(resource))
+    # Delete iam entries
+    if service_accounts:
+        iam.remove_iam_entries(service_accounts)
+    # Force delete buckets
+    for bucket_name in buckets:
+        gcstorage.delete_bucket(bucket_name)
 
 
 def wait_for_operation(op_name, deployment_api, project_id, level_path=None):

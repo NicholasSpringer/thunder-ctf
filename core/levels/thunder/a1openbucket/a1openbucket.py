@@ -32,12 +32,7 @@ def create():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete starting files
     levels.delete_start_files(LEVEL_PATH)
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Delete deployment
-    deployments.delete(LEVEL_PATH, buckets=[bucket_name])
+    deployments.delete()

@@ -136,17 +136,6 @@ def destroy():
         logger.delete()
     # Delete starting files
     levels.delete_start_files(LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
-
-    service_accounts = [
-        iam.service_account_email(f'{RESOURCE_PREFIX}-access'),
-        iam.service_account_email(f'{RESOURCE_PREFIX}-logging-instance-sa')
-    ]
+    print('Level tear-down finished for: ' + LEVEL_PATH) 
     # Delete deployment
-    deployments.delete(LEVEL_PATH,
-                       buckets=[bucket_name],
-                       service_accounts=service_accounts)
+    deployments.delete()
