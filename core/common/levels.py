@@ -16,7 +16,7 @@ def import_level(level_path):
         exit(
             f'Level: {level_path} not found in levels list. A list of available levels can be found by running:\n'
             '  python3 thunder.py list_levels\n'
-            'If this is a custom level that you have not yet imported, run:'
+            'If this is a custom level that you have not yet imported, run:\n'
             '  python3 thunder.py add_levels [level-path]')
 
     level_name = os.path.basename(level_path)
