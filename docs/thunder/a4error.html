@@ -24,31 +24,34 @@
       <a class="levelbanner levelbutton" href="../..">&#8592</a>
       <h2 class="levelbanner">thunder/a4error</h2>
     </div>
-    <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
-    <pre>python3 thunder.py create thunder/a4error</pre>
-      <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
-      <pre>gcloud auth activate-service-account --key-file=start/a4-access.json</pre>
-    <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
-    <pre>python3 thunder.py destroy</pre>
   </div>
   <br>
   <div class=hints>
     <div>
       <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
-      <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+      <span id="hint_title" class="hintbanner hintbannertext"></span>
       <span id="next" class="hintbanner hintbutton">Next</span>
     </div>
-    <div id="hintdisplay" class="hintdisplay">
-      <pre>testpre</pre>
+    <div id="hint_display" class="hintdisplay">
     </div>
+    <div>
+      <span id="writeup_button" class="hintbanner hintbannertext">Show Level Writeup</span>
+    </div>
+    <h3>Destroy:</h3>
+    <pre>python3 thunder.py destroy</pre>
   </div>
   <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
-
-
 
   <ul id="hint_content" style="display: none">
     <li>
       <span>Intro</span>
+      <h3>Setup:</h3>
+      <p>Your virtual environment must be active to use thunder.py:</p>
+      <pre>source ../env-tctf/bin/activate</pre>
+      <pre>python3 thunder.py create thunder/a4error</pre>
+      <p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
+      <pre>gcloud auth activate-service-account --key-file=start/a4-access.json</pre>
+      <h3>Intro:</h3>
       <p>In this level, look for a file named "secret.txt," which is owned by "secretuser." Use the given compromised credentials to find it.</p>
     </li>
     
@@ -196,6 +199,9 @@ cat secret.txt</pre>
     </li>
     
   </ul>
+  <div id="writeup_content" style="display: none">
+    <p>INSERT WRITEUP</p>
+  </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../static/slideshow.js"></script>

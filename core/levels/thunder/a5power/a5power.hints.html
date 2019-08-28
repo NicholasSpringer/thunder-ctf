@@ -1,9 +1,10 @@
+<h3>Setup:</h3>
+<p>Your virtual environment must be active to use thunder.py:</p>
+<pre>source ../env-tctf/bin/activate</pre>
 <pre>python3 thunder.py create thunder/a5power</pre>
-<p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+<p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
 <pre>gcloud auth activate-service-account --key-file=start/a5-access.json</pre>
----
-<pre>python3 thunder.py destroy</pre>
----
+<h3>Intro:</h3>
 <p>Use the compromised service account credentials given to you to find the secret, 
 which is located in a file called secret.txt in a private bucket on the project.</p>
 ---
@@ -83,3 +84,5 @@ def main(request):
 gsutil ls [bucket-name]
 gsutil cp [secret-object-name] .
 cat secret.txt</pre>
+---
+<p>INSERT WRITEUP</p>

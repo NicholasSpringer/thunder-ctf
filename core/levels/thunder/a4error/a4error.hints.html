@@ -1,9 +1,10 @@
+<h3>Setup:</h3>
+<p>Your virtual environment must be active to use thunder.py:</p>
+<pre>source ../env-tctf/bin/activate</pre>
 <pre>python3 thunder.py create thunder/a4error</pre>
-<p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+<p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
 <pre>gcloud auth activate-service-account --key-file=start/a4-access.json</pre>
----
-<pre>python3 thunder.py destroy</pre>
----
+<h3>Intro:</h3>
 <p>In this level, look for a file named "secret.txt," which is owned by "secretuser." Use the given compromised credentials to find it.</p>
 ---
 <p>Test the permissions of the given credentials using the test-permissions.py script.</p>
@@ -97,3 +98,5 @@ ls</pre>
 <p>The secret is stored in the home file of the user "secretuser"</p>
 <pre>cd ~/../secretuser
 cat secret.txt</pre>
+---
+<p>INSERT WRITEUP</p>

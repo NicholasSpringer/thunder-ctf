@@ -1,15 +1,16 @@
+<h3>Setup:</h3>
+<p>Your virtual environment must be active to use thunder.py:</p>
+<pre>source ../env-tctf/bin/activate</pre>
 <pre>python3 thunder.py create thunder/a6container</pre>
-<p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
+<p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
 <pre>gcloud auth activate-service-account --key-file=start/a6-access.json</pre>
----
-<pre>python3 thunder.py destroy</pre>
----
+<h3>Intro:</h3>
 <p>Use the compromised service account credentials stored in a6-access.json to find the secret, which is located in a file called secret.txt in a private bucket on the project.</p>
 ---
 <p>Test the permissions of the given credentials using the test-permissions.py script.</p>
 ---
 <p>The credentials have the permission compute.instances.list and compute.instances.get</p>
----
+---˝
 <p>List the instances in the project:</p>
 <pre>gcloud compute instances list</pre>
 <p>Get information on the running instance:</p>
@@ -77,3 +78,5 @@ gsutil ls [bucket-name]</pre>
 ---
 <p>Get secret.txt:</p>
 <pre>curl https://www.googleapis.com/storage/v1/b/[BUCKET-NAME]/o/[OBJECT-NAME]?alt=media -H "Authorization: Bearer [ACCESS-TOKEN]"</pre>
+---
+<p>INSERT WRITEUP</p>

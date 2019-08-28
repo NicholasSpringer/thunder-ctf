@@ -24,29 +24,32 @@
       <a class="levelbanner levelbutton" href="../..">&#8592</a>
       <h2 class="levelbanner">thunder/a1openbucket</h2>
     </div>
-    <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
-    <pre>python3 thunder.py create thunder/a1openbucket</pre>
-    <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
-    <pre>python3 thunder.py destroy</pre>
   </div>
   <br>
   <div class=hints>
     <div>
       <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
-      <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+      <span id="hint_title" class="hintbanner hintbannertext"></span>
       <span id="next" class="hintbanner hintbutton">Next</span>
     </div>
-    <div id="hintdisplay" class="hintdisplay">
-      <pre>testpre</pre>
+    <div id="hint_display" class="hintdisplay">
     </div>
+    <div>
+      <span id="writeup_button" class="hintbanner hintbannertext">Show Level Writeup</span>
+    </div>
+    <h3>Destroy:</h3>
+    <pre>python3 thunder.py destroy</pre>
   </div>
   <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
-
-
 
   <ul id="hint_content" style="display: none">
     <li>
       <span>Intro</span>
+      <h3>Setup:</h3>
+      <p>Your virtual environment must be active to use thunder.py:</p>
+      <pre>source ../env-tctf/bin/activate</pre>
+      <pre>python3 thunder.py create thunder/a1openbucket</pre>
+      <h3>Intro:</h3>
       <p>For each level of this ctf, you will be tasked with exploiting various vulnerable cloud infrastructure in order to find the "secret" of each level, which is a large integer stored somewhere in the infrastructure</p>
       <p>The secret for this level is in a file in a Google Cloud Storage bucket. On level creation, you are given the bucket name, and it is written to start/a1openbucket.txt</p>
       <p>Each level of this ctf has a set of detailed hints that can guide you through the level, but we strongly encourage you to try as hard as you can to figure out the challenges using the least number of hints possible, as this is how you will learn the most. The hints can be accessed by clicking the "next" button next to "Intro"</p>
@@ -75,6 +78,9 @@
     </li>
     
   </ul>
+  <div id="writeup_content" style="display: none">
+    <p>INSERT WRITEUP</p>
+  </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../static/slideshow.js"></script>

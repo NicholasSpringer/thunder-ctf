@@ -88,7 +88,7 @@ def delete_start_files(level_path, files=[]):
             os.remove(file_path)
 
 
-def create_level_docs():
+def generate_level_docs():
     with open('core/common/level-hints-template.jinja') as f:
         template = Template(f.read())
 
@@ -98,11 +98,11 @@ def create_level_docs():
             with open(f'core/levels/{level_path}/{level_name}.hints.html') as f:
                 # Split hints in file
                 blocks = f.read().split('\n---\n')
+            # Set jinja args, indenting html tags that are mnot on the first line
             jinja_args = {'level_path': level_path,
-                          'setup': blocks[0].replace('\n<', f'\n{" "*6}<'),
-                          'destroy': blocks[1].replace('\n<', f'\n{" "*6}<'),
-                          'intro': blocks[2].replace('\n<', f'\n{" "*6}<'),
-                          'hints': [block.replace('\n<', f'\n{" "*6}<') for block in blocks[3:]]}
+                          'intro': blocks[0].replace('\n<', f'\n{" "*6}<'),
+                          'hints': [block.replace('\n<', f'\n{" "*6}<') for block in blocks[1:-1]],
+                          'writeup': blocks[-1].replace('\n<', f'\n{" "*4}<')}
 
             render = template.render(**jinja_args)
             if not os.path.exists(f'docs/{os.path.dirname(level_path)}'):

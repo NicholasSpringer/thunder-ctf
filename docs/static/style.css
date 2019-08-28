@@ -189,13 +189,11 @@ header{
 
 h1{
     text-align: center;
-    font-family: 'Nova Square', cursive;
+    font-family: 'Roboto', sans-serif;
     color:#fff;
     font-size: 2rem;
     padding:5rem 2rem;
     line-height: 100%;
-   -webkit-transition:all .5s ease-out;
-
     }
 h2{
     font-family: 'Roboto', sans-serif;
@@ -211,6 +209,8 @@ h3{
     font-size:1.25rem;
     margin-bottom: 0px;
     font-weight:400;
+    text-align: left; 
+    padding-left:10px;
 }
 
 .shrink-header{

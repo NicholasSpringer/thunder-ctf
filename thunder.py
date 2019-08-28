@@ -92,8 +92,8 @@ def activate_project(*args):
         print('Project not set.')
 
 
-def create_level_docs():
-    levels.create_level_docs()
+def generate_level_docs():
+    levels.generate_level_docs()
 
 
 def help(*args):
@@ -107,7 +107,7 @@ def help(*args):
 
 Developer commands:
     python3 thunder.py add_levels [level-path] [level-path]...
-    python3 thunder.py create_level_docs
+    python3 thunder.py generate_level_docs
     """)
     exit()
 
