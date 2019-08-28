@@ -103,6 +103,17 @@ span.hintbutton:hover {
     cursor: pointer;
 }
 
+span.writeupbutton {
+    width: 95%;
+    display: inline-block;
+    margin: auto;
+}
+
+span.writeupbutton:hover {
+    background-color: #4841BE;
+    cursor: pointer;
+}
+
 span.buttondisabled {
     visibility: hidden;
 }
@@ -189,7 +200,7 @@ header{
 
 h1{
     text-align: center;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Nova Square', cursive;
     color:#fff;
     font-size: 2rem;
     padding:5rem 2rem;
