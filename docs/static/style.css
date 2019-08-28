@@ -7,11 +7,9 @@
 }
 
 .bottombanner{
-
     text-align: center; 
     left: 5px;
     right: 5px;
-
 }
 
 a.button {
@@ -104,7 +102,7 @@ span.hintbutton:hover {
 }
 
 span.writeupbutton {
-    width: 95%;
+    width: 95.5%;
     display: inline-block;
     margin: auto;
 }
