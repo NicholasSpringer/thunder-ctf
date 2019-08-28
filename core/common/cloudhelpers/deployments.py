@@ -103,7 +103,7 @@ def delete_resources():
             if resource['type'] == 'storage.v1.bucket':
                 buckets.append(resource['name'])
             if resource['type'] == 'iam.v1.serviceAccount':
-                service_accounts.append(iam.service_account_email(resource))
+                service_accounts.append(iam.service_account_email(resource['name']))
     # Delete iam entries
     if service_accounts:
         iam.remove_iam_entries(service_accounts)
