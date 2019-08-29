@@ -3,6 +3,7 @@ import importlib
 import os
 import random
 import hashlib
+import shutil
 
 import google.auth
 from jinja2 import Template
@@ -11,6 +12,14 @@ from .config import cfg
 
 
 def import_level(level_path):
+    '''Returns the imported python module of the given level path.
+
+    Parameters:
+        level_path (str): Relative path of level from core/levels/ directory
+    
+    Returns:
+        module: The python module of the given level
+    '''
     # Check if level is in config
     if not level_path in cfg.get_seeds():
         exit(
@@ -30,8 +39,15 @@ def import_level(level_path):
 
 
 def add_level(level_path):
+    '''Generates a seed for a new level, which is necessary to generate level secrets.
+
+    Parameters:
+        level_path (str): The path of the level
+    '''
+    # Check to see if level already has a seed
     if level_path in cfg.get_seeds():
         exit(f'{level_path} has already been imported.')
+    # Check to see if level has the necessary files
     level_name = os.path.basename(level_path)
     level_py_path = f'core/levels/{level_path}/{level_name}.py'
     level_yaml_path = f'core/levels/{level_path}/{level_name}.yaml'
@@ -40,13 +56,22 @@ def add_level(level_path):
     if not os.path.exists(level_yaml_path):
         exit(
             f'Expected yaml configuration file was not found at {level_yaml_path}')
-    # Generate new random seeds for the specified level
+    # Generate a random seed for the specified level
     seeds = cfg.get_seeds()
     seeds[level_path] = str(random.randint(100000, 999999))
     cfg.set_seeds(seeds)
 
 
 def make_secret(level_path, chars=None):
+    '''Generates the secret of the level by hashing the level seed and the player's project id.
+
+    Parameters:
+        level_path (str): The path of the level
+        chars (int, optional): Integer that sets the length of the returned secret. If not supplied, the secret will be arbitrary length based on the value of the hash.
+
+    Returns:
+        str: String that contains an integer version of the hash of the level seed and project id 
+    '''
     credentials, project_id = google.auth.default()
     seeds = cfg.get_seeds()
     seed = seeds[level_path]
@@ -57,9 +82,21 @@ def make_secret(level_path, chars=None):
 
 
 def write_start_info(level_path, message, file_name=None, file_content=None):
+    '''Prints the start message and saves start files.
+    
+    Prints the supplied start message and saves it to a text file, and saves another optional file, which can be used for credential files, ssh key files, or any other file that the player is given at the beginning of the level. This function saves files in the start/ directory.
+
+    Parameters:
+        level_path (str): The path of the level being created
+        message (str): The start message that will be printed and saved
+        file_name (str, optional): The name of the optional extra file
+        file_content (str, optional): The contents of the optional extra file
+    '''
     print('\n')
+    # If start directory is not present, create it
     if not os.path.exists('start'):
         os.makedirs('start')
+    # If there is an extra file, create it
     if file_name and file_content:
         file_path = f'start/{file_name}'
         with open(file_path, 'w+') as f:
@@ -67,6 +104,7 @@ def write_start_info(level_path, message, file_name=None, file_content=None):
         os.chmod(file_path, 0o400)
         print(
             f'Starting file: {file_name} has been written to {file_path}')
+    # Write the start message to a file 
     level_name = os.path.basename(level_path)
     message_file_path = f'start/{level_name}.txt'
     with open(message_file_path, 'w+') as f:
@@ -74,27 +112,24 @@ def write_start_info(level_path, message, file_name=None, file_content=None):
     os.chmod(message_file_path, 0o400)
     print(
         f'Starting message for {level_path} has been written to {message_file_path}')
+    # Print start message
     print(f'Start Message: {message}')
     print('\n')
 
 
-def delete_start_files(level_path, files=[]):
-    level_name = os.path.basename(level_path)
-    files.append(f'{level_name}.txt')
-    for f in files:
-        file_path = f'start/{f}'
-        if os.path.exists(file_path):
-            os.chmod(file_path, 0o700)
-            os.remove(file_path)
+def delete_start_files():
+    '''Deletes the start files of a level. This function should be called upon level destruction.'''
+    shutil.rmtree('start')
 
 
 def generate_level_docs():
-    with open('core/common/level-hints-template.jinja') as f:
+    '''Generates HTML documents for each level based on each level's [levelname].hints.html'''
+    with open('core/framework/level-hints-template.jinja') as f:
         template = Template(f.read())
 
     for level_path in cfg.get_seeds():
         level_name = os.path.basename(level_path)
-        if os.path.exists(f'core/common/config/project.txt'):
+        if os.path.exists(f'core/framework/config/project.txt'):
             with open(f'core/levels/{level_path}/{level_name}.hints.html') as f:
                 # Split hints in file
                 blocks = f.read().split('\n---\n')
@@ -111,4 +146,4 @@ def generate_level_docs():
                 f.write(render)
         else:
             print(
-                f'No hints file found for level: {level_path} at core/common/config/project.txt')
+                f'No hints file found for level: {level_path} at core/framework/config/project.txt')

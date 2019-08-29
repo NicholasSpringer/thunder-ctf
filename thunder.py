@@ -3,9 +3,9 @@ import sys
 import os
 import string
 
-from core.common.config import cfg
-from core.common import levels, project
-from core.common.cloudhelpers import deployments
+from core.framework.config import cfg
+from core.framework import levels, project
+from core.framework.cloudhelpers import deployments
 
 def create(*args):
     project.test_application_default_credentials()

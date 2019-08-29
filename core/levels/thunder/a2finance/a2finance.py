@@ -5,8 +5,8 @@ import shutil
 
 from google.cloud import storage, logging as glogging
 
-from core.common import levels
-from core.common.cloudhelpers import deployments, iam, gcstorage, ssh_keys
+from core.framework import levels
+from core.framework.cloudhelpers import deployments, iam, gcstorage, ssh_keys
 
 LEVEL_PATH = 'thunder/a2finance'
 RESOURCE_PREFIX = 'a2'
@@ -20,7 +20,7 @@ def create():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
 
     # Create ssh key
-    ssh_private_key, ssh_public_key = ssh_keys.generate_ssh_key()
+    ssh_private_key, ssh_public_key = ssh_keys.generate_ssh_keypair()
     ssh_username = "clouduser"
 
     try:
@@ -35,18 +35,16 @@ def create():
                              'ssh_username': ssh_username}
         labels = {'nonce': nonce}
         template_files = [
-            'core/common/templates/bucket_acl.jinja',
-            'core/common/templates/ubuntu_vm.jinja',
-            'core/common/templates/service_account.jinja',
-            'core/common/templates/iam_policy.jinja']
+            'core/framework/templates/bucket_acl.jinja',
+            'core/framework/templates/ubuntu_vm.jinja',
+            'core/framework/templates/service_account.jinja',
+            'core/framework/templates/iam_policy.jinja']
         deployments.insert(LEVEL_PATH, template_files=template_files,
                            config_template_args=config_template_args, labels=labels)
 
         print("Level setup started for: " + LEVEL_PATH)
         # Upload repository to bucket
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
-        gcstorage.upload_directory_recursive(repo_path, bucket)
+        gcstorage.upload_directory_recursive(repo_path, bucket_name)
 
         # Create logs
         secret_name = create_logs()
@@ -95,7 +93,7 @@ def create_repo_files(repo_path, ssh_private_key):
 
 
 def create_logs():
-    # Load list of common names
+    # Load list of framework names
     with open(f'core/levels/{LEVEL_PATH}/first-names.txt') as f:
         first_names = f.read().split('\n')
     with open(f'core/levels/{LEVEL_PATH}/last-names.txt') as f:

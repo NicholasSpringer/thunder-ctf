@@ -2,8 +2,8 @@ import random
 import os
 
 from google.cloud import storage
-from core.common import levels
-from core.common.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
+from core.framework import levels
+from core.framework.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
 LEVEL_PATH = 'thunder/a3password'
 RESOURCE_PREFIX = 'a3'
@@ -31,10 +31,10 @@ def create():
                          'func_upload_url': func_upload_url}
     labels = {'nonce': nonce}
     template_files = [
-        'core/common/templates/bucket_acl.jinja',
-        'core/common/templates/cloud_function.jinja',
-        'core/common/templates/service_account.jinja',
-        'core/common/templates/iam_policy.jinja']
+        'core/framework/templates/bucket_acl.jinja',
+        'core/framework/templates/cloud_function.jinja',
+        'core/framework/templates/service_account.jinja',
+        'core/framework/templates/iam_policy.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
                        config_template_args=config_template_args, labels=labels)
 

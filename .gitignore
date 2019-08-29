@@ -2,4 +2,4 @@
 *.pyc
 *.DS_STORE
 start/*
-core/common/config/project.txt
+core/framework/config/project.txt

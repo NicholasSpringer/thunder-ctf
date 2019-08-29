@@ -667,7 +667,7 @@ compute.nodeTemplates.setIamPolicy
 compute.nodeTypes.get
 compute.nodeTypes.list
 compute.projects.get
-compute.projects.setCommonInstanceMetadata
+compute.projects.setframeworkInstanceMetadata
 compute.projects.setDefaultNetworkTier
 compute.projects.setDefaultServiceAccount
 compute.projects.setUsageExportBucket

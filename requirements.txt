@@ -13,5 +13,5 @@ gitpython
 # Configuration templating
 Jinja2
 
-# Displaying YAML
+# Displaying YAML/Reading expanded deployment configs
 pyyaml

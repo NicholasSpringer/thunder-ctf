@@ -7,11 +7,29 @@ import jinja2
 import google.auth
 from googleapiclient import discovery
 
+
 def upload_cloud_function(function_path, location_id, template_args={}):
+    '''Uploads the source code of a cloud function and returns the upload url
+
+    Before a cloud function can be created, the source code must be uploaded to Google Cloud.
+    This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the "source upload url" field when creating the cloud function.
+
+    Parameters:
+        function_path (str): The relative path to the function source code, starting with "core/"
+        location_id (str): The gcs zone that the function will be uploaded to.
+        template_args (dict, optional): Optional dictionary to specify arguments 
+            to be used to render jinja templates in cloud function code.
+    
+    Returns:
+        str: The url that the source code has been uploaded to.
+
+            This url should be inputted into the "source upload url" field when creating the cloud function.
+            In the cloud_function.jinja template, the property name for the source upload url is "upload_url"
+    '''
     temp_func_path = function_path + '-temp'
     zip_path = os.path.dirname(temp_func_path) + '/' + 'function.zip'
     try:
-        create_temp_cf_files(function_path, temp_func_path,
+        _create_temp_cf_files(function_path, temp_func_path,
                              template_args=template_args)
         credentials, project_id = google.auth.default()
         # Create zip
@@ -46,7 +64,7 @@ def upload_cloud_function(function_path, location_id, template_args={}):
             shutil.rmtree(temp_func_path)
 
 
-def create_temp_cf_files(func_path, temp_func_path, template_args={}):
+def _create_temp_cf_files(func_path, temp_func_path, template_args={}):
     # Iterate recursively through all subfiles
     for dir_path, subdir_paths, f_names in os.walk(func_path):
         for f in f_names:

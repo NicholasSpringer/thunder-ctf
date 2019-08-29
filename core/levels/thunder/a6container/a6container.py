@@ -5,8 +5,8 @@ import google.auth
 from googleapiclient import discovery
 from google.cloud import storage
 
-from core.common import levels
-from core.common.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
+from core.framework import levels
+from core.framework.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
 LEVEL_PATH = 'thunder/a6container'
 RESOURCE_PREFIX = 'a6'
@@ -24,10 +24,10 @@ def create():
     config_template_args = {'nonce': nonce}
     labels = {'nonce': nonce}
     template_files = [
-        'core/common/templates/bucket_acl.jinja',
-        'core/common/templates/service_account.jinja',
-        'core/common/templates/iam_policy.jinja',
-        'core/common/templates/container_vm.jinja']
+        'core/framework/templates/bucket_acl.jinja',
+        'core/framework/templates/service_account.jinja',
+        'core/framework/templates/iam_policy.jinja',
+        'core/framework/templates/container_vm.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
                        config_template_args=config_template_args, labels=labels)
 

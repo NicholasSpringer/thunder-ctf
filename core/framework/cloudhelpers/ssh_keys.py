@@ -5,7 +5,14 @@ from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
 
-def generate_ssh_key():
+def generate_ssh_keypair():
+    '''Returns a random RSA public/private keypair that can be used for SSH
+
+    Returns:
+        tuple: private_key, public_key
+        - private_key (str) - The private key of the keypair
+        - public_key (str) - The public key of the keypair
+    '''
     # Generate private key
     key = rsa.generate_private_key(
         backend=crypto_default_backend(),
@@ -20,6 +27,5 @@ def generate_ssh_key():
     public_key = key.public_key().public_bytes(
         crypto_serialization.Encoding.OpenSSH,
         crypto_serialization.PublicFormat.OpenSSH)
-    # Add username to public key
     public_key = public_key.decode('utf-8')
     return private_key, public_key
