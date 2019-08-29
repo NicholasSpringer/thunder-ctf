@@ -94,23 +94,26 @@ def setup_project():
     op_name = services_api.services().batchEnable(
         parent=f'projects/{project_num}', body=request_body).execute()['name']
     _wait_for_api_op(op_name, services_api)
+    print('Configuring DM role...')
     # Set deployment manager service account as owner
     iam.set_account_iam(
         f'{project_num}@cloudservices.gserviceaccount.com', ['roles/owner'])
-
+    print('Configuring firewall rules...')
     # Add the default-allow-http firewall rule
-    firewall_body = {'allowed':
-                 [{'IPProtocol': 'tcp',
-                   'ports': ['80']}],
-                 'direction': 'INGRESS',
-                 'disabled': False,
-                 'logConfig': {
-                     'enable': False},
-                 'name': 'default-allow-http',
-                 'sourceRanges': ['0.0.0.0/0'],
-                 'targetTags': ['http-server']}
     compute_api = discovery.build('compute', 'v1', credentials=credentials)
-    compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
+    firewall_list = compute_api.firewalls().list(project=project_id).execute()
+    if not 'default-allow-http' in [firewall['name'] for firewall in firewall_list['items']]:
+        firewall_body = {'allowed':
+                         [{'IPProtocol': 'tcp',
+                           'ports': ['80']}],
+                         'direction': 'INGRESS',
+                         'disabled': False,
+                         'logConfig': {
+                             'enable': False},
+                         'name': 'default-allow-http',
+                         'sourceRanges': ['0.0.0.0/0'],
+                         'targetTags': ['http-server']}
+        compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
 
 
 def _wait_for_api_op(op_name, services_api):
