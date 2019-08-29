@@ -33,6 +33,6 @@ def create():
 
 def destroy():
     # Delete starting files
-    levels.delete_start_files(LEVEL_PATH)
+    levels.delete_start_files()
     # Delete deployment
     deployments.delete()

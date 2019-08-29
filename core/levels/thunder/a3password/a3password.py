@@ -60,7 +60,6 @@ def create():
 
 def destroy():
     # Delete starting files
-    levels.delete_start_files(
-        LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
+    levels.delete_start_files()
     # Delete deployment
     deployments.delete()
