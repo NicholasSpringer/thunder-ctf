@@ -8,15 +8,17 @@ from core.framework.cloudhelpers import deployments
 LEVEL_PATH = 'thunder/a1openbucket'
 RESOURCE_PREFIX = 'a1'
 
+
 def create():
     # Create randomized bucket name to avoid namespace conflict
     nonce = str(random.randint(100000000000, 999999999999))
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Insert deployment
     config_template_args = {'nonce': nonce}
-    labels = {'nonce': nonce}
-    deployments.insert(LEVEL_PATH, template_files=['core/framework/templates/bucket_acl.jinja'],
-                       config_template_args=config_template_args, labels=labels)
+    template_files = ['core/framework/templates/bucket_acl.jinja']
+    deployments.insert(LEVEL_PATH,
+                       template_files=template_files,
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
     # Insert secret into bucket

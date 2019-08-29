@@ -33,14 +33,13 @@ def create():
         config_template_args = {'nonce': nonce,
                              'ssh_public_key': ssh_public_key,
                              'ssh_username': ssh_username}
-        labels = {'nonce': nonce}
         template_files = [
             'core/framework/templates/bucket_acl.jinja',
             'core/framework/templates/ubuntu_vm.jinja',
             'core/framework/templates/service_account.jinja',
             'core/framework/templates/iam_policy.jinja']
         deployments.insert(LEVEL_PATH, template_files=template_files,
-                           config_template_args=config_template_args, labels=labels)
+                           config_template_args=config_template_args)
 
         print("Level setup started for: " + LEVEL_PATH)
         # Upload repository to bucket

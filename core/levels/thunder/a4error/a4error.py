@@ -31,7 +31,6 @@ def create():
     config_template_args = {'nonce': nonce,
                             'secret': secret,
                             'func_upload_url': func_upload_url}
-    labels = {'nonce': nonce}
     template_files = [
         'core/framework/templates/bucket_acl.jinja',
         'core/framework/templates/cloud_function.jinja',
@@ -39,7 +38,7 @@ def create():
         'core/framework/templates/iam_policy.jinja',
         'core/framework/templates/ubuntu_vm.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
-                       config_template_args=config_template_args, labels=labels)
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
     # Insert dummy files into bucket

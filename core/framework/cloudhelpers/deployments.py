@@ -49,7 +49,7 @@ def insert(level_path, template_files=[],
         "name": "thunder",
         "target": {
             "config": {
-                "content": read_render_config(
+                "content": _read_render_config(
                     f'core/levels/{level_path}/{level_name}.yaml',
                     template_args=config_template_args)
             },
@@ -61,16 +61,16 @@ def insert(level_path, template_files=[],
     for template in template_files:
         request_body['target']['imports'].append(
             {"name": os.path.basename(template),
-             "content": read_render_config(template)})
+             "content": _read_render_config(template)})
         # If schema is present in sibling directory to template, import it
         schema_path = f'{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema'
         if os.path.exists(schema_path):
             request_body['target']['imports'].append(
                 {"name": os.path.basename(template) + '.schema',
-                 "content": read_render_config(schema_path)})
+                 "content": _read_render_config(schema_path)})
     # Add labels to deployment json
     for key in labels.keys():
-        if key == level:
+        if key == 'level':
             exit('The label key "level" is reserved for storing the level path of the active deployment.')
         request_body['labels'].append({
             "key": key,

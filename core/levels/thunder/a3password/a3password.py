@@ -29,14 +29,13 @@ def create():
     config_template_args = {'nonce': nonce,
                          'func_xor_password': func_xor_password,
                          'func_upload_url': func_upload_url}
-    labels = {'nonce': nonce}
     template_files = [
         'core/framework/templates/bucket_acl.jinja',
         'core/framework/templates/cloud_function.jinja',
         'core/framework/templates/service_account.jinja',
         'core/framework/templates/iam_policy.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
-                       config_template_args=config_template_args, labels=labels)
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
     # Insert secret into bucket

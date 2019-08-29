@@ -25,7 +25,6 @@ def create():
         f'core/levels/{LEVEL_PATH}/function', FUNCTION_LOCATION)
     print("Level initialization finished for: " + LEVEL_PATH)
     # Insert deployment
-    labels = {'nonce': nonce}
     config_template_args = {'nonce': nonce,
                             'func_upload_url': func_upload_url}
     template_files = [
@@ -34,7 +33,7 @@ def create():
         'core/framework/templates/iam_policy.jinja',
         'core/framework/templates/bucket_acl.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
-                       config_template_args=config_template_args, labels=labels)
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
     # Allow player to use cloud function's service account
