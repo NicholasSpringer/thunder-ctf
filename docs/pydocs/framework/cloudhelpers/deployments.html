@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.3" />
+<title>framework.cloudhelpers.deployments API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>framework.cloudhelpers.deployments</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">import random
+import os
+import time
+import sys
+
+import jinja2
+import google.auth
+from googleapiclient import discovery
+from googleapiclient.errors import HttpError
+from . import iam, gcstorage
+from .. import levels
+import yaml
+
+
+def _read_render_config(file_name, template_args={}):
+    with open(file_name) as f:
+        content = f.read()
+    if not template_args == {}:
+        return jinja2.Template(content).render(**template_args)
+    else:
+        return content
+
+
+def insert(level_path, template_files=[],
+           config_template_args={}, labels={}):
+    &#39;&#39;&#39;Inserts a deployment using deployment manager, importing any specified template files. 
+        If template arguments are included, the top level configuration file will be rendered using Jinja2.
+
+    Parameters:
+        level_path (str): Relative path of the level from the levels/ directory
+        template_files (list of str, optional): List of paths of the template files that are used in the deployment configuration, starting with &#34;core/&#34;.
+            The names of the templates in the configuration use the filenames of the templates, not the full paths.
+        config_template_args (dict, optional): Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+            Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+            If not supplied, the top level configuration will not be treated as a template.
+        labels (dict, optional): Dictionary of key/value pairs that will be included as labels on the deployment, 
+            and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
+            Labels are the recommended way to store any information that will be necessary for level deletion.
+            The keyword &#34;level&#34; is reserved for storing the active level path.
+    &#39;&#39;&#39;
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+
+    level_name = os.path.basename(level_path)
+    # Create request to insert deployment
+    request_body = {
+        &#34;name&#34;: &#34;thunder&#34;,
+        &#34;target&#34;: {
+            &#34;config&#34;: {
+                &#34;content&#34;: _read_render_config(
+                    f&#39;core/levels/{level_path}/{level_name}.yaml&#39;,
+                    template_args=config_template_args)
+            },
+            &#34;imports&#34;: []
+        },
+        &#34;labels&#34;: []
+    }
+    # Add imports to deployment json
+    for template in template_files:
+        request_body[&#39;target&#39;][&#39;imports&#39;].append(
+            {&#34;name&#34;: os.path.basename(template),
+             &#34;content&#34;: _read_render_config(template)})
+        # If schema is present in sibling directory to template, import it
+        schema_path = f&#39;{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema&#39;
+        if os.path.exists(schema_path):
+            request_body[&#39;target&#39;][&#39;imports&#39;].append(
+                {&#34;name&#34;: os.path.basename(template) + &#39;.schema&#39;,
+                 &#34;content&#34;: _read_render_config(schema_path)})
+    # Add labels to deployment json
+    for key in labels.keys():
+        if key == &#39;level&#39;:
+            exit(&#39;The label key &#34;level&#34; is reserved for storing the level path of the active deployment.&#39;)
+        request_body[&#39;labels&#39;].append({
+            &#34;key&#34;: key,
+            &#34;value&#34;: labels[key]
+        })
+    request_body[&#39;labels&#39;].append({
+        &#34;key&#34;: &#39;level&#39;,
+        &#34;value&#34;: level_path.replace(&#39;/&#39;, &#39;-&#39;)
+    })
+    # Send insert request then wait for operation
+    operation = deployment_api.deployments().insert(
+        project=project_id, body=request_body).execute()
+    op_name = operation[&#39;name&#39;]
+    _wait_for_operation(op_name, deployment_api,
+                        project_id, level_path=level_path)
+
+
+def delete():
+    &#39;&#39;&#39;Deletes the active deployment. 
+        Automatically empties and deletes any buckets in the deployment,
+        and deletes all IAM bindings of service accounts in the deployment.
+        This function should be called during level destruction
+    &#39;&#39;&#39;
+    _delete_resources()
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+    # Send delete request
+    operation = deployment_api.deployments().delete(
+        project=project_id, deployment=&#39;thunder&#39;).execute()
+    op_name = operation[&#39;name&#39;]
+    _wait_for_operation(op_name, deployment_api, project_id)
+
+
+def _delete_resources():
+    print(&#39;Deleting buckets and IAM entries&#39;)
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+    manifest_url = deployment_api.deployments().get(
+        project=project_id, deployment=&#39;thunder&#39;).execute()[&#39;manifest&#39;]
+    manifest_name = os.path.basename(manifest_url)
+    manifest = deployment_api.manifests().get(deployment=&#39;thunder&#39;, project=project_id,
+                                              manifest=manifest_name).execute()
+    expanded_config = yaml.load(manifest[&#39;expandedConfig&#39;], Loader=yaml.Loader)
+    buckets = []
+    service_accounts = []
+    for resource in expanded_config[&#39;resources&#39;]:
+        if &#39;type&#39; in resource:
+            if resource[&#39;type&#39;] == &#39;storage.v1.bucket&#39;:
+                buckets.append(resource[&#39;name&#39;])
+            if resource[&#39;type&#39;] == &#39;iam.v1.serviceAccount&#39;:
+                service_accounts.append(
+                    iam.service_account_email(resource[&#39;name&#39;]))
+    # Delete iam entries
+    if service_accounts:
+        iam.remove_iam_entries(service_accounts)
+    # Force delete buckets
+    for bucket_name in buckets:
+        gcstorage.delete_bucket(bucket_name)
+
+
+def _wait_for_operation(op_name, deployment_api, project_id, level_path=None):
+    # Wait till  operation finishes, giving updates every 5 seconds
+    op_done = False
+    t = 0
+    start_time = time.time()
+    time_string = &#39;&#39;
+    while not op_done:
+        time_string = f&#39;[{int(t/60)}m {(t%60)//10}{t%10}s]&#39;
+        sys.stdout.write(
+            f&#39;\r{time_string} Deployment operation in progress...&#39;)
+        t += 5
+        while t &lt; time.time()-start_time:
+            t += 5
+        time.sleep(t-(time.time()-start_time))
+        op_status = deployment_api.operations().get(
+            project=project_id,
+            operation=op_name).execute()[&#39;status&#39;]
+        op_done = (op_status == &#39;DONE&#39;)
+    sys.stdout.write(
+        f&#39;\r{time_string} Deployment operation in progress... Done\n&#39;)
+    operation = op_status = deployment_api.operations().get(
+        project=project_id,
+        operation=op_name).execute()
+    if &#39;error&#39; in operation and level_path:
+        print(&#34;\nDeployment Error:\n&#34; + yaml.dump(operation[&#39;error&#39;]))
+        if &#39;y&#39; == input(&#39;\nDeployment error caused deployment to fail. &#39;
+                        &#39;Would you like to destroy the deployment [y] or continue [n]? [y/n] &#39;).lower().strip()[0]:
+            level_module = levels.import_level(level_path)
+            level_module.destroy()
+            exit()
+
+
+def get_labels():
+    &#39;&#39;&#39;Queries the Deployment Manager API to retrieve the labels on the active level&#39;s deployment.
+
+    Returns:
+        dict: Dictionary of labels
+    &#39;&#39;&#39;
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+    # Get deployment information
+    try:
+        deployment = deployment_api.deployments().get(
+            project=project_id,
+            deployment=&#39;thunder&#39;).execute()
+    except HttpError:
+        return None
+
+    # Get labels as list of k/v pairs
+    labels_list = deployment[&#39;labels&#39;]
+
+    # Insert all k/v pairs into python dictionary
+    labels_dict = {}
+    for label in labels_list:
+        labels_dict[label[&#39;key&#39;]] = label[&#39;value&#39;]
+    labels_dict[&#39;level&#39;] = labels_dict[&#39;level&#39;].replace(&#39;-&#39;, &#39;/&#39;)
+    return labels_dict
+
+
+def get_active_level():
+    &#39;&#39;&#39;Returns the active level path by querying the labels of the active deployment&#39;&#39;&#39;
+    labels = get_labels()
+    if labels:
+        return labels[&#39;level&#39;]
+    else:
+        return None</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="framework.cloudhelpers.deployments.delete"><code class="name flex">
+<span>def <span class="ident">delete</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Deletes the active deployment.
+Automatically empties and deletes any buckets in the deployment,
+and deletes all IAM bindings of service accounts in the deployment.
+This function should be called during level destruction</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def delete():
+    &#39;&#39;&#39;Deletes the active deployment. 
+        Automatically empties and deletes any buckets in the deployment,
+        and deletes all IAM bindings of service accounts in the deployment.
+        This function should be called during level destruction
+    &#39;&#39;&#39;
+    _delete_resources()
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+    # Send delete request
+    operation = deployment_api.deployments().delete(
+        project=project_id, deployment=&#39;thunder&#39;).execute()
+    op_name = operation[&#39;name&#39;]
+    _wait_for_operation(op_name, deployment_api, project_id)</code></pre>
+</details>
+</dd>
+<dt id="framework.cloudhelpers.deployments.get_active_level"><code class="name flex">
+<span>def <span class="ident">get_active_level</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns the active level path by querying the labels of the active deployment</p></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_active_level():
+    &#39;&#39;&#39;Returns the active level path by querying the labels of the active deployment&#39;&#39;&#39;
+    labels = get_labels()
+    if labels:
+        return labels[&#39;level&#39;]
+    else:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="framework.cloudhelpers.deployments.get_labels"><code class="name flex">
+<span>def <span class="ident">get_labels</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Queries the Deployment Manager API to retrieve the labels on the active level's deployment.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>dict</code></strong></dt>
+<dd>Dictionary of labels</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_labels():
+    &#39;&#39;&#39;Queries the Deployment Manager API to retrieve the labels on the active level&#39;s deployment.
+
+    Returns:
+        dict: Dictionary of labels
+    &#39;&#39;&#39;
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+    # Get deployment information
+    try:
+        deployment = deployment_api.deployments().get(
+            project=project_id,
+            deployment=&#39;thunder&#39;).execute()
+    except HttpError:
+        return None
+
+    # Get labels as list of k/v pairs
+    labels_list = deployment[&#39;labels&#39;]
+
+    # Insert all k/v pairs into python dictionary
+    labels_dict = {}
+    for label in labels_list:
+        labels_dict[label[&#39;key&#39;]] = label[&#39;value&#39;]
+    labels_dict[&#39;level&#39;] = labels_dict[&#39;level&#39;].replace(&#39;-&#39;, &#39;/&#39;)
+    return labels_dict</code></pre>
+</details>
+</dd>
+<dt id="framework.cloudhelpers.deployments.insert"><code class="name flex">
+<span>def <span class="ident">insert</span></span>(<span>level_path, template_files=[], config_template_args={}, labels={})</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Inserts a deployment using deployment manager, importing any specified template files.
+If template arguments are included, the top level configuration file will be rendered using Jinja2.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>level_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Relative path of the level from the levels/ directory</dd>
+<dt><strong><code>template_files</code></strong> :&ensp;<code>list</code> of <code>str</code>, optional</dt>
+<dd>List of paths of the template files that are used in the deployment configuration, starting with "core/".
+The names of the templates in the configuration use the filenames of the templates, not the full paths.</dd>
+<dt><strong><code>config_template_args</code></strong> :&ensp;<code>dict</code>, optional</dt>
+<dd>Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+If not supplied, the top level configuration will not be treated as a template.</dd>
+<dt><strong><code>labels</code></strong> :&ensp;<code>dict</code>, optional</dt>
+<dd>Dictionary of key/value pairs that will be included as labels on the deployment,
+and can be retrieved later using <a title="framework.cloudhelpers.deployments.get_labels" href="#framework.cloudhelpers.deployments.get_labels"><code>get_labels()</code></a>.
+Labels are the recommended way to store any information that will be necessary for level deletion.
+The keyword "level" is reserved for storing the active level path.</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def insert(level_path, template_files=[],
+           config_template_args={}, labels={}):
+    &#39;&#39;&#39;Inserts a deployment using deployment manager, importing any specified template files. 
+        If template arguments are included, the top level configuration file will be rendered using Jinja2.
+
+    Parameters:
+        level_path (str): Relative path of the level from the levels/ directory
+        template_files (list of str, optional): List of paths of the template files that are used in the deployment configuration, starting with &#34;core/&#34;.
+            The names of the templates in the configuration use the filenames of the templates, not the full paths.
+        config_template_args (dict, optional): Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+            Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+            If not supplied, the top level configuration will not be treated as a template.
+        labels (dict, optional): Dictionary of key/value pairs that will be included as labels on the deployment, 
+            and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
+            Labels are the recommended way to store any information that will be necessary for level deletion.
+            The keyword &#34;level&#34; is reserved for storing the active level path.
+    &#39;&#39;&#39;
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+        &#39;deploymentmanager&#39;, &#39;v2&#39;, credentials=credentials)
+
+    level_name = os.path.basename(level_path)
+    # Create request to insert deployment
+    request_body = {
+        &#34;name&#34;: &#34;thunder&#34;,
+        &#34;target&#34;: {
+            &#34;config&#34;: {
+                &#34;content&#34;: _read_render_config(
+                    f&#39;core/levels/{level_path}/{level_name}.yaml&#39;,
+                    template_args=config_template_args)
+            },
+            &#34;imports&#34;: []
+        },
+        &#34;labels&#34;: []
+    }
+    # Add imports to deployment json
+    for template in template_files:
+        request_body[&#39;target&#39;][&#39;imports&#39;].append(
+            {&#34;name&#34;: os.path.basename(template),
+             &#34;content&#34;: _read_render_config(template)})
+        # If schema is present in sibling directory to template, import it
+        schema_path = f&#39;{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema&#39;
+        if os.path.exists(schema_path):
+            request_body[&#39;target&#39;][&#39;imports&#39;].append(
+                {&#34;name&#34;: os.path.basename(template) + &#39;.schema&#39;,
+                 &#34;content&#34;: _read_render_config(schema_path)})
+    # Add labels to deployment json
+    for key in labels.keys():
+        if key == &#39;level&#39;:
+            exit(&#39;The label key &#34;level&#34; is reserved for storing the level path of the active deployment.&#39;)
+        request_body[&#39;labels&#39;].append({
+            &#34;key&#34;: key,
+            &#34;value&#34;: labels[key]
+        })
+    request_body[&#39;labels&#39;].append({
+        &#34;key&#34;: &#39;level&#39;,
+        &#34;value&#34;: level_path.replace(&#39;/&#39;, &#39;-&#39;)
+    })
+    # Send insert request then wait for operation
+    operation = deployment_api.deployments().insert(
+        project=project_id, body=request_body).execute()
+    op_name = operation[&#39;name&#39;]
+    _wait_for_operation(op_name, deployment_api,
+                        project_id, level_path=level_path)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="framework.cloudhelpers" href="index.html">framework.cloudhelpers</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="framework.cloudhelpers.deployments.delete" href="#framework.cloudhelpers.deployments.delete">delete</a></code></li>
+<li><code><a title="framework.cloudhelpers.deployments.get_active_level" href="#framework.cloudhelpers.deployments.get_active_level">get_active_level</a></code></li>
+<li><code><a title="framework.cloudhelpers.deployments.get_labels" href="#framework.cloudhelpers.deployments.get_labels">get_labels</a></code></li>
+<li><code><a title="framework.cloudhelpers.deployments.insert" href="#framework.cloudhelpers.deployments.insert">insert</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

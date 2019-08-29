@@ -5,8 +5,8 @@ import google.auth
 from googleapiclient import discovery
 from google.cloud import storage
 
-from core.common import levels
-from core.common.cloudhelpers import deployments, iam, cloudfunctions
+from core.framework import levels
+from core.framework.cloudhelpers import deployments, iam, cloudfunctions
 
 LEVEL_PATH = 'thunder/a5power'
 RESOURCE_PREFIX = 'a5'
@@ -25,19 +25,18 @@ def create():
         f'core/levels/{LEVEL_PATH}/function', FUNCTION_LOCATION)
     print("Level initialization finished for: " + LEVEL_PATH)
     # Insert deployment
-    labels = {'nonce': nonce}
     config_template_args = {'nonce': nonce,
                             'func_upload_url': func_upload_url}
     template_files = [
-        'core/common/templates/service_account.jinja',
-        'core/common/templates/cloud_function.jinja',
-        'core/common/templates/iam_policy.jinja',
-        'core/common/templates/bucket_acl.jinja']
+        'core/framework/templates/service_account.jinja',
+        'core/framework/templates/cloud_function.jinja',
+        'core/framework/templates/iam_policy.jinja',
+        'core/framework/templates/bucket_acl.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
-                       config_template_args=config_template_args, labels=labels)
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
-    # Allow user to use default cloud function
+    # Allow player to use cloud function's service account
     iam_api = discovery.build('iam', 'v1', credentials=credentials)
     policy_body = {"policy": {
         "bindings": [{
@@ -66,30 +65,7 @@ def create():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete starting files
-    levels.delete_start_files(
-        LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
-
-    # Reset role of default cloud function account
-    credentials, project_id = google.auth.default()
-
-    # Reset IAM policy of default cloud function
-    iam_api = discovery.build('iam', 'v1', credentials=credentials)
-    policy_body = {"policy": {"bindings": []}}
-    iam_api.projects().serviceAccounts().setIamPolicy(
-        resource=f'projects/{project_id}/serviceAccounts/{project_id}@appspot.gserviceaccount.com', body=policy_body).execute()
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
-
-    service_accounts = [
-        iam.service_account_email(f'{RESOURCE_PREFIX}-access'),
-        iam.service_account_email(f'{RESOURCE_PREFIX}-func-{nonce}-sa')
-    ]
+    levels.delete_start_files()
     # Delete deployment
-    deployments.delete(LEVEL_PATH,
-                       buckets=[bucket_name],
-                       service_accounts=service_accounts)
+    deployments.delete()

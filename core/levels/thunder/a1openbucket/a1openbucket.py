@@ -2,11 +2,12 @@ import random
 
 from google.cloud import storage
 
-from core.common import levels
-from core.common.cloudhelpers import deployments
+from core.framework import levels
+from core.framework.cloudhelpers import deployments
 
 LEVEL_PATH = 'thunder/a1openbucket'
 RESOURCE_PREFIX = 'a1'
+
 
 def create():
     # Create randomized bucket name to avoid namespace conflict
@@ -14,9 +15,10 @@ def create():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     # Insert deployment
     config_template_args = {'nonce': nonce}
-    labels = {'nonce': nonce}
-    deployments.insert(LEVEL_PATH, template_files=['core/common/templates/bucket_acl.jinja'],
-                       config_template_args=config_template_args, labels=labels)
+    template_files = ['core/framework/templates/bucket_acl.jinja']
+    deployments.insert(LEVEL_PATH,
+                       template_files=template_files,
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
     # Insert secret into bucket
@@ -32,12 +34,7 @@ def create():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete starting files
-    levels.delete_start_files(LEVEL_PATH)
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
+    levels.delete_start_files()
     # Delete deployment
-    deployments.delete(LEVEL_PATH, buckets=[bucket_name])
+    deployments.delete()

@@ -3,9 +3,9 @@ import sys
 import os
 import string
 
-from core.common.config import cfg
-from core.common import levels, project
-from core.common.cloudhelpers import deployments
+from core.framework.config import cfg
+from core.framework import levels, project
+from core.framework.cloudhelpers import deployments
 
 def create(*args):
     project.test_application_default_credentials()
@@ -81,8 +81,7 @@ def activate_project(*args):
                 f'Set project to {project_id}? The CTF should be run on a new project with no infrastructure. [y/n]: ').lower().strip()[0]
     if(confirmed):
         # Make sure credentials are set correctly and have owner role
-        project.test_application_default_credentials(
-            set_project=project_id)
+        project.test_application_default_credentials(tctf_project=project_id)
         # Enable apis, grant DM service account owner status
         project.setup_project()
         # Set project in thunder ctf config

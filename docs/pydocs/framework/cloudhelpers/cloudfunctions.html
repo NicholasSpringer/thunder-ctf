@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.3" />
+<title>framework.cloudhelpers.cloudfunctions API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>framework.cloudhelpers.cloudfunctions</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">import os
+import shutil
+import zipfile
+import httplib2
+import jinja2
+
+import google.auth
+from googleapiclient import discovery
+
+
+def upload_cloud_function(function_path, location_id, template_args={}):
+    &#39;&#39;&#39;Uploads the source code of a cloud function and returns the upload url.
+
+    Before a cloud function can be created, the source code must be uploaded to Google Cloud.
+    This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the &#34;source upload url&#34; field when creating the cloud function.
+
+    Parameters:
+        function_path (str): The relative path to the function source code, starting with &#34;core/&#34;
+        location_id (str): The gcs zone that the function will be uploaded to.
+        template_args (dict, optional): Optional dictionary to specify arguments 
+            to be used to render jinja templates in cloud function code.
+    
+    Returns:
+        str: The url that the source code has been uploaded to.
+
+            This url should be inputted into the &#34;source upload url&#34; field when creating the cloud function.
+            In the cloud_function.jinja template, the property name for the source upload url is &#34;upload_url&#34;
+    &#39;&#39;&#39;
+    temp_func_path = function_path + &#39;-temp&#39;
+    zip_path = os.path.dirname(temp_func_path) + &#39;/&#39; + &#39;function.zip&#39;
+    try:
+        _create_temp_cf_files(function_path, temp_func_path,
+                             template_args=template_args)
+        credentials, project_id = google.auth.default()
+        # Create zip
+        with zipfile.ZipFile(zip_path, &#39;w&#39;) as z:
+            for dir_path, subdir_paths, f_names in os.walk(temp_func_path):
+                for f in f_names:
+                    file_path = dir_path + &#39;/&#39; + f
+                    arc_path = file_path.replace(temp_func_path+&#39;/&#39;, &#39;&#39;)
+                    z.write(file_path, arcname=arc_path)
+        # Build api object
+        cf_api = discovery.build(&#39;cloudfunctions&#39;,
+                                 &#39;v1&#39;, credentials=credentials)
+        parent = f&#39;projects/{project_id}/locations/{location_id}&#39;
+        # Generate upload URL
+        upload_url = cf_api.projects().locations().functions(
+        ).generateUploadUrl(parent=parent).execute()[&#39;uploadUrl&#39;]
+        # Make Http object
+        h = httplib2.Http()
+        # Upload to url
+        headers = {&#39;Content-Type&#39;: &#39;application/zip&#39;,
+                   &#39;x-goog-content-length-range&#39;: &#39;0,104857600&#39;}
+        with open(zip_path, &#39;rb&#39;) as f:
+            h.request(upload_url, method=&#39;PUT&#39;, headers=headers, body=f)
+        # Return signed url for creating cloud function
+        return upload_url
+    finally:
+        # Delete zip
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+        # Delete temp file
+        if os.path.exists(temp_func_path):
+            shutil.rmtree(temp_func_path)
+
+
+def _create_temp_cf_files(func_path, temp_func_path, template_args={}):
+    # Iterate recursively through all subfiles
+    for dir_path, subdir_paths, f_names in os.walk(func_path):
+        for f in f_names:
+            file_path = dir_path + &#39;/&#39; + f
+            temp_path = file_path.replace(func_path, temp_func_path)
+            # Read and render function template
+            with open(file_path) as f:
+                rendered_template = jinja2.Template(
+                    f.read()).render(**template_args)
+            # If temporary path doesn&#39;t exist yet, create the directory structure
+            if not os.path.exists(os.path.dirname(temp_path)):
+                os.makedirs(os.path.dirname(temp_path))
+            # Write to temporary file
+            with open(temp_path, &#39;w+&#39;) as f:
+                f.write(rendered_template)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="framework.cloudhelpers.cloudfunctions.upload_cloud_function"><code class="name flex">
+<span>def <span class="ident">upload_cloud_function</span></span>(<span>function_path, location_id, template_args={})</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Uploads the source code of a cloud function and returns the upload url.</p>
+<p>Before a cloud function can be created, the source code must be uploaded to Google Cloud.
+This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the "source upload url" field when creating the cloud function.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>function_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The relative path to the function source code, starting with "core/"</dd>
+<dt><strong><code>location_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The gcs zone that the function will be uploaded to.</dd>
+<dt><strong><code>template_args</code></strong> :&ensp;<code>dict</code>, optional</dt>
+<dd>Optional dictionary to specify arguments
+to be used to render jinja templates in cloud function code.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>str</code></strong></dt>
+<dd>
+<p>The url that the source code has been uploaded to.</p>
+<p>This url should be inputted into the "source upload url" field when creating the cloud function.
+In the cloud_function.jinja template, the property name for the source upload url is "upload_url"</p>
+</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def upload_cloud_function(function_path, location_id, template_args={}):
+    &#39;&#39;&#39;Uploads the source code of a cloud function and returns the upload url.
+
+    Before a cloud function can be created, the source code must be uploaded to Google Cloud.
+    This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the &#34;source upload url&#34; field when creating the cloud function.
+
+    Parameters:
+        function_path (str): The relative path to the function source code, starting with &#34;core/&#34;
+        location_id (str): The gcs zone that the function will be uploaded to.
+        template_args (dict, optional): Optional dictionary to specify arguments 
+            to be used to render jinja templates in cloud function code.
+    
+    Returns:
+        str: The url that the source code has been uploaded to.
+
+            This url should be inputted into the &#34;source upload url&#34; field when creating the cloud function.
+            In the cloud_function.jinja template, the property name for the source upload url is &#34;upload_url&#34;
+    &#39;&#39;&#39;
+    temp_func_path = function_path + &#39;-temp&#39;
+    zip_path = os.path.dirname(temp_func_path) + &#39;/&#39; + &#39;function.zip&#39;
+    try:
+        _create_temp_cf_files(function_path, temp_func_path,
+                             template_args=template_args)
+        credentials, project_id = google.auth.default()
+        # Create zip
+        with zipfile.ZipFile(zip_path, &#39;w&#39;) as z:
+            for dir_path, subdir_paths, f_names in os.walk(temp_func_path):
+                for f in f_names:
+                    file_path = dir_path + &#39;/&#39; + f
+                    arc_path = file_path.replace(temp_func_path+&#39;/&#39;, &#39;&#39;)
+                    z.write(file_path, arcname=arc_path)
+        # Build api object
+        cf_api = discovery.build(&#39;cloudfunctions&#39;,
+                                 &#39;v1&#39;, credentials=credentials)
+        parent = f&#39;projects/{project_id}/locations/{location_id}&#39;
+        # Generate upload URL
+        upload_url = cf_api.projects().locations().functions(
+        ).generateUploadUrl(parent=parent).execute()[&#39;uploadUrl&#39;]
+        # Make Http object
+        h = httplib2.Http()
+        # Upload to url
+        headers = {&#39;Content-Type&#39;: &#39;application/zip&#39;,
+                   &#39;x-goog-content-length-range&#39;: &#39;0,104857600&#39;}
+        with open(zip_path, &#39;rb&#39;) as f:
+            h.request(upload_url, method=&#39;PUT&#39;, headers=headers, body=f)
+        # Return signed url for creating cloud function
+        return upload_url
+    finally:
+        # Delete zip
+        if os.path.exists(zip_path):
+            os.remove(zip_path)
+        # Delete temp file
+        if os.path.exists(temp_func_path):
+            shutil.rmtree(temp_func_path)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="framework.cloudhelpers" href="index.html">framework.cloudhelpers</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="framework.cloudhelpers.cloudfunctions.upload_cloud_function" href="#framework.cloudhelpers.cloudfunctions.upload_cloud_function">upload_cloud_function</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.3</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

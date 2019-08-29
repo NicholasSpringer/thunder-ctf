@@ -15,7 +15,12 @@ check_permissions = [
 ]
 
 
-def test_application_default_credentials(set_project=None):
+def test_application_default_credentials(tctf_project=None):
+    '''Tests to make sure the Thunder CTF config project and gcloud CLI project are the same, and that the application default credentials give owner access to the project.
+
+    Parameters:
+        tctf_project (str, optional): Overrides Thunder CTF config project id. If not supplied, the project will be read from "core/framework/config/project.txt"
+    '''
     # Query user to delete environment variable
     if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
         if 'y' == input(f'GOOGLE_APPLICATION_CREDENTIALS is set, meaning the application default credentials will use a service account. '
@@ -30,15 +35,15 @@ def test_application_default_credentials(set_project=None):
              '  gcloud auth application-default login')
 
     # Make sure application default project is the same as the project in thunder ctf config
-    if not set_project:
-        set_project = cfg.get_project()
+    if not tctf_project:
+        tctf_project = cfg.get_project()
     if not project_id:
         exit('You must the set the gcloud cli project: \n'
              '  gcloud config set project [project-id]')
-    if not set_project == project_id:
+    if not tctf_project == project_id:
         exit('gcloud CLI project ID is not equal to Thunder CTF config project ID'
              f'gcloud CLI project id: {project_id if not project_id=="" else "None"}\n'
-             f'Thunder CTF project id: {set_project if not set_project=="" else "None"}.\n'
+             f'Thunder CTF project id: {tctf_project if not tctf_project=="" else "None"}.\n'
              'To change gcloud cli project, run:\n'
              '  gcloud config set project=[project-id]\n'
              'To change the Thunder CTF project, run:\n'
@@ -58,7 +63,9 @@ def test_application_default_credentials(set_project=None):
 
 
 def setup_project():
-    print('Setting up project.')
+    '''Enables necessary Google Cloud APIs, 
+        gives the deployment manager owner permission on the gcloud cli config project, 
+        and adds the default-allow-http firewall rule.'''
     credentials, project_id = google.auth.default()
     # Build api object
     crm_api = discovery.build('cloudresourcemanager',
@@ -86,14 +93,28 @@ def setup_project():
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
         parent=f'projects/{project_num}', body=request_body).execute()['name']
-    wait_for_api_op(op_name, services_api)
+    _wait_for_api_op(op_name, services_api)
     # Set deployment manager service account as owner
-    iam.set_account_iam_role(
-        f'{project_num}@cloudservices.gserviceaccount.com', 'roles/owner')
+    iam.set_account_iam(
+        f'{project_num}@cloudservices.gserviceaccount.com', ['roles/owner'])
+
+    # Add the default-allow-http firewall rule
+    firewall_body = {'allowed':
+                 [{'IPProtocol': 'tcp',
+                   'ports': ['80']}],
+                 'direction': 'INGRESS',
+                 'disabled': False,
+                 'logConfig': {
+                     'enable': False},
+                 'name': 'default-allow-http',
+                 'sourceRanges': ['0.0.0.0/0'],
+                 'targetTags': ['http-server']}
+    compute_api = discovery.build('compute', 'v1', credentials=credentials)
+    compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
 
 
-def wait_for_api_op(op_name, services_api):
-    # Wait till  operation finishes, giving updates every 5 seconds
+def _wait_for_api_op(op_name, services_api):
+    # Wait till operation finishes, giving updates every 5 seconds
     op_done = False
     t = 0
     start_time = time.time()
@@ -106,6 +127,7 @@ def wait_for_api_op(op_name, services_api):
         while t < time.time()-start_time:
             t += 5
         time.sleep(t-(time.time()-start_time))
+        # Check to see if the operation has finished
         response = services_api.operations().get(
             name=op_name).execute()
         if not 'done' in response:

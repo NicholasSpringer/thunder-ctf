@@ -11,12 +11,12 @@ resources:
   name: {{ INSTANCE_NAME }}
   properties:
     zone: {{ properties["zone"] }}
-    machineType: zones/{{ properties["zone"] }}/machineTypes/g1-small
+    machineType: zones/{{ properties["zone"] }}/machineTypes/f1-micro
     disks:
     - boot: true
       autoDelete: true
       initializeParams:
-        sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts
+        sourceImage: projects/cos-cloud/global/images/family/cos-stable
     {% if properties['open_external'] %}
     networkInterfaces:
     - network: global/networks/default
@@ -32,16 +32,8 @@ resources:
     - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
       scopes:
       - https://www.googleapis.com/auth/cloud-platform
-    {% if properties['ssh_credentials'] or properties['startup_script'] %}
     metadata:
       items:
-      {% if properties['ssh_credentials'] %}
-      - key: ssh-keys
-        value: {{ properties['ssh_credentials']['username'] }}:{{ properties['ssh_credentials']['public_key'] }} {{ properties['ssh_credentials']['username'] }}
-      {% endif %}
-      {% if properties['startup_script'] %}
-      - key: startup-script
+      - key: gce-container-declaration
         value: |
-          {{ properties['startup_script']|indent(10) }}
-      {% endif %}
-    {% endif %}
+          {{ properties['container_manifest']|indent(10) }}

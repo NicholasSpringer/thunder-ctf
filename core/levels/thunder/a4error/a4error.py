@@ -5,8 +5,8 @@ import google.auth
 from googleapiclient import discovery
 from google.cloud import storage
 
-from core.common import levels
-from core.common.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
+from core.framework import levels
+from core.framework.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
 LEVEL_PATH = 'thunder/a4error'
 RESOURCE_PREFIX = 'a4'
@@ -31,22 +31,19 @@ def create():
     config_template_args = {'nonce': nonce,
                             'secret': secret,
                             'func_upload_url': func_upload_url}
-    labels = {'nonce': nonce}
     template_files = [
-        'core/common/templates/bucket_acl.jinja',
-        'core/common/templates/cloud_function.jinja',
-        'core/common/templates/service_account.jinja',
-        'core/common/templates/iam_policy.jinja',
-        'core/common/templates/ubuntu_vm.jinja']
+        'core/framework/templates/bucket_acl.jinja',
+        'core/framework/templates/cloud_function.jinja',
+        'core/framework/templates/service_account.jinja',
+        'core/framework/templates/iam_policy.jinja',
+        'core/framework/templates/ubuntu_vm.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
-                       config_template_args=config_template_args, labels=labels)
+                       config_template_args=config_template_args)
 
     print("Level setup started for: " + LEVEL_PATH)
     # Insert dummy files into bucket
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
     gcstorage.upload_directory_recursive(
-        f'core/levels/{LEVEL_PATH}/bucket', bucket)
+        f'core/levels/{LEVEL_PATH}/bucket', bucket_name)
 
     # Delete startup script that contains secret from instance metadata
     credentials, project_id = google.auth.default()
@@ -75,21 +72,7 @@ def create():
 
 
 def destroy():
-    print('Level tear-down started for: ' + LEVEL_PATH)
     # Delete starting files
-    levels.delete_start_files(
-        LEVEL_PATH, files=[f'{RESOURCE_PREFIX}-access.json'])
-    print('Level tear-down finished for: ' + LEVEL_PATH)
-
-    # Find bucket name from deployment label
-    nonce = deployments.get_labels()['nonce']
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
-
-    service_accounts = [
-        iam.service_account_email(f'{RESOURCE_PREFIX}-access'),
-        iam.service_account_email(f'{RESOURCE_PREFIX}-func-{nonce}-sa')
-    ]
+    levels.delete_start_files()
     # Delete deployment
-    deployments.delete(LEVEL_PATH,
-                       buckets=[bucket_name],
-                       service_accounts=service_accounts)
+    deployments.delete()
