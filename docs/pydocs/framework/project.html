@@ -87,7 +87,9 @@ def test_application_default_credentials(tctf_project=None):
 
 
 def setup_project():
-    &#39;&#39;&#39;Enables necessary Google Cloud APIs, and gives the deployment manager owner permission on the gcloud cli config project.&#39;&#39;&#39;
+    &#39;&#39;&#39;Enables necessary Google Cloud APIs, 
+        gives the deployment manager owner permission on the gcloud cli config project, 
+        and adds the default-allow-http firewall rule.&#39;&#39;&#39;
     credentials, project_id = google.auth.default()
     # Build api object
     crm_api = discovery.build(&#39;cloudresourcemanager&#39;,
@@ -117,8 +119,22 @@ def setup_project():
         parent=f&#39;projects/{project_num}&#39;, body=request_body).execute()[&#39;name&#39;]
     _wait_for_api_op(op_name, services_api)
     # Set deployment manager service account as owner
-    iam.set_account_iam_role(
-        f&#39;{project_num}@cloudservices.gserviceaccount.com&#39;, &#39;roles/owner&#39;)
+    iam.set_account_iam(
+        f&#39;{project_num}@cloudservices.gserviceaccount.com&#39;, [&#39;roles/owner&#39;])
+
+    # Add the default-allow-http firewall rule
+    firewall_body = {&#39;allowed&#39;:
+                 [{&#39;IPProtocol&#39;: &#39;tcp&#39;,
+                   &#39;ports&#39;: [&#39;80&#39;]}],
+                 &#39;direction&#39;: &#39;INGRESS&#39;,
+                 &#39;disabled&#39;: False,
+                 &#39;logConfig&#39;: {
+                     &#39;enable&#39;: False},
+                 &#39;name&#39;: &#39;default-allow-http&#39;,
+                 &#39;sourceRanges&#39;: [&#39;0.0.0.0/0&#39;],
+                 &#39;targetTags&#39;: [&#39;http-server&#39;]}
+    compute_api = discovery.build(&#39;compute&#39;, &#39;v1&#39;, credentials=credentials)
+    compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
 
 
 def _wait_for_api_op(op_name, services_api):
@@ -157,11 +173,15 @@ def _wait_for_api_op(op_name, services_api):
 <span>def <span class="ident">setup_project</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Enables necessary Google Cloud APIs, and gives the deployment manager owner permission on the gcloud cli config project.</p></section>
+<section class="desc"><p>Enables necessary Google Cloud APIs,
+gives the deployment manager owner permission on the gcloud cli config project,
+and adds the default-allow-http firewall rule.</p></section>
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">def setup_project():
-    &#39;&#39;&#39;Enables necessary Google Cloud APIs, and gives the deployment manager owner permission on the gcloud cli config project.&#39;&#39;&#39;
+    &#39;&#39;&#39;Enables necessary Google Cloud APIs, 
+        gives the deployment manager owner permission on the gcloud cli config project, 
+        and adds the default-allow-http firewall rule.&#39;&#39;&#39;
     credentials, project_id = google.auth.default()
     # Build api object
     crm_api = discovery.build(&#39;cloudresourcemanager&#39;,
@@ -191,8 +211,22 @@ def _wait_for_api_op(op_name, services_api):
         parent=f&#39;projects/{project_num}&#39;, body=request_body).execute()[&#39;name&#39;]
     _wait_for_api_op(op_name, services_api)
     # Set deployment manager service account as owner
-    iam.set_account_iam_role(
-        f&#39;{project_num}@cloudservices.gserviceaccount.com&#39;, &#39;roles/owner&#39;)</code></pre>
+    iam.set_account_iam(
+        f&#39;{project_num}@cloudservices.gserviceaccount.com&#39;, [&#39;roles/owner&#39;])
+
+    # Add the default-allow-http firewall rule
+    firewall_body = {&#39;allowed&#39;:
+                 [{&#39;IPProtocol&#39;: &#39;tcp&#39;,
+                   &#39;ports&#39;: [&#39;80&#39;]}],
+                 &#39;direction&#39;: &#39;INGRESS&#39;,
+                 &#39;disabled&#39;: False,
+                 &#39;logConfig&#39;: {
+                     &#39;enable&#39;: False},
+                 &#39;name&#39;: &#39;default-allow-http&#39;,
+                 &#39;sourceRanges&#39;: [&#39;0.0.0.0/0&#39;],
+                 &#39;targetTags&#39;: [&#39;http-server&#39;]}
+    compute_api = discovery.build(&#39;compute&#39;, &#39;v1&#39;, credentials=credentials)
+    compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()</code></pre>
 </details>
 </dd>
 <dt id="framework.project.test_application_default_credentials"><code class="name flex">

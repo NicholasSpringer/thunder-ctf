@@ -95,8 +95,8 @@ def setup_project():
         parent=f'projects/{project_num}', body=request_body).execute()['name']
     _wait_for_api_op(op_name, services_api)
     # Set deployment manager service account as owner
-    iam.set_account_iam_role(
-        f'{project_num}@cloudservices.gserviceaccount.com', 'roles/owner')
+    iam.set_account_iam(
+        f'{project_num}@cloudservices.gserviceaccount.com', ['roles/owner'])
 
     # Add the default-allow-http firewall rule
     firewall_body = {'allowed':
@@ -110,7 +110,7 @@ def setup_project():
                  'sourceRanges': ['0.0.0.0/0'],
                  'targetTags': ['http-server']}
     compute_api = discovery.build('compute', 'v1', credentials=credentials)
-    compute_api.firewalls().insert(project=project_id, body=firewall_body)
+    compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
 
 
 def _wait_for_api_op(op_name, services_api):
