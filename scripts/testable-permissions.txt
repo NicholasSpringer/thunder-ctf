@@ -667,7 +667,6 @@ compute.nodeTemplates.setIamPolicy
 compute.nodeTypes.get
 compute.nodeTypes.list
 compute.projects.get
-compute.projects.setframeworkInstanceMetadata
 compute.projects.setDefaultNetworkTier
 compute.projects.setDefaultServiceAccount
 compute.projects.setUsageExportBucket
@@ -1962,6 +1961,13 @@ stackdriver.resourceMetadata.write
 storage.buckets.create
 storage.buckets.delete
 storage.buckets.list
+storage.objects.create
+storage.objects.delete
+storage.objects.get
+storage.objects.getIamPolicy
+storage.objects.list
+storage.objects.setIamPolicy
+storage.objects.update
 storage.hmacKeys.create
 storage.hmacKeys.delete
 storage.hmacKeys.get
