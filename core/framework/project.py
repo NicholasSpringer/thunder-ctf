@@ -63,7 +63,9 @@ def test_application_default_credentials(tctf_project=None):
 
 
 def setup_project():
-    '''Enables necessary Google Cloud APIs, and gives the deployment manager owner permission on the gcloud cli config project.'''
+    '''Enables necessary Google Cloud APIs, 
+        gives the deployment manager owner permission on the gcloud cli config project, 
+        and adds the default-allow-http firewall rule.'''
     credentials, project_id = google.auth.default()
     # Build api object
     crm_api = discovery.build('cloudresourcemanager',
@@ -95,6 +97,20 @@ def setup_project():
     # Set deployment manager service account as owner
     iam.set_account_iam_role(
         f'{project_num}@cloudservices.gserviceaccount.com', 'roles/owner')
+
+    # Add the default-allow-http firewall rule
+    firewall_body = {'allowed':
+                 [{'IPProtocol': 'tcp',
+                   'ports': ['80']}],
+                 'direction': 'INGRESS',
+                 'disabled': False,
+                 'logConfig': {
+                     'enable': False},
+                 'name': 'default-allow-http',
+                 'sourceRanges': ['0.0.0.0/0'],
+                 'targetTags': ['http-server']}
+    compute_api = discovery.build('compute', 'v1', credentials=credentials)
+    compute_api.firewalls().insert(project=project_id, body=firewall_body)
 
 
 def _wait_for_api_op(op_name, services_api):
