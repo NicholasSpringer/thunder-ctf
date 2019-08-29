@@ -73,7 +73,7 @@ def insert(level_path, template_files=[],
         &#34;name&#34;: &#34;thunder&#34;,
         &#34;target&#34;: {
             &#34;config&#34;: {
-                &#34;content&#34;: read_render_config(
+                &#34;content&#34;: _read_render_config(
                     f&#39;core/levels/{level_path}/{level_name}.yaml&#39;,
                     template_args=config_template_args)
             },
@@ -85,16 +85,16 @@ def insert(level_path, template_files=[],
     for template in template_files:
         request_body[&#39;target&#39;][&#39;imports&#39;].append(
             {&#34;name&#34;: os.path.basename(template),
-             &#34;content&#34;: read_render_config(template)})
+             &#34;content&#34;: _read_render_config(template)})
         # If schema is present in sibling directory to template, import it
         schema_path = f&#39;{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema&#39;
         if os.path.exists(schema_path):
             request_body[&#39;target&#39;][&#39;imports&#39;].append(
                 {&#34;name&#34;: os.path.basename(template) + &#39;.schema&#39;,
-                 &#34;content&#34;: read_render_config(schema_path)})
+                 &#34;content&#34;: _read_render_config(schema_path)})
     # Add labels to deployment json
     for key in labels.keys():
-        if key == level:
+        if key == &#39;level&#39;:
             exit(&#39;The label key &#34;level&#34; is reserved for storing the level path of the active deployment.&#39;)
         request_body[&#39;labels&#39;].append({
             &#34;key&#34;: key,
@@ -374,7 +374,7 @@ The keyword "level" is reserved for storing the active level path.</dd>
         &#34;name&#34;: &#34;thunder&#34;,
         &#34;target&#34;: {
             &#34;config&#34;: {
-                &#34;content&#34;: read_render_config(
+                &#34;content&#34;: _read_render_config(
                     f&#39;core/levels/{level_path}/{level_name}.yaml&#39;,
                     template_args=config_template_args)
             },
@@ -386,16 +386,16 @@ The keyword "level" is reserved for storing the active level path.</dd>
     for template in template_files:
         request_body[&#39;target&#39;][&#39;imports&#39;].append(
             {&#34;name&#34;: os.path.basename(template),
-             &#34;content&#34;: read_render_config(template)})
+             &#34;content&#34;: _read_render_config(template)})
         # If schema is present in sibling directory to template, import it
         schema_path = f&#39;{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema&#39;
         if os.path.exists(schema_path):
             request_body[&#39;target&#39;][&#39;imports&#39;].append(
                 {&#34;name&#34;: os.path.basename(template) + &#39;.schema&#39;,
-                 &#34;content&#34;: read_render_config(schema_path)})
+                 &#34;content&#34;: _read_render_config(schema_path)})
     # Add labels to deployment json
     for key in labels.keys():
-        if key == level:
+        if key == &#39;level&#39;:
             exit(&#39;The label key &#34;level&#34; is reserved for storing the level path of the active deployment.&#39;)
         request_body[&#39;labels&#39;].append({
             &#34;key&#34;: key,

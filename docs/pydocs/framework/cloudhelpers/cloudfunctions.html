@@ -33,7 +33,7 @@ from googleapiclient import discovery
 
 
 def upload_cloud_function(function_path, location_id, template_args={}):
-    &#39;&#39;&#39;Uploads the source code of a cloud function and returns the upload url
+    &#39;&#39;&#39;Uploads the source code of a cloud function and returns the upload url.
 
     Before a cloud function can be created, the source code must be uploaded to Google Cloud.
     This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the &#34;source upload url&#34; field when creating the cloud function.
@@ -117,7 +117,7 @@ def _create_temp_cf_files(func_path, temp_func_path, template_args={}):
 <span>def <span class="ident">upload_cloud_function</span></span>(<span>function_path, location_id, template_args={})</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Uploads the source code of a cloud function and returns the upload url</p>
+<section class="desc"><p>Uploads the source code of a cloud function and returns the upload url.</p>
 <p>Before a cloud function can be created, the source code must be uploaded to Google Cloud.
 This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the "source upload url" field when creating the cloud function.</p>
 <h2 id="parameters">Parameters</h2>
@@ -142,7 +142,7 @@ In the cloud_function.jinja template, the property name for the source upload ur
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">def upload_cloud_function(function_path, location_id, template_args={}):
-    &#39;&#39;&#39;Uploads the source code of a cloud function and returns the upload url
+    &#39;&#39;&#39;Uploads the source code of a cloud function and returns the upload url.
 
     Before a cloud function can be created, the source code must be uploaded to Google Cloud.
     This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the &#34;source upload url&#34; field when creating the cloud function.

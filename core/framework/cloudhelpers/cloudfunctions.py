@@ -9,7 +9,7 @@ from googleapiclient import discovery
 
 
 def upload_cloud_function(function_path, location_id, template_args={}):
-    '''Uploads the source code of a cloud function and returns the upload url
+    '''Uploads the source code of a cloud function and returns the upload url.
 
     Before a cloud function can be created, the source code must be uploaded to Google Cloud.
     This function will upload the cloud function source code at the specified path and then will return the upload url that will be put into the "source upload url" field when creating the cloud function.
