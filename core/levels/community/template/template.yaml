@@ -1,0 +1,12 @@
+imports:
+- path: -template1-
+- path: -template2-
+
+resources:
+- name: -resource1-
+  type: -template1-
+  properties:
+    -property1-: -property_value1-
+    -property2-: {{ -config_template_argument1- }}
+- name: -resource2-
+  type: -template2-
