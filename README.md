@@ -1,6 +1,6 @@
 # Thunder CTF
 Thunder CTF is a computer security CTF that teaches players about Google Cloud Platform security.
-To get more information or the play the CTF, visit to the website: [thunder-ctf.cloud](https://thunder-ctf.cloud)
+To get more information or the play the CTF, visit the website: [thunder-ctf.cloud](https://thunder-ctf.cloud)
 
 ### Level Development
 Thunder CTF was built to be extensible, and we encourage players to make their own levels.
