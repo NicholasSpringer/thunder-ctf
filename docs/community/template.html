@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
+</head>
+
+<body>
+  <header class="banner" style="top: 5px">
+    <div id="nav">
+      <h1 style="margin-top:0px;">Thunder CTF</h1>
+    </div>
+  </header>
+  <div class="level">
+    <div style="padding-bottom:10px">
+      <a class="levelbanner levelbutton" href="../..">&#8592</a>
+      <h2 class="levelbanner">community/template</h2>
+    </div>
+  </div>
+  <br>
+  <div class=hints>
+    <div>
+      <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
+      <span id="hint_title" class="hintbanner hintbannertext"></span>
+      <span id="next" class="hintbanner hintbutton">Next</span>
+    </div>
+    <div id="hint_display" class="hintdisplay">
+    </div>
+    <div>
+      <span id="writeup_button" class="hintbanner writeupbutton">Show Level Writeup</span>
+    </div>
+    <h3>Destroy:</h3>
+    <pre>python3 thunder.py destroy</pre>
+  </div>
+  <footer class="bottombanner">Thunder CTF was created at Portland State University under NSF Award #1821841</footer>
+
+  <ul id="hint_content" style="display: none">
+    <li>
+      <span>Intro</span>
+      <h3>Setup:</h3>
+      <p>Your virtual environment must be active to use thunder.py:</p>
+      <pre>source ../env-tctf/bin/activate</pre>
+      <pre>python3 thunder.py create thunder/a1openbucket</pre>
+      <h3>Intro:</h3>
+      <p>[put your instructions here]</p>
+    </li>
+    
+    <li>
+      <span>Hint 1</span>
+      <p>This is the first hint</p>
+    </li>
+    
+    <li>
+      <span>Hint 2</span>
+      <p>This is the second hint</p>
+    </li>
+    
+  </ul>
+  <div id="writeup_content" style="display: none">
+    <p>This is the writeup<p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../static/slideshow.js"></script>
+  <script src="../static/bannercollapse.js"></script>
+  <script>$(".inline").attr("target","_blank")</script>
+</body>
+
+</html>
