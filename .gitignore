@@ -1,5 +1,6 @@
 *.pyo
 *.pyc
+*.workspace
 *.DS_STORE
 start/*
 core/framework/config/project.txt
