@@ -192,7 +192,18 @@ cat secret.txt</pre>
     
   </ul>
   <div id="writeup_content" style="display: none">
-    <p>Level writeup will be available soon</p>
+    <p>In this level, a compromised service account for a developer is discovered that allows one to set the source code of a function.
+      This allows one to deploy a function
+      that can programmatically access and modify any resources that the privileges given to the function are allowed.  These
+      privileges could potentially be more expansive than the ones the initial service account provides.  By setting the code of a function to 
+      query the Metadata service for credentials, we can then obtain an ephemeral access token that we can then use to navigate the cloud 
+      project's resources using the privileges given to the function.
+    
+      One of the privileges granted to this function is the ability to view and patch IAM policies.   IAM access, let alone patching privileges, should
+      never be given to such a function and it is a good idea to audit all IAM policies for correctness continuously to ensure such patches are detected.
+      Patching privileges allows the adversary to grant him/herself the privileges required to access any project resource (such as objects in a restricted
+      storage bucket).
+    </p>
   </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>

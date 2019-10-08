@@ -171,7 +171,18 @@ gsutil ls [bucket-name]</pre>
     
   </ul>
   <div id="writeup_content" style="display: none">
-    <p>Level writeup will be available soon</p>
+    <p>Containers and microservice deployments are becoming increasingly common in cloud deployments.  Unfortunately, one of the benefits of containers: the ability
+      to deploy it without thinking about dependencies, is also one of its security Achilles heels as developers can often forget about dependencies that might be found
+      to contain vulnerabilities.  In a scan of popular container images, a large percentage were <a href="https://www.banyansecurity.io/blog/analyzing-docker-hub/">found to contain CVEs</a>
+      that required patching.
+      When an adversary comes across a container image, they can easily scan it for potential vulerabilities and leverage them to obtain further access
+      within the project.  In this case, one can reverse-engineer the container to discover a hidden URL in the application that contains an SSRF vulnerability.</p>
+
+    <p>An SSRF vulnerability in which an attacker feeds a site a malicious URL to obtain access to internal data otherwise hidden, is a common problem in web applications.
+      The problem is significant since such vulnerabilities can give an attacker an initial foothold within a cloud deployment.
+      An SSRF vulnerability that leveraged the project metadata service was, unfortunately, one of the initial steps the attacker leveraged in the <a href="https://ejj.io/blog/capital-one">Capital One breach
+      in 2019</a>.  Although an SSRF is one effective vector for compromising projects, many other vectors <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">exist</a> and cloud deployments must take pains to ensure they are protected against them.
+    </p>
   </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>

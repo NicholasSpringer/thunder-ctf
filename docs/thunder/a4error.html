@@ -200,7 +200,18 @@ cat secret.txt</pre>
     
   </ul>
   <div id="writeup_content" style="display: none">
-    <p>Level writeup will be available soon</p>
+    <p>It is common practice for an server application to perform input validation on any data that might be received to prevent injection attacks and to
+      emit an error when something is wrong.  A developer must be sure that the error messages and their handling do not reveal any additional information that an
+      attacker can leverage.  For example, timing and behavior discrepencies in handling successful and unsucessful login attempts can be leveraged to
+      perform username enumeration or execute <a href="https://www.owasp.org/index.php/Blind_SQL_Injection">Blind SQL injection</a> attacks.  <br><br>
+
+      In the case of this level, the log messages generated from a request that produces an error, contains the request itself including its headers.
+      For cloud operations, such requests often contain an ephemeral access token that allows the requestor to authenticate itself to an API endpoint.
+      As the token is exposed, it can then be used to perform actions using the permissions that the cloud function has.  If the developer has not
+      practiced the principle of least privileges, the attacker can use the compromised token to move laterally.   In this case, a privilege
+      that allows one to set the Metadata of a running instance is given.   This can be used to add an ssh key to an instance that effectively
+      provides a backdoor for the adversary.
+    </p>
   </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
