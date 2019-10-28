@@ -1,0 +1,53 @@
+imports:
+- path: bucket_acl.jinja
+- path: container_vm.jinja
+- path: service_account.jinja
+- path: iam_policy.jinja
+
+resources:
+- name: b1-access
+  type: service_account.jinja
+- name: b1-bucket
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }} 
+    predefined_acl: private
+- name: b1-container-vm
+  type: container_vm.jinja
+  properties:
+    zone: us-west1-b
+    open_external: true
+    open_http: true
+    container_manifest: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: b1
+      spec:
+        containers:
+          - name: b1
+            image: docker.io/wwupdx/thunder-ctf-a7:latest
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 80
+                hostPort: 80
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: b1-access
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - compute.instances.list
+        - compute.instances.get
+        - compute.zones.list
+        - storage.buckets.list
+        - storage.objects.list
+    - service_account_id: b1-container-vm-sa
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - storage.objects.get

