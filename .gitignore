@@ -4,3 +4,4 @@
 *.DS_STORE
 start/*
 core/framework/config/project.txt
+__pycache__/
