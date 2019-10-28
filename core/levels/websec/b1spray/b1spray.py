@@ -47,6 +47,20 @@ def create():
         LEVEL_PATH, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
     print(
         f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
+    
+    #move helper scripts to thunder-ctf/start
+    #will fail if dicrectory start/ not being created in previous steps--examples levels.write_start_info
+    #to be continue....
+    source = 'core/levels/'+LEVEL_PATH+'/helper/'
+    dest = 'start/'
+    for f in os.listdir(source):
+        os.replace(source+f, dest+f)
+    #change permission
+    for f in os.listdir(dest):
+        os.chmod(dest+f, 0o700)
+    #remove empty helper directory
+    os.rmdir(source)
+
 
 
 def destroy():
