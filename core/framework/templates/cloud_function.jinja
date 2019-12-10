@@ -14,7 +14,7 @@ resources:
     runtime: python37
     serviceAccountEmail: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
     httpsTrigger: {{ '{}' }}
-    {% if env_variables in properties %}
+    {% if 'env_variables' in properties %}
     environmentVariables:
     {% for key, value in properties['env_variables'].iteritems() %}
       "{{ key }}": "{{ value }}"
