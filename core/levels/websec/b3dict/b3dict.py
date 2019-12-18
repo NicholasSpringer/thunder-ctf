@@ -8,8 +8,8 @@ from google.cloud import storage
 from core.framework import levels
 from core.framework.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
-LEVEL_PATH = 'websec/b1spray'
-RESOURCE_PREFIX = 'b1'
+LEVEL_PATH = 'websec/b3dict'
+RESOURCE_PREFIX = 'b3'
 INSTANCE_ZONE = 'us-west1-b'
 
 
@@ -20,10 +20,13 @@ def create():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     print("Level initialization finished for: " + LEVEL_PATH)
     
-    source = 'scripts/'+RESOURCE_PREFIX+'/'
-    user_r, pass_r = gen_credentials(source)
+    dict_size = 20
+    user_r, pass_r, W_FROM, W_END = gen_credentials(dict_size)
+    
+
     # Insert deployment
     config_template_args = {'nonce': nonce, 'user_r': user_r, 'pass_r': pass_r}
+
     template_files = [
         'core/framework/templates/container_vm.jinja','core/framework/templates/ubuntu_vm.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
@@ -42,39 +45,27 @@ def create():
 
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = (
-        f'Use attack.py, unames.txt and passwords.txt to find valid credential of the vulnerable website.')
+        f'Use attack.py to find valid credential of the vulnerable website. \nYour dicrectory start from word[{W_FROM}] end at word[{W_END}]')
     levels.write_start_info(LEVEL_PATH, start_message)
     print(
         f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
     
-    #move helper scripts to thunder-ctf/start
-    #will fail if dicrectory start/ not being created in previous steps--examples levels.write_start_info
-    #to be continue....
-    
-    #dest = 'start/'
-    #for f in os.listdir(source):
-    #    cmd='cp '+ source+f +' '+ dest+f
-    #    os.popen(cmd)
-        #os.replace(source+f, dest+f)
-    #change permission
-    #for f in os.listdir(dest):
-    #    os.chmod(dest+f, 0o700)
-    #remove empty helper directory
-    #os.rmdir(source)
 
-def gen_credentials(source):
+
+def gen_credentials(n):
     
-    #possible usernames
-    u_srouce=source+'unames.txt'
-    names=[uname.rstrip('\n') for uname in open(u_srouce,'r')]
-    #most commanly used passwords
-    p_srouce=source+'passwords.txt'
-    passwords=[password.rstrip('\n').strip() for password in open(p_srouce,'r')]
-    #randomly generate valid credientials
-    rcreds={}
-    random.shuffle(names)
-    random.shuffle(passwords)
-    return names[0],passwords[0]
+    #para n:number of words choose from in dicrectory
+    import nltk
+    nltk.download('words')
+    from nltk.corpus import words
+    w = words.words()
+    l = len(w)
+    #randomly generate one valid credientials
+    u=random.randint(0,l-n)
+    p=random.randint(u,u+n)
+    vname=w[u]
+    vpass=w[p]
+    return vname,vpass, u, u+n
 
 def destroy():
     # Delete starting files

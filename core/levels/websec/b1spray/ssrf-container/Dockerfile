@@ -1,13 +1,12 @@
-# Use Ubuntu 18.04 as the base image
-FROM ubuntu:18.04
+# Use python:3.7-alpine as the base image
+FROM python:3.7-alpine
 
 # Specify your e-mail address as the maintainer of the container image
 MAINTAINER Wen Wu "wwu@pdx.edu"
 
-# Execute apt-get update and install to get Python's package manager
-#  installed (pip)
-RUN apt-get update -y
-RUN apt-get install -y python-pip
+# Execute apk add and update 
+#RUN apk add --update --no-cache 
+
 
 # Copy the contents of the current directory into the container directory /app
 COPY . /app
@@ -19,7 +18,7 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 
 # Set the program that is invoked upon container instantiation
-ENTRYPOINT ["python"]
+#ENTRYPOINT ["python"]
 
 # Set the parameters to the program
-CMD ["app.py"]
+CMD gunicorn --bind :$PORT app:app

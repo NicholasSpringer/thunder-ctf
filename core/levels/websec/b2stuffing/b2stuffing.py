@@ -8,8 +8,8 @@ from google.cloud import storage
 from core.framework import levels
 from core.framework.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
 
-LEVEL_PATH = 'websec/b1spray'
-RESOURCE_PREFIX = 'b1'
+LEVEL_PATH = 'websec/b2stuffing'
+RESOURCE_PREFIX = 'b2'
 INSTANCE_ZONE = 'us-west1-b'
 
 
@@ -20,10 +20,21 @@ def create():
     bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
     print("Level initialization finished for: " + LEVEL_PATH)
     
-    source = 'scripts/'+RESOURCE_PREFIX+'/'
-    user_r, pass_r = gen_credentials(source)
+    source = 'core/levels/'+LEVEL_PATH+'/'
+    dest='scripts/'+RESOURCE_PREFIX+'/'
+    user_r, pass_r, CREDS= gen_credentials(source,dest,10,3)
+    
+
     # Insert deployment
-    config_template_args = {'nonce': nonce, 'user_r': user_r, 'pass_r': pass_r}
+    config_template_args = {'nonce': nonce}
+    for i in range(len(user_r)):
+        kn='user_r'+str(i)
+        vn=user_r[i]
+        kp='pass_r'+str(i)
+        vp=pass_r[i]
+        config_template_args[kn]=vn
+        config_template_args[kp]=vp
+
     template_files = [
         'core/framework/templates/container_vm.jinja','core/framework/templates/ubuntu_vm.jinja']
     deployments.insert(LEVEL_PATH, template_files=template_files,
@@ -42,7 +53,7 @@ def create():
 
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = (
-        f'Use attack.py, unames.txt and passwords.txt to find valid credential of the vulnerable website.')
+        f'Use attack.py and credentials.py to find valid credential of vulnerable websites. \nProssible credentials are {CREDS}.')
     levels.write_start_info(LEVEL_PATH, start_message)
     print(
         f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
@@ -62,7 +73,7 @@ def create():
     #remove empty helper directory
     #os.rmdir(source)
 
-def gen_credentials(source):
+def gen_credentials(source,dest,n,m):
     
     #possible usernames
     u_srouce=source+'unames.txt'
@@ -70,11 +81,27 @@ def gen_credentials(source):
     #most commanly used passwords
     p_srouce=source+'passwords.txt'
     passwords=[password.rstrip('\n').strip() for password in open(p_srouce,'r')]
-    #randomly generate valid credientials
+    #randomly generate 10 credientials and write to file
     rcreds={}
     random.shuffle(names)
     random.shuffle(passwords)
-    return names[0],passwords[0]
+    c_dest=dest+'credentials.py'
+    for i in range(n):
+        rcreds[names[i]]=passwords[i]
+    f = open(c_dest, "w")
+    f.write("creds = "+str(rcreds))
+    f.close()
+    #randomly generate one valid credientials
+    index=random.randint(0,n-1)
+    vnames=[list(rcreds.keys())[index]]
+    vpass=[list(rcreds.values())[index]]
+    #generate m-1 valid credientials
+    for i in range(m-1):
+        vnames.append(names[n+i])
+        vpass.append(passwords[n+i]) 
+    random.shuffle(vnames)
+    random.shuffle(vpass)     
+    return vnames,vpass,rcreds
 
 def destroy():
     # Delete starting files

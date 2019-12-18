@@ -4,7 +4,7 @@ imports:
 
 
 resources:
-- name: b1-attack-instance
+- name: b3-attack-instance
   type: ubuntu_vm.jinja
   properties:
     zone: us-west1-b
@@ -13,8 +13,9 @@ resources:
       #!/bin/bash
       sudo apt update
       sudo apt install -y python-pip
+      pip install nltk
 
-- name: b1-container-vm
+- name: b3-container-vm
   type: container_vm.jinja
   properties:
     zone: us-west1-b
@@ -24,12 +25,12 @@ resources:
       apiVersion: v1
       kind: Pod
       metadata:
-        name: b1
+        name: b3
       spec:
         containers:
-          - name: b1
+          - name: b3
             image: docker.io/wwupdx/websec-b2:latest
-            imagePullPolicy: Always
+            imagePullPolicy: Always           
             env:
               - name: USERNAME
                 value: {{user_r}}

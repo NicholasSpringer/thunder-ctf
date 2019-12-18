@@ -1,12 +1,7 @@
-imports:
-- path: service_account.jinja
-
 {% set INSTANCE_NAME = env['name'] %}
 {% set SERVICE_ACCOUNT_NAME = env['name'] + "-sa" %}
 
 resources:
-- type: service_account.jinja
-  name: {{ SERVICE_ACCOUNT_NAME }}
 - type: compute.v1.instance
   name: {{ INSTANCE_NAME }}
   properties:
@@ -28,10 +23,6 @@ resources:
       items:
       - http-server
     {% endif %}
-    serviceAccounts:
-    - email: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
-      scopes:
-      - https://www.googleapis.com/auth/cloud-platform
     {% if properties['ssh_credentials'] or properties['startup_script'] %}
     metadata:
       items:

@@ -3,8 +3,6 @@ info:
   author: Nicholas Springer
   description: Creates a new instance with ubuntu 18.04. Creates a service account for the instance called [instance-name]-sa 
 
-imports:
-- path: service_account.jinja
 
 required:
 - zone
