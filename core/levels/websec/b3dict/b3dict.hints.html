@@ -67,7 +67,9 @@ b3-attack-instance and b3-container-vm are created in the same VPC network, so t
 <p>SSH into your attack instance </p>
 <pre>gcloud compute ssh b3-attack-instance</pre>
 <p>Install nltk </p>
-<pre>sudo apt install python-pip
+<pre>
+sudo apt update
+sudo apt install python-pip
 pip install nltk</pre>
 ---
 <p>Run attack script</p>
