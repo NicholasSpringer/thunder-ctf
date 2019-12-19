@@ -9,10 +9,10 @@ resources:
   properties:
     zone: us-west1-b
     open_external: true
-    startup-script: |
+    startup_script: |
       #!/bin/bash
       sudo apt update
-      sudo apt install -y python-pip
+      sudo apt install -y python3-pip
 
 - name: b1-container-vm
   type: container_vm.jinja

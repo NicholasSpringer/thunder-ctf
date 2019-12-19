@@ -9,11 +9,11 @@ resources:
   properties:
     zone: us-west1-b
     open_external: true
-    startup-script: |
+    startup_script: |
       #!/bin/bash
       sudo apt update
-      sudo apt install -y python-pip
-      pip install nltk
+      sudo apt install -y python3-pip
+      pip3 install nltk
 
 - name: b3-container-vm
   type: container_vm.jinja
