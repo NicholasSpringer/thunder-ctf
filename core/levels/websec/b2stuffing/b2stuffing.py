@@ -13,6 +13,7 @@ RESOURCE_PREFIX = 'b2'
 INSTANCE_ZONE = 'us-west1-b'
 LEVEL_NAME ='b2stuffing'
 CRED_PATH='scripts/'+RESOURCE_PREFIX+'/'
+#Max number of instances can be max(#passwords.txt, #unames.txt)-len(RCREDS)
 NUM_OF_CONTAINERS = 3
 SOURCE = 'core/levels/'+LEVEL_PATH+'/'
 
