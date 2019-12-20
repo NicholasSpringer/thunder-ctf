@@ -1,0 +1,21 @@
+imports:
+- path: ubuntu_vm.jinja
+- path: container_vm.jinja
+
+
+resources:
+- name: b2-attack-instance
+  type: ubuntu_vm.jinja
+  properties:
+    zone: us-west1-b
+    open_external: true
+    startup_script: |
+      #!/bin/bash
+      sudo apt update
+      sudo apt install -y python3-pip
+
+
+
+              
+
+

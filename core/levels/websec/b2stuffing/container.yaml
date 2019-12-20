@@ -1,0 +1,24 @@
+- name: b2-container-vm-{INDEX}
+  type: container_vm.jinja
+  properties:
+    zone: us-west1-b
+    open_external: true
+    open_http: true
+    container_manifest: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: b2-{INDEX}
+      spec:
+        containers:
+          - name: b2-{INDEX}
+            image: docker.io/wwupdx/websec-b2:latest
+            imagePullPolicy: Always
+            env:
+              - name: USERNAME
+                value: {{{UUU}}}
+              - name: PASSWORD
+                value: {{{PPP}}}
+              - name: PORT
+                value: 80
+
