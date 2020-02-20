@@ -72,7 +72,7 @@ PROJECT_ID = '[project-id]'</pre>
 <p>Read the log named transaction. You will need to specify it's full resource name:</p>
 <pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name]"</pre>
 ---
-<p>You won't want to look through all the log entries, so try filtering it to only show the name you are looking for. The documentation for logging filtration can be found <a class="inline" href="cloud.google.com/logging/docs/view/advanced-queries">here</a>.</p>
+<p>You won't want to look through all the log entries, so try filtering it to only show the name you are looking for. The documentation for logging filtration can be found <a class="inline" href="https://cloud.google.com/logging/docs/view/advanced-queries">here</a>.</p>
 ---
 <p>The command to get the log entry you want is:</p>
 <pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name] AND jsonPayload.name=[name]"</pre>
