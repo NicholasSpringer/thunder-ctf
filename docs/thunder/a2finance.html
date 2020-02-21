@@ -179,7 +179,7 @@ PROJECT_ID = '[project-id]'</pre>
     
     <li>
       <span>Hint 20</span>
-      <p>You won't want to look through all the log entries, so try filtering it to only show the name you are looking for. The documentation for logging filtration can be found <a class="inline" href="cloud.google.com/logging/docs/view/advanced-queries">here</a>.</p>
+      <p>You won't want to look through all the log entries, so try filtering it to only show the name you are looking for. The documentation for logging filtration can be found <a class="inline" href="https://cloud.google.com/logging/docs/view/advanced-queries">here</a>.</p>
     </li>
     
     <li>
@@ -191,21 +191,21 @@ PROJECT_ID = '[project-id]'</pre>
   </ul>
   <div id="writeup_content" style="display: none">
     <p>Accidentally uploading sensitive information in git repositories is a common pattern.  Unfortunately, modern tools allow one to immediately detect and copy 
-      exposed credentials on sites such as GitHub in under a 
-      <a href="https://blog.acolyer.org/2019/04/08/how-bad-can-it-git-characterizing-secret-leakage-in-public-github-repositories/">minute</a> 
-      with such tools detecting thousands of exposed keys being uploaded per day (Meli 2019).
-      One never put credentials in source-files, but rather to use environment variables or native cloud platform services to manage
-      keys.   Regardless of the length of time a credential has been exposed, once it has been, developers must invalidate the credential to prevent abuse.<br>
-      <br>
-      Another issue with applications deployed in the cloud is insecure logging.  Since cloud applications often abstract out the machines they are running on,
-      logging events are often collected centrally via a service such as Stack Driver.  Unfortunately, log information may contain sensitive information that
-      has not been sanitized and developers may have allowed excessive permissions to such log files from the machines that are writing to the log (e.g. allowing
-      them to read logging information as well). When log data contains such information as
-      PIN codes (<a href="https://www.zdnet.com/article/monzo-admits-to-storing-payment-card-pins-in-internal-logs/">Monzo 8/2019</a>) and passwords
-      (<a href="https://www.bleepingcomputer.com/news/security/github-accidentally-recorded-some-plaintext-passwords-in-its-internal-logs/">GitHub 2018</a>,
-      <a href="https://www.zdnet.com/article/facebook-admits-to-storing-plaintext-passwords-for-millions-of-instagram-users/">Instagram 2019</a>,
-      <a href="https://www.theverge.com/2018/5/3/17316684/twitter-password-bug-security-flaw-exposed-change-now">Twitter 2018</a>), data breaches can occur.
-      </p>
+    exposed credentials on sites such as GitHub in under a 
+    <a href="https://blog.acolyer.org/2019/04/08/how-bad-can-it-git-characterizing-secret-leakage-in-public-github-repositories/">minute</a> 
+    with such tools detecting thousands of exposed keys being uploaded per day (Meli 2019).
+    One never put credentials in source-files, but rather to use environment variables or native cloud platform services to manage
+    keys.   Regardless of the length of time a credential has been exposed, once it has been, developers must invalidate the credential to prevent abuse.<br>
+    <br>
+    Another issue with applications deployed in the cloud is insecure logging.  Since cloud applications often abstract out the machines they are running on,
+    logging events are often collected centrally via a service such as Stack Driver.  Unfortunately, log information may contain sensitive information that
+    has not been sanitized and developers may have allowed excessive permissions to such log files from the machines that are writing to the log (e.g. allowing
+    them to read logging information as well). When log data contains such information as
+    PIN codes (<a href="https://www.zdnet.com/article/monzo-admits-to-storing-payment-card-pins-in-internal-logs/">Monzo 8/2019</a>) and passwords
+    (<a href="https://www.bleepingcomputer.com/news/security/github-accidentally-recorded-some-plaintext-passwords-in-its-internal-logs/">GitHub 2018</a>,
+    <a href="https://www.zdnet.com/article/facebook-admits-to-storing-plaintext-passwords-for-millions-of-instagram-users/">Instagram 2019</a>,
+    <a href="https://www.theverge.com/2018/5/3/17316684/twitter-password-bug-security-flaw-exposed-change-now">Twitter 2018</a>), data breaches can occur.</p>
+
   </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
