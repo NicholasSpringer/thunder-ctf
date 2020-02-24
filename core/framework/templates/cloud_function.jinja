@@ -16,7 +16,7 @@ resources:
     httpsTrigger: {{ '{}' }}
     {% if 'env_variables' in properties %}
     environmentVariables:
-    {% for key, value in properties['env_variables'].iteritems() %}
+    {% for key, value in properties['env_variables'].items() %}
       "{{ key }}": "{{ value }}"
     {% endfor %}
     {% endif %}
