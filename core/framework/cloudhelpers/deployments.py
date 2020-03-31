@@ -112,12 +112,17 @@ def _delete_resources():
     credentials, project_id = google.auth.default()
     deployment_api = discovery.build(
         'deploymentmanager', 'v2', credentials=credentials)
-    manifest_url = deployment_api.deployments().get(
-        project=project_id, deployment='thunder').execute()['manifest']
-    manifest_name = os.path.basename(manifest_url)
-    manifest = deployment_api.manifests().get(deployment='thunder', project=project_id,
-                                              manifest=manifest_name).execute()
-    expanded_config = yaml.load(manifest['expandedConfig'], Loader=yaml.Loader)
+    try:
+        manifest_url = deployment_api.deployments().get(
+            project=project_id, deployment='thunder').execute()['manifest']
+        manifest_name = os.path.basename(manifest_url)
+        manifest = deployment_api.manifests().get(deployment='thunder', project=project_id,
+                                                manifest=manifest_name).execute()
+        expanded_config = yaml.load(manifest['expandedConfig'], Loader=yaml.Loader)
+    except Exception as e:
+        print(f"ERROR:Error retrieving deployment manifest for resource deletion: {e}")
+        return
+    
     buckets = []
     service_accounts = []
     for resource in expanded_config['resources']:

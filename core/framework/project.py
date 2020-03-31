@@ -80,6 +80,7 @@ def setup_project():
     apis = [
         'cloudapis.googleapis.com',
         'cloudfunctions.googleapis.com',
+        'cloudbuild.googleapis.com',
         'cloudresourcemanager.googleapis.com',
         'compute.googleapis.com',
         'datastore.googleapis.com',
