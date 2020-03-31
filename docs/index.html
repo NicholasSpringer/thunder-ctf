@@ -20,29 +20,24 @@
     </div>
   </header>
   <div style="width:90%; max-width: 800px; text-align: center; margin: auto;">
-	  <p>This CTF is based around attacking vulnerable cloud infrastructure on Google Cloud Platform (GCP). A paper detailing its design can be found <a href="https://thefengs.com/wuchang/papers/cybersec20_thunder.pdf">here</a>.  In each level,
-      you will be tasked with exploiting various issues with deployed cloud infrastructure in order to find the "secret"
-      of the level, which is a large integer stored somewhere in the infrastructure. The CTF is meant to be used by
-      everyone from beginners to experts, so each level has a set of detailed hints that can help players where they get
-      stuck, so the difficulty of the challenge is decided by the player based on how frequently they use hints. We
-      strongly encourage you to try as hard as you can to solve the levels using the least number of hints possible, as
-      this is how you will learn the most.</p>
-    <p>Thunder CTF works by deploying infrastructure on the fly to a Google Cloud Platform project owned by the player
-      when the player deploys a level. Therefore, to play Thunder CTF, you will need a GCP project with billing enabled.
-      If you are creating an account for the first time, you can get $300 in free credit <a class="inline"
-        href="https://cloud.google.com/free">here</a>. However, Thunder CTF is very cheap to run, with its resource
+    <p style="width:70%">Nicholas Springer, Wu-chang Feng, <b>"Thunder CTF: Learning Cloud Security on a Dime"</b>, Cyber Security Symposium 2020,
+          April 2020.  <a href="https://thefengs.com/wuchang/papers/cybersec20_thunder.pdf">pdf</a>.</p>
+    <p>Thunder CTF allows players to practice attacking vulnerable cloud projects on Google Cloud Platform (GCP).
+      In each level, players are tasked with exploiting a cloud deployment to find a "secret" integer stored within it.
+      Key to the CTF is a progressive set of hints that can be used by players when they are stuck so that
+      levels can be solved by players of all levels from novices to experts.</p>
+    <p>Thunder CTF deploys level infrastructure on demand to a player's Google Cloud Platform project.
+      Players new to Google Cloud can get a free $300 credit <a class="inline"
+        href="https://cloud.google.com/free">here</a>.  Thunder CTF is very cheap to run, with its resource
       consumption fitting almost entirely into GCP's free tier.  To save cloud credits, we recommend deploying levels
-      only while you are
-      playing and taking them down when you are done.</p>
+      only while you are playing and destroying them as soon as levels are completed.</p>
     <p>The CTF is played through Cloud Shell, a command line interface that is already set up for accessing cloud
       resources. It can be accessed by click the following icon at the top right of the GCP console located <a
         class="inline" href="https://console.cloud.google.com">here</a>:</p>
     <img src="img/index/cloudshell.png">
-    <p>Setup steps:</p>
-    <p>1. Create a new GCP project.</p>
-    <p>2. Enable billing on the project. Instructions can be found <a class="inline"
-        href="https://cloud.google.com/billing/docs/how-to/modify-project">here</a>.</p>
-    <p>3. Open cloud shell, and run the following commands:</p>
+    <p>After creating a new project and enabling <a class="inline"
+      href="https://cloud.google.com/billing/docs/how-to/modify-project">billing</a> for it, simply open Cloud Shell and
+      run the following commands to set up the CTF</p>
     <pre>gcloud config set project [PROJECT-ID]
 virtualenv -v env-tctf
 source env-tctf/bin/activate
