@@ -60,95 +60,85 @@ git config --global user.email johndoe@example.com</pre>
       <h3>Intro:</h3>
       <p>In this level, the secret is the (fake) credit card number of the person assigned to you upon level creation. Use the compromised service account that is given to you to navigate the cloud infrastructure to find the credit card.</p>
       <p>Upon level creation, the name of the target is written to start/a2finance.txt, and the service account key file is written to start/a2-access.json.</p>
-      <p>From this level on, you will need to be able to figure out the project-wide permissions of service account credentials. To do this, we have provided you with a script that repeatedly queries the projects.testIamPermissions REST api function to figure out which permissions given credentials have. The script is stored at scripts/test-permissions.py. We recommend glancing over the script to understand how it works, but to run it just set PROJECT_ID and either SERVICE_ACCOUNT_KEY_FILE or ACCESS_TOKEN, then run the script, and it will output the permissions of the given credentials. By default, it will test the given service account key file, but if USE_ACCESS_TOKEN is set to True, it will test the given access token.</p>
-      <pre># If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
-USE_ACCESS_TOKEN = False
-# Only one of the following need to be set:
-SERVICE_ACCOUNT_KEY_FILE = 'path/to/key/file'
-ACCESS_TOKEN = ''
-# Set the project ID
-PROJECT_ID = '[project-id]'</pre>
+      <p>From this level on, you will need to be able to figure out the project-wide permissions of service account credentials. To do this, we have provided you with a script that repeatedly queries the projects.testIamPermissions REST API function to figure out which permissions given credentials have. The script is stored at scripts/test-permissions.py. We recommend glancing over the script to understand how it works, but to run it supply either the JSON credential file for the service account or an access token for it.</p>
+      <pre>python scripts/test-permissions.py &lt;path_to_key_file | access_token&gt;</pre>
     </li>
     
     <li>
       <span>Hint 1</span>
-      <p>Run the permissions testing script on the given service account credentials</p>
+      <p>Run the permissions testing script on the given service account credential file:
+      <pre>python scripts/test-permissions.py start/a2-access.json</pre>
+      </p>
     </li>
     
     <li>
       <span>Hint 2</span>
-      <p>In scripts/test-permissions.py, set PROJECT_ID to your project id and SERVICE_ACCOUNT_KEY_FILE to 'start/a2-access.json', then run:</p>
-      <pre>python3 scripts/test-permissions.py</pre>
-    </li>
-    
-    <li>
-      <span>Hint 3</span>
       <p>One of the permissions you have is storage.buckets.list. Try using this permission.</p>
     </li>
     
     <li>
-      <span>Hint 4</span>
+      <span>Hint 3</span>
       <p>The command to do so is:</p>
       <pre>gsutil ls</pre>
     </li>
     
     <li>
-      <span>Hint 5</span>
+      <span>Hint 4</span>
       <p>There's a bucket in the project. Check out what's inside of it.</p>
     </li>
     
     <li>
-      <span>Hint 6</span>
+      <span>Hint 5</span>
       <p>Download the bucket:</p>
       <pre>gsutil cp -r gs://[bucket-name] .</pre>
     </li>
     
     <li>
-      <span>Hint 7</span>
+      <span>Hint 6</span>
       <p>The bucket stores a git repository. There might be something interesting in the git history.</p>
     </li>
     
     <li>
-      <span>Hint 8</span>
+      <span>Hint 7</span>
       <p>View the previous git commits:</p>
       <pre>git log</pre>
     </li>
     
     <li>
-      <span>Hint 9</span>
+      <span>Hint 8</span>
       <p>The most recent commit mentions a key file getting committed by the first commit.</p>
     </li>
     
     <li>
-      <span>Hint 10</span>
+      <span>Hint 9</span>
       <p>Checkout the previous commit:</p>
       <pre>git checkout &ltold commit name&gt</pre>
     </li>
     
     <li>
-      <span>Hint 11</span>
+      <span>Hint 10</span>
       <p>There's an ssh key file! It could be used to login to a Google Compute Engine instance.</p>
     </li>
     
     <li>
-      <span>Hint 12</span>
+      <span>Hint 11</span>
       <p>List the compute instances in the project:</p>
       <pre>gcloud compute instances list</pre>
     </li>
     
     <li>
-      <span>Hint 13</span>
+      <span>Hint 12</span>
       <p>Get more information on the running instance:</p>
       <pre>gcloud compute instances describe [instance-name]</pre>
     </li>
     
     <li>
-      <span>Hint 14</span>
+      <span>Hint 13</span>
       <p>In the metadata of the instance, there is information about the ssh keys that can be used to login to instance, including the username that the key is for.</p>
     </li>
     
     <li>
-      <span>Hint 15</span>
+      <span>Hint 14</span>
       <p>To use the SSH key, you will need to restrict access to the key file:</p>
       <pre>chmod 400 [key-file]</pre>
       <p>SSH into the instance:</p>
@@ -156,34 +146,34 @@ PROJECT_ID = '[project-id]'</pre>
     </li>
     
     <li>
-      <span>Hint 16</span>
+      <span>Hint 15</span>
       <p>Based on the name of the instance, it probably has access to Google Cloud's logging service, Stackdriver Logging.</p>
     </li>
     
     <li>
-      <span>Hint 17</span>
+      <span>Hint 16</span>
       <p>List the logs on the project:</p>
       <pre>gcloud logging logs list</pre>
     </li>
     
     <li>
-      <span>Hint 18</span>
+      <span>Hint 17</span>
       <p>Most of the logs are automatically generated logs of events of other resources, which may not provide much useful information, but one of the logs is named "transactions"</p>
     </li>
     
     <li>
-      <span>Hint 19</span>
+      <span>Hint 18</span>
       <p>Read the log named transaction. You will need to specify it's full resource name:</p>
       <pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name]"</pre>
     </li>
     
     <li>
-      <span>Hint 20</span>
+      <span>Hint 19</span>
       <p>You won't want to look through all the log entries, so try filtering it to only show the name you are looking for. The documentation for logging filtration can be found <a class="inline" href="https://cloud.google.com/logging/docs/view/advanced-queries">here</a>.</p>
     </li>
     
     <li>
-      <span>Hint 21</span>
+      <span>Hint 20</span>
       <p>The command to get the log entry you want is:</p>
       <pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name] AND jsonPayload.name=[name]"</pre>
     </li>

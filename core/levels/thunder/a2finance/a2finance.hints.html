@@ -13,19 +13,12 @@ git config --global user.email johndoe@example.com</pre>
 <h3>Intro:</h3>
 <p>In this level, the secret is the (fake) credit card number of the person assigned to you upon level creation. Use the compromised service account that is given to you to navigate the cloud infrastructure to find the credit card.</p>
 <p>Upon level creation, the name of the target is written to start/a2finance.txt, and the service account key file is written to start/a2-access.json.</p>
-<p>From this level on, you will need to be able to figure out the project-wide permissions of service account credentials. To do this, we have provided you with a script that repeatedly queries the projects.testIamPermissions REST api function to figure out which permissions given credentials have. The script is stored at scripts/test-permissions.py. We recommend glancing over the script to understand how it works, but to run it just set PROJECT_ID and either SERVICE_ACCOUNT_KEY_FILE or ACCESS_TOKEN, then run the script, and it will output the permissions of the given credentials. By default, it will test the given service account key file, but if USE_ACCESS_TOKEN is set to True, it will test the given access token.</p>
-<pre># If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
-USE_ACCESS_TOKEN = False
-# Only one of the following need to be set:
-SERVICE_ACCOUNT_KEY_FILE = 'path/to/key/file'
-ACCESS_TOKEN = ''
-# Set the project ID
-PROJECT_ID = '[project-id]'</pre>
+<p>From this level on, you will need to be able to figure out the project-wide permissions of service account credentials. To do this, we have provided you with a script that repeatedly queries the projects.testIamPermissions REST API function to figure out which permissions given credentials have. The script is stored at scripts/test-permissions.py. We recommend glancing over the script to understand how it works, but to run it supply either the JSON credential file for the service account or an access token for it.</p>
+<pre>python scripts/test-permissions.py &lt;path_to_key_file | access_token&gt;</pre>
 ---
-<p>Run the permissions testing script on the given service account credentials</p>
----
-<p>In scripts/test-permissions.py, set PROJECT_ID to your project id and SERVICE_ACCOUNT_KEY_FILE to 'start/a2-access.json', then run:</p>
-<pre>python3 scripts/test-permissions.py</pre>
+<p>Run the permissions testing script on the given service account credential file:
+<pre>python scripts/test-permissions.py start/a2-access.json</pre>
+</p>
 ---
 <p>One of the permissions you have is storage.buckets.list. Try using this permission.</p>
 ---
