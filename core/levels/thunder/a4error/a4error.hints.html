@@ -34,15 +34,9 @@
 
 Authorization: Bearer ya29.c.EqEBZwepkOFych006VjfVDFAJxSb5ErvGmBsVqq8S83NiJXZ_jaQsZlW0lWTP0q6Hs44ICf6mUkDYhOBG5H15A-lsIB-X9bMA-cJ9cl0mt-TU0q7vZjb0qdSUbYasDSTMBXKNzgkX_S_8ipAWVfg4HXfs_pb1Iid7O_QSxl1FeueTEQ6ns96Z1uRiF2qYQJlTyrWRKO3mPPGE1R9C0Nf9en2iFM</pre>
 ---
-<p>Check the permissions of the access token using the test-permissions.py script by setting USE_ACCESS_TOKEN to True and ACCESS_TOKEN to the access token</p>
+<p>Check the permissions of the access token using the test-permissions.py script by supplying an access token instead of a JSON credential file.</p>
 <p>Example:</p>
-<pre># If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
-USE_ACCESS_TOKEN = True
-# Only one of the following need to be set:
-SERVICE_ACCOUNT_KEY_FILE = ''
-ACCESS_TOKEN = 'ya29.c.EqEBZwepkOFych006VjfVDFAJxSb5ErvGmBsVqq8S83NiJXZ_jaQsZlW0lWTP0q6Hs44ICf6mUkDYhOBG5H15A-lsIB-X9bMA-cJ9cl0mt-TU0q7vZjb0qdSUbYasDSTMBXKNzgkX_S_8ipAWVfg4HXfs_pb1Iid7O_QSxl1FeueTEQ6ns96Z1uRiF2qYQJlTyrWRKO3mPPGE1R9C0Nf9en2iFM'
-# Set the project ID
-PROJECT_ID = '[project-id]'</pre>
+<pre>python scripts/test-permissions ya29.c...2iFM</pre>
 ---
 <p>The token has the compute.instances.setMetadata ability, which can be used to add allowed ssh keys to the metadata of instances.</p>
 ---

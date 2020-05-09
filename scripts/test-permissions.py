@@ -1,33 +1,36 @@
 from googleapiclient import discovery
 import google.oauth2.service_account
 from google.oauth2.credentials import Credentials
-import os
+import os, sys
+from permissions import permissions
 
-# If set to true, credentials will be created using ACCESS_TOKEN instead of SERVICE_ACCOUNT_KEY_FILE
-USE_ACCESS_TOKEN = False
-# Only one of the following need to be set:
-SERVICE_ACCOUNT_KEY_FILE = 'path/to/key/file'
-ACCESS_TOKEN = ''
-# Set the project ID
-PROJECT_ID = '[project-id]'
+if len(sys.argv) != 2:
+    sys.exit("Usage python test-permissions <token | path_to_key_file>")
 
-
-if USE_ACCESS_TOKEN:
-    # Create credentials using access token
-    credentials = Credentials(token=ACCESS_TOKEN)
+if os.getenv('GOOGLE_CLOUD_PROJECT'):
+    PROJECT_ID = os.getenv('GOOGLE_CLOUD_PROJECT')
+    print(PROJECT_ID)
 else:
+    sys.exit("Please set your GOOGLE_CLOUD_PROJECT environment variable via gcloud config set project [PROJECT_ID]")
+
+if (os.path.exists(sys.argv[1])):
+    print(f'JSON credential: {sys.argv[1]}')
     # Create credentials using service account key file
-    credentials = google.oauth2.service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_KEY_FILE)
+    credentials = google.oauth2.service_account.Credentials.from_service_account_file(sys.argv[1])
+else:
+    print(f'Access token: {sys.argv[1][0:4]}...{sys.argv[1][-4:]}')
+    ACCESS_TOKEN = sys.argv[1]
+    # Create credentials using access token
+    credentials = Credentials(token=sys.argv[1])
 
 # Change current working directory to top level of repo
 os.chdir(os.path.dirname(os.getcwd()+'/'+os.path.dirname(__file__)))
 # Load testable permissions into list
-with open('scripts/testable-permissions.txt') as f:
-    testable_permissions = f.read().split('\n')
+#with open('scripts/testable-permissions.txt') as f:
+    #testable_permissions = f.read().split('\n')
 # Split testable permissions list into lists of 100 items each
 chunked_permissions = (
-    [testable_permissions[i * 100:(i + 1) * 100] for i in range((len(testable_permissions)+99) // 100)])
+    [permissions[i * 100:(i + 1) * 100] for i in range((len(permissions)+99) // 100)])
 
 # Build cloudresourcemanager REST API python object
 crm_api = discovery.build('cloudresourcemanager',
