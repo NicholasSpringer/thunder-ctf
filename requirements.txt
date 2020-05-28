@@ -5,6 +5,7 @@ google-auth
 # Cloud client apis
 google-cloud-storage
 google-cloud-logging
+google-cloud-datastore
 
 # SSH keys
 cryptography

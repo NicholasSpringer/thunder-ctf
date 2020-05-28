@@ -1,0 +1,26 @@
+imports:
+- path: service_account.jinja
+- path: iam_policy.jinja
+{% block imports %}{% endblock %}
+
+resources:
+- name: c4-access
+  type: service_account.jinja
+
+- name: c4-check
+  type: service_account.jinja
+
+
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: c4-access
+      role:
+        name: roles/logging.admin
+
+    - service_account_id: c4-check
+      role:
+        name: roles/iam.roleViewer
+
+{% block resources %}{% endblock %}

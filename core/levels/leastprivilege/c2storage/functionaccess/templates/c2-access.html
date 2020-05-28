@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% raw -%}
+<head>
+  <title>Least Privileges - {{prefix}}{{level_name}}</title>
+</head>
+<body >
+<div>
+<h1 style="text-align:center">Least Privileges {{prefix}}{{level_name}}</h1>
+<ul>
+  <li>A Bucket was created with the level and a txt file has been placed into the bucket</li>
+  <li>Service account {{prefix}}-access has the role with permission to list content in bucket. However it's a role with permissions more than necessary</li>
+  <li>You can use this <a href="{{url}}" target="_blank">funtion</a> to check current permissions of {{prefix}}-access</li>
+  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-access in the list  and edit role </li>
+  <li>Refresh the check <a href="{{url}}" target="_blank">funtion</a> to see if you get the correct <b>Predefined Cloud Storage Role</b>with least privileges to list file in bucket</li>
+  <li>To validate if there are sufficient permissions, wait a minute or two and refresh the current function.</li>
+</ul>  
+</div>
+
+
+<div style=" width:80%;margin:auto;padding:auto; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));">
+<h3>Bucket:</h3>
+<ul>
+	{% for r in resources %} 
+	  <li>{{ r }}</li>
+	{% endfor %}
+</ul> 
+ <span style="width:100%;background-color:teal">
+{% if err|length>0 %} 
+<h4>Error:</h4>
+<ul>
+	{% for e in err %} 
+	  <li>{{ e }}</li>
+	{% endfor %}
+</ul>
+{% endif %}
+</span>    
+</div>
+
+<div style=" width:80%;margin:auto;padding:auto;" >
+  <h4>Source code of function that checks what roles bind with {{prefix}}-access :</h4>
+<pre style=" width:100%;margin:auto;padding:auto; background-color:rgb(147, 181, 182);">
+    name = f'{RESOURCE_PREFIX}-bucket-{NONCE}'
+    request = storage_api.objects().list(bucket=name).execute()["items"][0]
+    bucket = name + ' :  ' + request["name"]
+    resources.append(bucket)
+
+</pre>
+
+</div>
+</body>
+{%- endraw %}

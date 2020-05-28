@@ -1,0 +1,36 @@
+imports:
+- path: service_account.jinja
+- path: iam_policy.jinja
+- path: ubuntu_vm.jinja
+{% block imports %}{% endblock %}
+
+
+resources:
+- name: c3-access
+  type: service_account.jinja
+
+- name: c3-check
+  type: service_account.jinja
+
+- name: c3-instance
+  type: ubuntu_vm.jinja
+  properties:
+    zone: us-west1-b
+    open_external: true
+
+
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: c3-access
+      role:
+        name: roles/compute.admin
+
+    - service_account_id: c3-check
+      role:
+        name: roles/iam.roleViewer
+
+{% block resources %}{% endblock %}
+        
+
