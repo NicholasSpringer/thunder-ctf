@@ -6,3 +6,5 @@ To get more information or the play the CTF, visit the website: [thunder-ctf.clo
 Thunder CTF was built to be extensible, and we encourage players to make their own levels.
 - [Level Development Guide](https://github.com/NicholasSpringer/thunder-ctf/wiki)
 - [Thunder CTF framework documentation](http://thunder-ctf.cloud/pydocs/framework/)
+
+

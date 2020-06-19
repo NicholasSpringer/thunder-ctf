@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Least Privilege-Thunder CTF</title>
+  <link rel="stylesheet" type="text/css" href="static/style.css">
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Nova+Square' rel='stylesheet' type='text/css'>
+  </link>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300' rel='stylesheet' type='text/css'>
+  </link>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  </meta>
+</head>
+
+<body>
+  <header class="banner" style="top: 5px">
+    <div id="nav">
+      <h1 style="margin-top:0px;">Thunder CTF<br><small style="font-size:0.6em">Least Privilege</small></h1>
+    </div>
+  </header>
+  <div style="width:90%; max-width: 800px; text-align: center; margin: auto;">
+    <p style="width:70%">Nicholas Springer, Wu-chang Feng, <b>"Thunder CTF: Learning Cloud Security on a Dime"</b>, Cyber Security Symposium 2020,
+          April 2020.  <a href="https://thefengs.com/wuchang/papers/cybersec20_thunder.pdf">pdf</a> |
+          <a href="https://bit.ly/pdx-thunder">slides</a> | <a href="https://youtu.be/vlsv2UoLexI">talk</a>.</p>
+    <p>Thunder CTF allows players to practice attacking vulnerable cloud projects on Google Cloud Platform (GCP).
+      In each level, players are tasked with exploiting a cloud deployment to find a "secret" integer stored within it.
+      Key to the CTF is a progressive set of hints that can be used by players when they are stuck so that
+      levels can be solved by players of all levels from novices to experts.</p>
+    <p>Thunder CTF deploys level infrastructure on demand to a player's Google Cloud Platform project.
+      Players new to Google Cloud can get a free $300 credit <a class="inline"
+        href="https://cloud.google.com/free">here</a>.  Thunder CTF is very cheap to run, with its resource
+      consumption fitting almost entirely into GCP's free tier.  To save cloud credits, we recommend deploying levels
+      only while you are playing and destroying them as soon as levels are completed.</p>
+    <p>The CTF is played through Cloud Shell, a command line interface that is already set up for accessing cloud
+      resources. It can be accessed by clicking on the Cloud Shell icon in the <a
+        class="inline" href="https://console.cloud.google.com">GCP console</a>:</p>
+    <img src="../img/index/cloudshell.png">
+    <p>After creating a new project and enabling <a class="inline"
+      href="https://cloud.google.com/billing/docs/how-to/modify-project">billing</a> for it, simply open Cloud Shell and
+      run the following commands to set up the CTF</p>
+    <pre>gcloud config set project [PROJECT-ID]
+virtualenv -v env-tctf
+source env-tctf/bin/activate
+git clone https://github.com/NicholasSpringer/thunder-ctf.git
+cd thunder-ctf
+pip3 install -r requirements.txt
+python3 thunder.py activate_project [PROJECT-ID]</pre>
+    <p>You are now ready to play the CTF! A full list of commands can be found by running: </p>
+    <pre>python3 thunder.py help</pre>
+
+    <h2>Levels:</h2>
+    
+    <div><a class="levelbanner levelbutton" style="display: block; margin-bottom: 5px;" href="roles.html">leastprivilege/roles</a></div>
+    <h2>Level Development</h2>
+    <p>Thunder CTF was built to be extensible, and we encourage players to make their own levels. For more information on how to create a level, visit the <a class="inline" href="https://github.com/NicholasSpringer/thunder-ctf/wiki">Level Development Guide</a> and the <a class="inline" href="pydocs/framework">Thunder CTF framework documentation.</a></p>
+  </div>
+
+  
+  <p></p>
+  <footer class="bottombanner">Thunder CTF was created at Portland State University under NSF Award #1821841</footer>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="../static/bannercollapse.js"></script>
+</body>
+
+</html>
