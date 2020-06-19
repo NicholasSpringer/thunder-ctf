@@ -16,7 +16,7 @@ a.button {
     background-color: #E0EAFD;
     border: 1px solid black;
     border-radius: 2px;
-    color: blue;
+    color: teal;
     cursor: pointer;
     padding: 18px;
     width: 66%;
@@ -28,10 +28,10 @@ a.button {
     text-decoration: none;
 }
 a.inline {
-    background-color: #D7E5F9;
+    background-color: #eaf9fa;
     border: 1px solid black;
     border-radius: 2px;
-    color: #201483;
+    color: #2c0650;
     cursor: pointer;
     padding: none;
     width: 66%;
@@ -51,7 +51,7 @@ div.level {
 }
 
 .levelbanner {
-    background-color: #707FFF;
+    background-color:  #0986ac;
     color: white;
     text-align: center;
     font-size: 24px;
@@ -68,7 +68,7 @@ a.levelbutton{
 }
 
 a.levelbutton:hover {
-    background-color: #3D51FF;
+    background-color: #103f66;
 }
 
 div.hints {
@@ -79,7 +79,7 @@ div.hints {
 }
 
 .hintbanner {
-    background-color: #6D67CB;
+    background-color: #3a98c4;
     color: white;
     text-align: center;
     font-size: 20px;
@@ -97,7 +97,7 @@ span.hintbutton{
 }
 
 span.hintbutton:hover {
-    background-color: #4841BE;
+    background-color: rgb(75, 6, 131);
     cursor: pointer;
 }
 
@@ -130,7 +130,7 @@ span.hintbannertext{
 }
 
 div.hintdisplay{
-    background-color: #F9E97F;
+    background-color: bisque;
     color: black;
     padding: 10px;
     background-clip: content-box;
@@ -233,10 +233,10 @@ h3{
 }
 
 #nav{
-    background:linear-gradient(90deg,#3540F5,#6A7FF0, #3540F5);
+    background:linear-gradient(90deg,indigo,#0daada, indigo);
 }
 #nav ul{
-    background:linear-gradient(90deg,#3540F5,#6A7FF0, #3540F5);
+    background:linear-gradient(90deg,indigo,#0daada, indigo);
     padding:5px 0 4px 0;
     bottom:0;
     position: absolute;
@@ -271,5 +271,5 @@ section{
 
 footer {
     color:#fff;
-    background:linear-gradient(135deg,#3540F5,#6A7FF0, #3540F5);
+    background:linear-gradient(135deg,indigo,#0daada, indigo);
 }
