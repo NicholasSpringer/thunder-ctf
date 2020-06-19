@@ -113,7 +113,7 @@ def insert(level_path, template_files=[],
 
 def patch(level_path, template_files=[],
            config_template_args={}, labels={}):
-    '''Patch a deployment using deployment manager, importing any specified template files. 
+    '''Patches a deployment using deployment manager, importing any specified template files. 
         If template arguments are included, the top level configuration file will be rendered using Jinja2.
 
     Parameters:
@@ -147,7 +147,7 @@ def patch(level_path, template_files=[],
                     load_path =  f'core/levels/{level_path}/'
                 )
     
-    # Create request to insert deployment
+    # Create request to patch deployment
     request_body = {
         "name": "thunder",
         "fingerprint": fingerprint,
@@ -208,7 +208,7 @@ def _delete_resources():
         manifest_name = os.path.basename(manifest_url)
         manifest = deployment_api.manifests().get(deployment='thunder', project=project_id,
                                                 manifest=manifest_name).execute()
-        expanded_config = yaml.load(manifest['expandedConfig'], Loader=yaml.Loader)
+        expanded_config = yaml.safe_load(manifest['expandedConfig'])
     except Exception as e:
         print(f"ERROR:Error retrieving deployment manifest for resource deletion: {e}")
         return

@@ -1,0 +1,256 @@
+{% extends 'roles.yaml' %}
+
+{% block imports %}
+- path: cloud_function.jinja
+{% endblock %}
+
+{% block resources %}
+- name: pr-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_pr }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pr}},"LEVEL_NAME":{{level_name_pr}}}
+
+- name: pr-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_pr }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables:  {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pr}},"LEVEL_NAME":{{level_name_pr}}}
+
+
+- name: pd1-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_pd1 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd1}},"LEVEL_NAME":{{level_name_pd1}}}
+
+- name: pd1-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_pd1 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd1}},"LEVEL_NAME":{{level_name_pd1}}}
+
+
+- name: pd2-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_pd2 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd2}},"LEVEL_NAME":{{level_name_pd2}}}
+
+- name: pd2-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_pd2 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd2}},"LEVEL_NAME":{{level_name_pd2}}}
+
+
+- name: pd3-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_pd3 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd3}},"LEVEL_NAME":{{level_name_pd3}}}
+
+- name: pd3-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_pd3 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd3}},"LEVEL_NAME":{{level_name_pd3}}}
+
+
+- name: pd4-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_pd4 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd4}},"LEVEL_NAME":{{level_name_pd4}}}
+
+- name: pd4-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_pd4 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd4}},"LEVEL_NAME":{{level_name_pd4}}}
+
+- name: ct1-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct1 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct1}},"LEVEL_NAME":{{level_name_ct1}}}
+
+- name: ct1-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct1 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct1}},"LEVEL_NAME":{{level_name_ct1}}}
+
+- name: ct2-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct2 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct2}},"LEVEL_NAME":{{level_name_ct2}}}
+
+- name: ct2-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct2 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct2}},"LEVEL_NAME":{{level_name_ct2}}}
+
+- name: ct3-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct3 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct3}},"LEVEL_NAME":{{level_name_ct3}}}
+
+- name: ct3-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct3 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct3}},"LEVEL_NAME":{{level_name_ct3}}}
+
+
+
+- name: ct4-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct4 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct4}},"LEVEL_NAME":{{level_name_ct4}}}
+
+- name: ct4-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct4 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct4}},"LEVEL_NAME":{{level_name_ct4}}}
+
+
+
+- name: ct5-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct5 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct5}},"LEVEL_NAME":{{level_name_ct5}}}
+
+- name: ct5-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct5 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct5}},"LEVEL_NAME":{{level_name_ct5}}}
+
+{% endblock %}

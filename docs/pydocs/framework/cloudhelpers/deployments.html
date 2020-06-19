@@ -23,10 +23,11 @@
 <details class="source">
 <summary>Source code</summary>
 <pre><code class="python">import random
+import random
 import os
 import time
 import sys
-
+    
 import jinja2
 import google.auth
 from googleapiclient import discovery
@@ -34,16 +35,39 @@ from googleapiclient.errors import HttpError
 from . import iam, gcstorage
 from .. import levels
 import yaml
+    
 
 
-def _read_render_config(file_name, template_args={}):
-    with open(file_name) as f:
-        content = f.read()
-    if not template_args == {}:
-        return jinja2.Template(content).render(**template_args)
+def _read_render_config(file_name, template_args={}, load_path=[]):
+     &#39; &#39; &#39;Use load_path to set jinja env loader, if there are blocks in level yaml.
+    
+    Parameters:
+        file_name (str): Relative file path with name. example core/levels/leastprivilege/c1project/c1project.yaml.
+            if load_path provided, should be file name only. example c1project.yaml
+        template_args (dict, optional): Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+            Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+            If not supplied, the top level configuration will not be treated as a template.
+        load_path (str): Relative path example core/levels/leastprivilege/c1project/
+     &#39; &#39; &#39;
+
+    if not load_path == []:
+        loader = jinja2.FileSystemLoader(searchpath=load_path)
+        env = jinja2.Environment(loader=loader)
+        content = env.get_template(file_name)
+        if not template_args == {}:
+            return content.render(**template_args)
+        else:
+            return content.render()
+
     else:
-        return content
-
+        
+        with open(file_name) as f:
+            content = f.read()
+        if not template_args == {}:
+            return jinja2.Template(content).render(**template_args)
+        else:
+            #deployment will faild if there are jinja blocks in yaml
+            return content
 
 def insert(level_path, template_files=[],
            config_template_args={}, labels={}):
@@ -112,6 +136,73 @@ def insert(level_path, template_files=[],
                         project_id, level_path=level_path)
 
 
+def patch(level_path, template_files=[],
+           config_template_args={}, labels={}):
+     &#39; &#39; &#39;Patches a deployment using deployment manager, importing any specified template files. 
+        If template arguments are included, the top level configuration file will be rendered using Jinja2.
+
+    Parameters:
+        level_path (str): Relative path of the level from the levels/ directory
+        template_files (list of str, optional): List of paths of the template files that are used in the deployment configuration, starting with  &#34;core/ &#34;.
+            The names of the templates in the configuration use the filenames of the templates, not the full paths.
+        config_template_args (dict, optional): Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+            Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+            If not supplied, the top level configuration will not be treated as a template.
+        labels (dict, optional): Dictionary of key/value pairs that will be included as labels on the deployment, 
+            and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
+            Labels are the recommended way to store any information that will be necessary for level deletion.
+            The keyword  &#34;level &#34; is reserved for storing the active level path.
+     &#39; &#39; &#39;
+    # Get current credentials from environment variables and build deployment API object
+    credentials, project_id = google.auth.default()
+    deployment_api = discovery.build(
+         &#39;deploymentmanager &#39;,  &#39;v2 &#39;, credentials=credentials)
+    
+    # get current deployment
+    current_depoy = deployment_api.deployments().get(
+        project=project_id, deployment= &#39;thunder &#39;).execute()
+    labels = current_depoy[ &#39;labels &#39;]
+    fingerprint = current_depoy[ &#39;fingerprint &#39;]
+    level_name = os.path.basename(level_path)
+    
+    #render patched contnent
+    content_patch = _read_render_config(
+                    f &#39;{level_name}_patch.yaml &#39;,
+                    template_args=config_template_args,
+                    load_path =  f &#39;core/levels/{level_path}/ &#39;
+                )
+    
+    # Create request to patch deployment
+    request_body = {
+         &#34;name &#34;:  &#34;thunder &#34;,
+         &#34;fingerprint &#34;: fingerprint,
+         &#34;target &#34;: {
+             &#34;config &#34;: {
+                 &#34;content &#34;: content_patch
+            },
+             &#34;imports &#34;: []
+        },
+         &#34;labels &#34;: [labels]
+    }
+    # Add imports to deployment json
+    for template in template_files:
+        request_body[ &#39;target &#39;][ &#39;imports &#39;].append(
+            { &#34;name &#34;: os.path.basename(template),
+              &#34;content &#34;: _read_render_config(template)})
+        # If schema is present in sibling directory to template, import it
+        schema_path = f &#39;{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema &#39;
+        if os.path.exists(schema_path):
+            request_body[ &#39;target &#39;][ &#39;imports &#39;].append(
+                { &#34;name &#34;: os.path.basename(template) +  &#39;.schema &#39;,
+                  &#34;content &#34;: _read_render_config(schema_path)})
+    
+    # Send patch request then wait for operation
+    operation = deployment_api.deployments().patch(
+        project=project_id, deployment= &#39;thunder &#39;, body=request_body).execute()
+    op_name = operation[ &#39;name &#39;]
+    _wait_for_operation(op_name, deployment_api,
+                        project_id, level_path=level_path)
+
 def delete():
     &#39;&#39;&#39;Deletes the active deployment. 
         Automatically empties and deletes any buckets in the deployment,
@@ -141,7 +232,7 @@ def _delete_resources():
     manifest_name = os.path.basename(manifest_url)
     manifest = deployment_api.manifests().get(deployment=&#39;thunder&#39;, project=project_id,
                                               manifest=manifest_name).execute()
-    expanded_config = yaml.load(manifest[&#39;expandedConfig&#39;], Loader=yaml.Loader)
+    expanded_config = yaml.safe_load(manifest[&#39;expandedConfig&#39;])
     buckets = []
     service_accounts = []
     for resource in expanded_config[&#39;resources&#39;]:
@@ -413,6 +504,99 @@ The keyword "level" is reserved for storing the active level path.</dd>
                         project_id, level_path=level_path)</code></pre>
 </details>
 </dd>
+<dt id="framework.cloudhelpers.deployments.patch"><code class="name flex">
+    <span>def <span class="ident">patch</span></span>(<span>level_path, template_files=[], config_template_args={}, labels={})</span>
+    </code></dt>
+    <dd>
+    <section class="desc"><p>Patches a deployment using deployment manager, importing any specified template files.
+    If template arguments are included, the top level configuration file will be rendered using Jinja2.</p>
+    <h2 id="parameters">Parameters</h2>
+    <dl>
+    <dt><strong><code>level_path</code></strong> :&ensp;<code>str</code></dt>
+    <dd>Relative path of the level from the levels/ directory</dd>
+    <dt><strong><code>template_files</code></strong> :&ensp;<code>list</code> of <code>str</code>, optional</dt>
+    <dd>List of paths of the template files that are used in the deployment configuration, starting with "core/".
+    The names of the templates in the configuration use the filenames of the templates, not the full paths.</dd>
+    <dt><strong><code>config_template_args</code></strong> :&ensp;<code>dict</code>, optional</dt>
+    <dd>Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+    Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+    If not supplied, the top level configuration will not be treated as a template.</dd>
+    <dt><strong><code>labels</code></strong> :&ensp;<code>dict</code>, optional</dt>
+    <dd>Dictionary of key/value pairs that will be included as labels on the deployment,
+    and can be retrieved later using <a title="framework.cloudhelpers.deployments.get_labels" href="#framework.cloudhelpers.deployments.get_labels"><code>get_labels()</code></a>.
+    Labels are the recommended way to store any information that will be necessary for level deletion.
+    The keyword "level" is reserved for storing the active level path.</dd>
+    </dl></section>
+    <details class="source">
+    <summary>Source code</summary>
+    <pre><code class="python">def patch(level_path, template_files=[],
+               config_template_args={}, labels={}):
+         &#39; &#39; &#39;Patches a deployment using deployment manager, importing any specified template files. 
+            If template arguments are included, the top level configuration file will be rendered using Jinja2.
+    
+        Parameters:
+            level_path (str): Relative path of the level from the levels/ directory
+            template_files (list of str, optional): List of paths of the template files that are used in the deployment configuration, starting with  &#34;core/ &#34;.
+                The names of the templates in the configuration use the filenames of the templates, not the full paths.
+            config_template_args (dict, optional): Dictionary of arguments to use when rendering the top level configuration template using Jinja2.
+                Keys should be strings that correspond to the names of variables in the Jinja template, and each corresponding value should be the passed value of the variable.
+                If not supplied, the top level configuration will not be treated as a template.
+            labels (dict, optional): Dictionary of key/value pairs that will be included as labels on the deployment, 
+                and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
+                Labels are the recommended way to store any information that will be necessary for level deletion.
+                The keyword  &#34;level &#34; is reserved for storing the active level path.
+         &#39; &#39; &#39;
+        # Get current credentials from environment variables and build deployment API object
+        credentials, project_id = google.auth.default()
+        deployment_api = discovery.build(
+             &#39;deploymentmanager &#39;,  &#39;v2 &#39;, credentials=credentials)
+        
+        # get current deployment
+        current_depoy = deployment_api.deployments().get(
+            project=project_id, deployment= &#39;thunder &#39;).execute()
+        labels = current_depoy[ &#39;labels &#39;]
+        fingerprint = current_depoy[ &#39;fingerprint &#39;]
+        level_name = os.path.basename(level_path)
+        
+        #render patched contnent
+        content_patch = _read_render_config(
+                        f &#39;{level_name}_patch.yaml &#39;,
+                        template_args=config_template_args,
+                        load_path =  f &#39;core/levels/{level_path}/ &#39;
+                    )
+        
+        # Create request to patch deployment
+        request_body = {
+             &#34;name &#34;:  &#34;thunder &#34;,
+             &#34;fingerprint &#34;: fingerprint,
+             &#34;target &#34;: {
+                 &#34;config &#34;: {
+                     &#34;content &#34;: content_patch
+                },
+                 &#34;imports &#34;: []
+            },
+             &#34;labels &#34;: [labels]
+        }
+        # Add imports to deployment json
+        for template in template_files:
+            request_body[ &#39;target &#39;][ &#39;imports &#39;].append(
+                { &#34;name &#34;: os.path.basename(template),
+                  &#34;content &#34;: _read_render_config(template)})
+            # If schema is present in sibling directory to template, import it
+            schema_path = f &#39;{os.path.dirname(template)}/schema/{os.path.basename(template)}.schema &#39;
+            if os.path.exists(schema_path):
+                request_body[ &#39;target &#39;][ &#39;imports &#39;].append(
+                    { &#34;name &#34;: os.path.basename(template) +  &#39;.schema &#39;,
+                      &#34;content &#34;: _read_render_config(schema_path)})
+        
+        # Send patch request then wait for operation
+        operation = deployment_api.deployments().patch(
+            project=project_id, deployment= &#39;thunder &#39;, body=request_body).execute()
+        op_name = operation[ &#39;name &#39;]
+        _wait_for_operation(op_name, deployment_api,
+                            project_id, level_path=level_path)</code></pre>
+    </details>
+    </dd>    
 </dl>
 </section>
 <section>
@@ -435,6 +619,7 @@ The keyword "level" is reserved for storing the active level path.</dd>
 <li><code><a title="framework.cloudhelpers.deployments.get_active_level" href="#framework.cloudhelpers.deployments.get_active_level">get_active_level</a></code></li>
 <li><code><a title="framework.cloudhelpers.deployments.get_labels" href="#framework.cloudhelpers.deployments.get_labels">get_labels</a></code></li>
 <li><code><a title="framework.cloudhelpers.deployments.insert" href="#framework.cloudhelpers.deployments.insert">insert</a></code></li>
+<li><code><a title="framework.cloudhelpers.deployments.patch" href="#framework.cloudhelpers.deployments.patch">patch</a></code></li>
 </ul>
 </li>
 </ul>
