@@ -20,6 +20,7 @@ resources:
       "{{ key }}": "{{ value }}"
     {% endfor %}
     {% endif %}
+{% if 'policyBindings' in properties %}
 - name: {{ FUNCTION_NAME }}-iam
   action: gcp-types/cloudfunctions-v1:cloudfunctions.projects.locations.functions.setIamPolicy
   properties:
@@ -28,6 +29,12 @@ resources:
       bindings:
       {% for binding in properties['policyBindings'] %}
       - role: {{ binding['role'] }}
+      {% if binding['service_account_id'] == 'allusers' %}
+        members:
+        - allUsers
+      {% else %}
         members:
         - serviceAccount:$(ref.{{ binding['service_account_id'] }}.email)
+      {% endif %}
       {% endfor %}
+{% endif %}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% raw -%}
+<head>
+  <title>Check Privileges - {{prefix}}{{level_name}}</title>
+</head>
+<body >
+<h1 style="text-align:center">Check Privileges {{prefix}}{{level_name}}</h1>
+
+
+<div style="width:80%;margin:auto;padding:auto; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));">
+<h3>Message:</h3>
+<ul>
+  <li>{{ msg }}</li>
+</ul> 
+  
+<h3>Permissions of role {{rn}}:</h3>
+<ol>
+{% for p in pers %} 
+  <li>{{ p }}</li>
+ {% endfor %}
+</ol>
+<span style="width:100%; background-color:teal;text-align:center">{{err}}</span>   
+</div>
+</body>
+{%- endraw %}
