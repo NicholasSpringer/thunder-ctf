@@ -12,6 +12,18 @@
     right: 5px;
 }
 
+a img { display:none; }
+a:hover img { 
+    display:block;
+    position:relative;
+    float: right;
+    width: 45%;
+    height: 45%;
+    
+    
+
+}
+
 a.button {
     background-color: #E0EAFD;
     border: 1px solid black;
@@ -28,7 +40,7 @@ a.button {
     text-decoration: none;
 }
 a.inline {
-    background-color: #eaf9fa;
+    background-color: #f2e1fc;
     border: 1px solid black;
     border-radius: 2px;
     color: #2c0650;
@@ -62,13 +74,31 @@ div.level {
     margin: auto;
 }
 
+.toggle {
+    border: solid #e8ccfa 2px;
+    color: #351066;
+    text-align: center;
+    font-size: 22px;
+    padding: 10px;
+    width: 50%;
+    border-radius: 5px;
+    margin: auto;
+    margin-bottom: 5px;
+}
+
+.toggle:hover  {
+    color:#05303b;
+    font-weight: bolder;
+    
+}
+
 a.levelbutton{
     outline: none;
     text-decoration: none;
 }
 
 a.levelbutton:hover {
-    background-color: #103f66;
+    background-color: #351066;
 }
 
 div.hints {
@@ -108,7 +138,7 @@ span.writeupbutton {
 }
 
 span.writeupbutton:hover {
-    background-color: #4841BE;
+    background-color: rgb(67, 0, 130);
     cursor: pointer;
 }
 
@@ -130,7 +160,7 @@ span.hintbannertext{
 }
 
 div.hintdisplay{
-    background-color: bisque;
+    background-color: rgb(250, 236, 241);
     color: black;
     padding: 10px;
     background-clip: content-box;
