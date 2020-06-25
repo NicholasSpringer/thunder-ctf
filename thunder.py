@@ -28,6 +28,8 @@ def create(*args):
 
     level_path = args[0]
     level_module = levels.import_level(level_path)
+    # if level_path == 'leastprivilege/roles':
+    #      level_module.create_appeng()
     level_module.create()
 
 
@@ -89,6 +91,15 @@ def activate_project(*args):
         print('Project has been set.')
     else:
         print('Project not set.')
+    
+    # Check if there is an app engine exist in current project
+    if not project.check_app_engine():
+        app_confirmed = 'y' == input(
+                f'Create app engine for project {project_id}? Required for Firestore. [y/n]: ').lower().strip()[0]
+        # Create an app engine in current project, only requried if firestore is used in the level 
+        if(app_confirmed):   
+            project.create_app_engine()
+
 
 
 def generate_level_docs():
