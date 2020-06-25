@@ -26,7 +26,7 @@ fvars = {
          'ct1':['storage.buckets.list','compute.instances.list'],
          'ct2':['storage.buckets.list'],
          'ct3':['compute.instances.list'],
-         'ct4':['logging.logEntries.list']
+         'ct4':['logging.logEntries.list'],
          'pr':'roles/viewer'
 
         }
