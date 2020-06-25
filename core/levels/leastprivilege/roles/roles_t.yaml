@@ -113,7 +113,7 @@ resources:
   type: service_account.jinja
 
 
-{% block resources %}{% endblock %}
+    
 
 
 - name: iam_policy
@@ -219,5 +219,5 @@ resources:
     
         
         
-
+{% block resources %}{% endblock %}
 
