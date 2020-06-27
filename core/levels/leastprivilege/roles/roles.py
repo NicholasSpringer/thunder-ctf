@@ -17,8 +17,9 @@ LEVEL_PATH = 'leastprivilege/roles'
 #RESOURCE_PREFIX = 'c6'
 FUNCTION_LOCATION = 'us-central1'
 #LEVEL_NAME ='project'
-LEVEL_NAMES = {'pd1':'Storage','pd2':'Compute','pd3':'Logging','pd4':'Datastore','ct1':'Projects','ct2':'Storage','ct3':'Compute','ct4':'Logging','pr':'Projects'}
+LEVEL_NAMES = {'pr':'Projects','pd1':'Storage','pd2':'Compute','pd3':'Logging','pd4':'Datastore','ct1':'Projects','ct2':'Storage','ct3':'Compute','ct4':'Logging'}
 fvars = {
+         'pr':'roles/viewer',
          'pd1':'roles/storage.objectViewer',
          'pd2':'roles/compute.viewer',
          'pd3':'roles/logging.viewer',
@@ -26,9 +27,7 @@ fvars = {
          'ct1':['storage.buckets.list','compute.instances.list'],
          'ct2':['storage.buckets.list'],
          'ct3':['compute.instances.list'],
-         'ct4':['logging.logEntries.list'],
-         'pr':'roles/viewer'
-
+         'ct4':['logging.logEntries.list']
         }
 KINDS = {'pd4':''}
 BUCKETS = ['pd1','ct2']
