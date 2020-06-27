@@ -45,9 +45,15 @@
     <h2 class="toggle toggle_lst"> Thunder CTF - Least Privilege</h2>
     <div id="about_lst"  >
         <p>Thunder CTF - Least Privilege is an extension of Thunder CTF. Both were built based on Google Cloud Platform.</p>
-        <p>Least Privilege levels do not have "secret". They were desgined to help understand google cloud iam roles and permissions.</p>
+        <p>Least Privilege levels were desgined to help understand google cloud iam roles and permissions. 
+          Related google documentaion can be found <a href="https://cloud.google.com/iam/docs/understanding-roles">here</a>
+        </p>
+        <p>Least Privilege levels do not have "secret". Instead, at each level you should get a success message similar to below:
+        </p>
+        <img src="img/index/success.png">
+        
     </div>
-    
+    <br >
 
     
  
@@ -91,18 +97,21 @@
             (The CTF is played through Cloud Shell, a command line interface that is already set up for accessing cloud
             resources. It can be accessed in the 
             <a style="font-size: 1em;" class="inline" href="https://console.cloud.google.com">GCP console</a>
-            by clicking on the <a style="font-size: 1em;" class="inline" >Cloud Shell icon<img src="../img/index/cloudshell.png"></a>.)
+            by clicking on the <a style="font-size: 1em;" class="inline" >Cloud Shell icon<img src="img/index/cloudshell.png"></a>.)
         </small>
 
       </p>
       <pre>
-gcloud config set project [PROJECT-ID]
+# Optional: Can skip if cloud shell is started from the project you want to use
+gcloud config set project [PROJECT-ID] 
+      </pre>
+      <pre>
 virtualenv -v env-tctf
 source env-tctf/bin/activate
 git clone https://github.com/NicholasSpringer/thunder-ctf.git
 cd thunder-ctf
 pip3 install -r requirements.txt
-python3 thunder.py activate_project [PROJECT-ID]</pre>
+python3 thunder.py activate_project  $GOOGLE_CLOUD_PROJECT</pre>
 <p>A full list of commands can be found by running: </p>
         <pre>python3 thunder.py help</pre>
       <h3>Deploy:</h3>
@@ -110,7 +119,7 @@ python3 thunder.py activate_project [PROJECT-ID]</pre>
       <pre>python3 thunder.py create leastprivilege/roles</pre>
         
         <h3>Level Access:</h3>
-        <p>If deployment is successful,  a list of function entrypoints will be printed in cloud shell.</p>
+        <p>If deployment is successful,  a list of function entrypoints will be printed in cloud shell. You can also find them in start/roles.txt</p>
         <p>Click each entrypoint link to see its associated level instruction.</p>
         <p>Note: If level requires creating custom role, you have to create the role with the exact ID specified in level instruction </p>
         <h3>Destroy:</h3>
@@ -128,7 +137,7 @@ python3 thunder.py activate_project [PROJECT-ID]</pre>
   </div>
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="static/slideshow.js"></script>
-  <script src="../static/bannercollapse.js"></script>
+  <script src="static/bannercollapse.js"></script>
   <script>$(".inline").attr("target","_blank")</script>
 </body>
 
