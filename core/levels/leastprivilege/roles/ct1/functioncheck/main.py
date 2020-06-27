@@ -37,7 +37,8 @@ def main(request):
 
 	get_iam_policy_request_body = {}
 	
-	roles =[]
+	p_roles =[]
+	c_roles = []
 	permissions =[]
 	msg = ''
 	err=''
@@ -45,15 +46,28 @@ def main(request):
 		bindings = service_r.projects().getIamPolicy(resource=PROJECT_ID, body=get_iam_policy_request_body).execute()['bindings']
 		for r in bindings:
 			if sa in r['members'] and r['role'].startswith('roles/') :
-				roles.append(r['role'])
+				p_roles.append(r['role'])
+			if sa in r['members'] and r['role'].startswith(f'projects/{PROJECT_ID}/roles/') :
+				c_roles.append(r['role'])
 	except Exception as e: 
 		permissions =[]
 		msg ='There is an error'
 		err = str(e)
 
-	if len(roles)>0:
+	if len(p_roles)>0:
 		msg = f'A primitive or predefined role currently attached to {RESOURCE_PREFIX}-access account. Please attach one custom role with least privilege permissions. '
 		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+
+	elif len(c_roles)==0:
+		msg = f'Did not find custom role attached to {RESOURCE_PREFIX}-access Role '
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+	elif len(c_roles)==1 and c_roles[0] != role_name :
+		msg = f'Custom role {c_roles[0]} currently attached to {RESOURCE_PREFIX}-access Role. Need custom role {role_name}.'
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)	
+	elif len(c_roles)>1:
+		msg = f'More than one custom roles attached to {RESOURCE_PREFIX}-access account. Please only attach one.'
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+	
 	else:
 
 		# Build cloudresourcemanager REST API python object
@@ -63,17 +77,19 @@ def main(request):
 		parent = f'projects/{PROJECT_ID}'
 
 		
-
 		try:
 			roles = service.projects().roles().list(parent= parent, view = 'FULL', showDeleted = False).execute()['roles']
 			for role in roles:
 				if role['name'] == role_name:
 					permissions = role['includedPermissions']
+					
 		except Exception as e: 
 			permissions =[]
 			msg ='There is an error'
 			err = str(e)
 		
+			
+
 		if msg =='':
 			msg='Congratulations! You get the least privileges. '
 			

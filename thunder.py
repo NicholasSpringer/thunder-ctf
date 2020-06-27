@@ -28,8 +28,6 @@ def create(*args):
 
     level_path = args[0]
     level_module = levels.import_level(level_path)
-    # if level_path == 'leastprivilege/roles':
-    #      level_module.create_appeng()
     level_module.create()
 
 

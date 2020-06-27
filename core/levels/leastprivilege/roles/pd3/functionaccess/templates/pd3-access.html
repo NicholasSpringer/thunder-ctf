@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 {% raw -%}
 <head>
-  <title>Least Privileges - {{prefix}}{{level_name}}</title>
+  <title>Least Privileges - {{prefix}} {{level_name}}</title>
 </head>
 <body >
 <div>
-<h1 style="text-align:center">Least Privileges {{prefix}}{{level_name}}</h1>
+<h1 style="text-align:center">Least Privileges {{prefix}} {{level_name}}</h1>
 <ul>
   <li>Service account {{prefix}}-access has the role with permission to list log entries associated with this project. However it's a role with permissions more than necessary</li>
-  <li>You can use this <a href="{{url}}" target="_blank">funtion</a> to check current permissions of {{prefix}}-access</li>
+  <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-access</li>
   <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-access in the list  and edit role </li>
-  <li>Refresh the check <a href="{{url}}" target="_blank">funtion</a> to see if you get the correct <b>Predefined Cloud IAM Role</b> with least privileges to read Cloud Logging</li>
+  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud IAM Role</b> with least privileges to read Cloud Logging</li>
   <li>To validate if there are sufficient permissions, wait a minute or two and refresh the current function.</li>
 </ul>  
 </div>
@@ -41,10 +41,8 @@
   <h4>Source code from current function {{prefix}}-access :</h4>
 <pre style=" width:100%;margin:auto;padding:auto; background-color:rgb(147, 181, 182);">
 	client = logging.Client(credentials=credentials )
-	logname = "cloudaudit.googleapis.com%2Factivity"
-	filter ="projects.setIamPolicy"
-	logger = client.logger(logname)	
-	entry = list(logger.list_entries(order_by=DESCENDING, filter_=filter))[0]
+	filter = f"projects.setIamPolicy AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
+	entry = list(client.list_entries(order_by="timestamp desc", filter_=filter))[0]
 </pre>
 
 </div>

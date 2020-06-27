@@ -172,9 +172,13 @@ def patch(level_path, template_files=[],
                  "content": _read_render_config(schema_path)})
     
     # Send patch request then wait for operation
-    operation = deployment_api.deployments().patch(
-        project=project_id, deployment='thunder', body=request_body).execute()
-    op_name = operation['name']
+    try:
+        operation = deployment_api.deployments().patch(
+            project=project_id, deployment='thunder', body=request_body).execute()
+        op_name = operation['name']
+    except Exception as e: 
+        print(str(e))
+        
     _wait_for_operation(op_name, deployment_api,
                         project_id, level_path=level_path)
 
