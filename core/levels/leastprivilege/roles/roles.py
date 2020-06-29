@@ -11,7 +11,7 @@ from google.cloud import datastore
 from core.framework import levels
 from core.framework.cloudhelpers import deployments, iam, cloudfunctions
 
-from cryptography.fernet import Fernet
+
 
 LEVEL_PATH = 'leastprivilege/roles'
 #RESOURCE_PREFIX = 'c6'
@@ -33,7 +33,8 @@ KINDS = {'pd4':''}
 BUCKETS = ['pd1','ct2']
 NONCE = ''
 
-def create():
+
+def create(second_deploy=False):
 
     # Create randomized bucket name to avoid namespace conflict
     nonce = str(random.randint(100000000000, 999999999999))
@@ -90,7 +91,8 @@ def create():
     template_files_patch = ['core/framework/templates/cloud_function.jinja']
     template_files.extend(template_files_patch)
     
-
+    start_message = ' Use function entrypoints below to access levels \n\n'
+    
     for RESOURCE_PREFIX in LEVEL_NAMES:
 
         LEVEL_NAME = LEVEL_NAMES[RESOURCE_PREFIX]
@@ -126,22 +128,22 @@ def create():
                                        
                                         f'level_name_{RESOURCE_PREFIX}': LEVEL_NAME, f'resource_prefix_{RESOURCE_PREFIX}':RESOURCE_PREFIX }
         config_template_args.update(config_template_args_patch)
-        
-    
-    deployments.patch(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args)
 
-    print('Patching completed')
-    
-    start_message = ' Use function entrypoints below to access levels \n'
-    for RESOURCE_PREFIX in LEVEL_NAMES:
         msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
         start_message += msg+'\n'
+
+
+    if second_deploy:
+        deployments.patch(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args,second_deploy=True)
+    else:
+        deployments.patch(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args)
+        
 
     try:
         levels.write_start_info(LEVEL_PATH, start_message)
         
     except Exception as e: 
-        print(str(e))
+        print(' ')
 
 
 def delete_custom_roles():

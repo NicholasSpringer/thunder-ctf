@@ -42,7 +42,7 @@
 <pre style=" width:100%;margin:auto;padding:auto; background-color:rgb(147, 181, 182);">
 	client = logging.Client(credentials=credentials )
 	filter = f"projects.setIamPolicy AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
-	entry = list(client.list_entries(order_by="timestamp desc", filter_=filter))[0]
+	client.list_entries(order_by="timestamp desc", filter_=filter)
 </pre>
 
 </div>

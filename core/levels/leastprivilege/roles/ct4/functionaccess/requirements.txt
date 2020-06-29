@@ -1,1 +1,2 @@
 google-cloud-logging
+google-api-core

@@ -12,6 +12,7 @@ from .. import levels
 import yaml
 
 
+
 def _read_render_config(file_name, template_args={}, load_path=[]):
     '''Use load_path to set jinja env loader, if there are blocks in level yaml.
     
@@ -112,7 +113,7 @@ def insert(level_path, template_files=[],
                         project_id, level_path=level_path)
 
 def patch(level_path, template_files=[],
-           config_template_args={}, labels={}):
+           config_template_args={}, labels={}, second_deploy = False):
     '''Patches a deployment using deployment manager, importing any specified template files. 
         If template arguments are included, the top level configuration file will be rendered using Jinja2.
 
@@ -127,6 +128,7 @@ def patch(level_path, template_files=[],
             and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
             Labels are the recommended way to store any information that will be necessary for level deletion.
             The keyword "level" is reserved for storing the active level path.
+        second_deploy (boolean): Automatically start destroy level and recreate if set to True
     '''
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
@@ -178,9 +180,14 @@ def patch(level_path, template_files=[],
         op_name = operation['name']
     except Exception as e: 
         print(str(e))
-        
-    _wait_for_operation(op_name, deployment_api,
-                        project_id, level_path=level_path)
+
+    if not second_deploy:
+        _wait_for_patch(op_name, deployment_api,
+                            project_id, level_path=level_path)
+    else:
+
+        _wait_for_operation(op_name, deployment_api,
+                            project_id, level_path=level_path)
 
 def delete():
     '''Deletes the active deployment. 
@@ -265,6 +272,38 @@ def _wait_for_operation(op_name, deployment_api, project_id, level_path=None):
             level_module.destroy()
             exit()
 
+def _wait_for_patch(op_name, deployment_api, project_id, level_path=None):
+    # Wait till  operation finishes, giving updates every 5 seconds
+    op_done = False
+    t = 0
+    start_time = time.time()
+    time_string = ''
+    while not op_done:
+        time_string = f'[{int(t/60)}m {(t%60)//10}{t%10}s]'
+        sys.stdout.write(
+            f'\r{time_string}Deployment patching in progress...')
+        t += 5
+        while t < time.time()-start_time:
+            t += 5
+        time.sleep(t-(time.time()-start_time))
+        op_status = deployment_api.operations().get(
+            project=project_id,
+            operation=op_name).execute()['status']
+        op_done = (op_status == 'DONE')
+    sys.stdout.write(
+        f'\r{time_string}Deployment patching in progress... Done\n')
+    operation = op_status = deployment_api.operations().get(
+        project=project_id,
+        operation=op_name).execute()
+    if 'error' in operation and level_path:
+        print("\nDeployment patching Error:\n" + yaml.dump(operation['error']))
+        print("\nSecond try of deploymnent")
+        level_module = levels.import_level(level_path)
+        level_module.destroy()
+        level_module.create(True)
+        
+    
+    
 
 def get_labels():
     '''Queries the Deployment Manager API to retrieve the labels on the active level's deployment.

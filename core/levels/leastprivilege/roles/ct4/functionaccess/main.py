@@ -4,7 +4,7 @@ def main(request):
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	from google.cloud import logging
-	#from google.cloud.logging import DESCENDING
+	from google.cloud.logging import DESCENDING
 	import os
 	
 	
@@ -27,13 +27,17 @@ def main(request):
 		#Build logging REST API python object
 		credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
 		client = logging.Client(credentials=credentials )
-		filter = f"projects.setIamPolicy AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
-		entry = list(client.list_entries(order_by="timestamp desc", filter_=filter))[0]
-		# logname = "cloudaudit.googleapis.com%2Factivity"
-		# filter ="projects.setIamPolicy"
-		# logger = client.logger(logname)	
-		# entry = list(logger.list_entries(order_by=DESCENDING, filter_=filter))[0]
-		resources.append(str(entry))
+		# filter = f"projects.setIamPolicy AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
+		# entry = list(client.list_entries(order_by="timestamp desc", filter_=filter))[0]
+		logname = "cloudaudit.googleapis.com%2Factivity"
+		filter =f"projects.setIamPolicy AND {NONCE}"
+		logger = client.logger(logname)
+		#entry = list(logger.list_entries(order_by=DESCENDING, filter_=filter))[0]
+		entries = logger.list_entries(order_by=DESCENDING, filter_=filter)
+		for entry in entries:
+			resources.append(entry)
+			if entries.num_results >0:
+				break
 
 	except Exception as e:
 		resources.append('Insufficient privilege!') 
