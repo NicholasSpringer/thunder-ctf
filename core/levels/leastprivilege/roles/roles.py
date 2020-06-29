@@ -143,7 +143,7 @@ def create(second_deploy=False):
         levels.write_start_info(LEVEL_PATH, start_message)
         
     except Exception as e: 
-        print(str(e))
+        print(' ')
 
 
 def delete_custom_roles():
