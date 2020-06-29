@@ -4,7 +4,7 @@ def main(request):
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	import os
-	from cryptography.fernet import Fernet
+	#from cryptography.fernet import Fernet
 
 	
 	# Set the project ID
