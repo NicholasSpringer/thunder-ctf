@@ -15,12 +15,10 @@ def main(request):
 	LEVEL_NAME = os.environ.get('LEVEL_NAME', 'Specified environment variable is not set.')
 
 	SERVICE_ACCOUNT_KEY_FILE = f'{RESOURCE_PREFIX}-access.json'
-	
-
-
 	credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
 
-	
+	#score function url
+	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 
 	#Build instance REST API python object
 	instance_api = discovery.build('compute', 'v1', credentials=credentials)
@@ -36,7 +34,7 @@ def main(request):
 		resources.append("Instance: Insufficient privilege!")
 		err.append(str(e))
 	if len(err)!=0:
-		return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE) 
+		return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE,surl=surl) 
 
 	#Build storage REST API python object
 	storage_api = discovery.build('storage', 'v1', credentials=credentials)
@@ -53,7 +51,7 @@ def main(request):
 	
 	
 	
-	return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE) 
+	return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE, surl=surl) 
 
 	
 

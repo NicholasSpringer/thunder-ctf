@@ -2,10 +2,31 @@
 {% raw -%}
 <head>
   <title>Least Privileges - {{prefix}} {{level_name}}</title>
+  <style>
+    body { width:100%;text-align:center }
+    div {width:80%; word-wrap: break-word; text-align: left;}
+    pre {width:80%;margin:auto; padding: auto; 
+        word-wrap: break-word; 
+        white-space: pre-wrap;       /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+         }
+    .err {width:100%; background-color:teal;text-align:left;border-radius:5px;}
+   .main {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0;
+         border-radius: 8px; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));
+         }
+   .ins {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0; }
+   .code {width:100%; background-color:rgb(209, 227, 228);border-radius:8px;}
+  </style>
 </head>
 <body >
-<div>
-<h1 style="text-align:center">Least Privileges {{prefix}} {{level_name}}</h1>
+
+<h1 >Least Privileges {{prefix}} {{level_name}}</h1>
+<h4>nonce: {{nonce}}</h4>
+
+<div class="ins">
 <ul>
   <li>Service account {{prefix}}-access has the role with permission to list log entries associated with this project. However it's a role with permissions more than necessary</li>
   <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-access</li>
@@ -16,35 +37,42 @@
 </div>
 
 
-<div style=" width:80%;margin:auto;padding:auto; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));">
-<h3>Log Entries:</h3>
-<ul>
-	
+<div class="main">
+<div>
+	<h3>Log Entries:</h3>
+	<ul>
 	{% for r in resources %} 
-	  <li style="word-wrap: break-word;">{{ r }}</li>
+		<li style="word-wrap: break-word;">{{ r }}</li>
 	{% endfor %}
+	</ul> 
+</div>
 	
-</ul> 
- <span style="width:100%;background-color:teal">
-{% if err|length>0 %} 
-<h4>Error:</h4>
-<ul>
+{% if err|length>0 %}
+<div>
+	<h4>Error:</h4>
 	{% for e in err %} 
-	  <li>{{ e }}</li>
+	<div class="err">{{ e }}</div>
 	{% endfor %}
-</ul>
+</div> 
 {% endif %}
-</span>    
 </div>
-
-<div style=" width:80%;margin:auto;padding:auto;" >
-  <h4>Source code from current function {{prefix}}-access :</h4>
-<pre style=" width:100%;margin:auto;padding:auto; background-color:rgb(147, 181, 182);">
-	client = logging.Client(credentials=credentials )
-	filter = f"projects.setIamPolicy AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
-	client.list_entries(order_by="timestamp desc", filter_=filter)
-</pre>
-
+	
+<div class="ins">
+<div>
+	<h4>Source code from current function {{prefix}}-access :</h4>
 </div>
+<div class="code">
+<pre>client = logging.Client(credentials=credentials )
+filter = f"projects.setIamPolicy AND {NONCE} AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
+entries = client.list_entries(order_by="timestamp desc", filter_=filter)
+for entry in entries:
+	resources.append(entry) #logging entry
+	if entries.num_results >0:
+		break</pre>
+</div>
+</div>
+	
+<h4>Click to see <a href={{surl}}>Score Board</a></h4>
 </body>
 {%- endraw %}
+	

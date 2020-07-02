@@ -2,24 +2,36 @@
 {% raw -%}
 <head>
   <title>Check Privileges - {{prefix}} {{level_name}}</title>
+  <style>
+   body { width:100%;text-align:center }
+    div {width:50%; word-wrap: break-word; text-align: left;}
+    span  {width:100%; background-color:teal;text-align:center;border-radius:5px;}
+   .main {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0;border-radius: 8px; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));}
+   
+  </style>
 </head>
 <body >
-<h1 style="text-align:center">Check Privileges {{prefix}} {{level_name}}</h1>
+<h1 >Check Privileges {{prefix}} {{level_name}}</h1>
+<h4>nonce: {{nonce}}</h4>
 
-
-<div style="width:80%;margin:auto;padding:auto; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));">
+<div class="main">
+<div>
 <h3>Message:</h3>
 <ul>
   <li>{{ msg }}</li>
 </ul> 
-  
-<h3>Permissions of role {{rn}}:</h3>
+</div>
+<div> 
+<h3>Permissions of custom role {{rn}}:</h3>
 <ol>
 {% for p in pers %} 
   <li>{{ p }}</li>
  {% endfor %}
 </ol>
-<span style="width:100%; background-color:teal;text-align:center">{{err}}</span>   
+</div>
+<div>
+<span >{{err}}</span>   
+</div>
 </div>
 </body>
 {%- endraw %}

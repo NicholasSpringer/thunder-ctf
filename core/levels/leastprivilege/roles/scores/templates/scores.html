@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% raw -%}
+<head>
+  <title>Least Privileges - Score - {{nonce}}</title>
+</head>
+<style>
+  body {text-align:center; width:100%;}
+  span  { background-color:#9358e0;text-align:center;border-radius: 5px;}
+ .main {width:80%; margin:auto;padding:auto; border-radius: 8px; background-image: linear-gradient(to right, rgb(246, 232, 255),white,rgb(246, 232, 255));}
+ .complete {background-color: rgb(209, 248, 248);}
+ .th {background-color:rgb(171, 88, 192);}
+ .tf {background-color:rgb(205, 185, 223);}
+ .container {display: flex; flex-direction: column; justify-content: center; align-items:space-around; align-content:center; margin:auto;padding:auto; width:80%; }
+ .row {display: flex; flex-direction: row; justify-content: center; align-content:center; }
+ .col { border:1px solid white; width: 50%;}
+</style>
+<body >
+<h1 >Least Privileges - Score</h1>
+<h4>nonce: {{nonce}}</h4>
+
+<div class="main" >
+
+
+<h2>User: {{ user }}</h2>
+
+{% if sum_score == total %} 
+
+<h3>Congratulations, all Least Privileges levels are completed.</h3>
+
+{% endif %}
+  
+<h3>Score Board</h3>
+<div class="container">
+
+<div class = "row th">
+  <div class="col">Level</div>
+  <div class="col">Score</div>
+</div>
+
+{% for k  in scores %} 
+
+{% if scores[k] > 0 %}
+<div class = "row complete">
+{% else %}
+<div class = "row">
+{% endif %}
+  <div class="col "><a href ={{a_urls[k]}} target="_blank">{{level_names[k]}}</a></div>
+  <div class="col"><a href ={{c_urls[k]}} target="_blank">{{ scores[k]}}</a>  /  10</div>
+</div>
+
+{% endfor %}
+
+<div class = "row tf">
+  <div class="col">Sum  /  Total</div>
+  <div class="col">{{sum_score}}  /  {{total}}</div>
+</div>
+
+
+
+</div>
+<br >
+<span >{{err}}</span>
+</div>
+<br>
+</body>
+{%- endraw %}

@@ -4,7 +4,7 @@ def main(request):
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	import os
-	#from cryptography.fernet import Fernet
+	
 
 	
 	# Set the project ID
@@ -56,17 +56,17 @@ def main(request):
 
 	if len(p_roles)>0:
 		msg = f'A primitive or predefined role currently attached to {RESOURCE_PREFIX}-access account. Please attach one custom role with least privilege permissions. '
-		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)
 
 	elif len(c_roles)==0:
 		msg = f'Did not find custom role attached to {RESOURCE_PREFIX}-access Role '
-		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)
 	elif len(c_roles)==1 and c_roles[0] != role_name :
 		msg = f'Custom role {c_roles[0]} currently attached to {RESOURCE_PREFIX}-access Role. Need custom role {role_name}.'
-		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)	
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)	
 	elif len(c_roles)>1:
 		msg = f'More than one custom roles attached to {RESOURCE_PREFIX}-access account. Please only attach one.'
-		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)
 	
 	else:
 
@@ -101,8 +101,8 @@ def main(request):
 				for p in PRI:
 					if p not in permissions:
 						msg='Not least privilege, please try again!'
-						return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+						return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)
 		
 
 		
-		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME)
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)
