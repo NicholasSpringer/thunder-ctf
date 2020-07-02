@@ -112,6 +112,8 @@ resources:
 - name: ct4-check
   type: service_account.jinja
 
+- name: scores
+  type: service_account.jinja
 
 {% block resources %}{% endblock %}
 
@@ -216,7 +218,14 @@ resources:
         - iam.roles.list
         - resourcemanager.projects.getIamPolicy
 
-    
+    - service_account_id: scores
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - iam.roles.list
+        - resourcemanager.projects.getIamPolicy
+
         
         
 

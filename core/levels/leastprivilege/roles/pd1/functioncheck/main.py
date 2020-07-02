@@ -64,4 +64,4 @@ def main(request):
 		permission =[]
 		err = str(e)
 	
-	return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=roles[0], err=err, prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME)
+	return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=roles[0], err=err, prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME,nonce=NONCE)

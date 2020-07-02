@@ -2,10 +2,30 @@
 {% raw -%}
 <head>
   <title>Least Privileges - {{prefix}} {{level_name}}</title>
+  <style>
+    body { width:100%;text-align:center }
+    div {width:80%; word-wrap: break-word; text-align: left;}
+    pre {width:80%;margin:auto; padding: auto; 
+        word-wrap: break-word; 
+        white-space: pre-wrap;       /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
+         }
+    .err {width:100%; background-color:teal;text-align:left;border-radius:5px;}
+   .main {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0;
+         border-radius: 8px; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));
+         }
+   .ins {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0; }
+   .code {width:100%; background-color:rgb(209, 227, 228);border-radius:8px;}
+  </style>
 </head>
 <body >
-<div>
-<h1 style="text-align:center">Least Privileges {{prefix}} {{level_name}}</h1>
+
+<h1>Least Privileges {{prefix}} {{level_name}}</h1>
+<h4>nonce: {{nonce}}</h4>
+<div class="ins">
 <ul>
   <li>A Bucket was created with the level and a txt file has been placed into the bucket</li>
   <li>Service account {{prefix}}-access has the role with permission to list content in bucket. However it's a role with permissions more than necessary</li>
@@ -17,33 +37,40 @@
 </div>
 
 
-<div style=" width:80%;margin:auto;padding:auto; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));">
-<h3>Bucket:</h3>
-<ul>
-	{% for r in resources %} 
-	  <li>{{ r }}</li>
-	{% endfor %}
-</ul> 
- <span style="width:100%;background-color:teal">
-{% if err|length>0 %} 
-<h4>Error:</h4>
-<ul>
-	{% for e in err %} 
-	  <li>{{ e }}</li>
-	{% endfor %}
-</ul>
-{% endif %}
-</span>    
-</div>
-
-<div style=" width:80%;margin:auto;padding:auto;" >
-  <h4>Source code of function that checks what roles bind with {{prefix}}-access :</h4>
-<pre style=" width:100%;margin:auto;padding:auto; background-color:rgb(147, 181, 182);">
-    name = f'{RESOURCE_PREFIX}-bucket-{NONCE}'
-    request = storage_api.objects().list(bucket=name).execute()["items"][0]
-    bucket = name + ' :  ' + request["name"]
-</pre>
-
-</div>
-</body>
-{%- endraw %}
+<div class="main">
+  <div>
+  <h3>Bucket:</h3>
+    <ul>
+      {% for r in resources %} 
+        <li>{{ r }}</li>
+      {% endfor %}
+    </ul> 
+  </div>
+  
+  {% if err|length>0 %} 
+  <div>
+  <h4>Error:</h4>
+  
+    {% for e in err %} 
+    <div class="err">{{ e }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  </div>
+  
+  
+  <div class="ins">
+  <div>
+    <h4>Source code of function that checks what roles bind with {{prefix}}-access :</h4>
+  </div>
+  <div class="code">
+<pre >name = f'{RESOURCE_PREFIX}-bucket-{NONCE}'
+request = storage_api.objects().list(bucket=name).execute()["items"][0]
+bucket = name + ' :  ' + request["name"]</pre>
+  </div>
+  </div>
+  
+  <h4>Click to see <a href={{surl}}>Score Board</a></h4>
+  </body>
+  {%- endraw %}
+  

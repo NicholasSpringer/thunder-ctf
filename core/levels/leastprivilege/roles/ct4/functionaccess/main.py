@@ -18,7 +18,8 @@ def main(request):
 	SERVICE_ACCOUNT_KEY_FILE = f'{RESOURCE_PREFIX}-access.json'
 	
 
-	
+	#score function url
+	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 	
 	
 	err=[]
@@ -27,8 +28,8 @@ def main(request):
 		#Build logging REST API python object
 		credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
 		client = logging.Client(credentials=credentials )
-		# filter = f"projects.setIamPolicy AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
-		# entry = list(client.list_entries(order_by="timestamp desc", filter_=filter))[0]
+		# filter = f"projects.setIamPolicy AND {NONCE} AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
+		# entries = client.list_entries(order_by="timestamp desc", filter_=filter)
 		logname = "cloudaudit.googleapis.com%2Factivity"
 		filter =f"projects.setIamPolicy AND {NONCE}"
 		logger = client.logger(logname)
@@ -46,7 +47,7 @@ def main(request):
 	url=f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
 	
 	
-	return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME,nonce=NONCE)
+	return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME,nonce=NONCE, surl=surl)
 
 	
 

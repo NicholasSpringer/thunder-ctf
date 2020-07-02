@@ -25,21 +25,25 @@ FARS = {
          'pd3':'roles/logging.viewer',
          'pd4':'roles/datastore.viewer',
          'ct1':['storage.buckets.list','compute.instances.list'],
-         'ct2':['storage.buckets.list'],
+         'ct2':['storage.objects.list'],
          'ct3':['compute.instances.list'],
          'ct4':['logging.logEntries.list']
         }
-KINDS = {'pd4':''}
+KINDS = ['pd4']
 BUCKETS = ['pd1','ct2']
-NONCE = ''
 
 
+()
 def create(second_deploy=False):
 
     # Create randomized bucket name to avoid namespace conflict
     nonce = str(random.randint(100000000000, 999999999999))
-    NONCE = nonce
-    
+    nonce_file =  f'core/levels/{LEVEL_PATH}/nonce.txt'
+    #write key file in function directory
+    with open(nonce_file, 'w') as f:
+        f.write(nonce)
+    os.chmod(nonce_file, 0o700)
+    print(f'Nonce {nonce} has been written to {nonce_file}')
     
 
     # Set role of default cloud function account
@@ -76,15 +80,14 @@ def create(second_deploy=False):
     # Create and insert data in datastore
     for k in KINDS:
         entities =[{'name': f'admin-{k}','password': 'admin1234','active': True},{'name': f'editor-{k}','password': '1111','active': True}]
-        KIND=f'{k}-Users-{nonce}-{project_id}'
-        KINDS[k]=KIND
+        kind =f'{k}-Users-{nonce}-{project_id}'
         client = datastore.Client(project_id)
         for entity in entities:
-            entity_key = client.key(KINDS[k])
+            entity_key = client.key(kind)
             task = datastore.Entity(key=entity_key)
             task.update(entity)
             client.put(task)
-        #print(f'Datastore {KIND}  created')
+        #print(f'Datastore {kind}  created')
 
 
     
@@ -119,10 +122,10 @@ def create(second_deploy=False):
         print(f'Key file: {RESOURCE_PREFIX}-check has been written to {func_namec}')
         
         #Generate function urls
-        func_template_argsc = {'fvar': fvar}
+        func_template_argc = {'fvar': fvar}
         func_upload_urla = cloudfunctions.upload_cloud_function(func_patha, FUNCTION_LOCATION)
-        func_upload_urlc = cloudfunctions.upload_cloud_function(func_pathc, FUNCTION_LOCATION,template_args=func_template_argsc)
-        #print(func_upload_urla)
+        func_upload_urlc = cloudfunctions.upload_cloud_function(func_pathc, FUNCTION_LOCATION,template_args=func_template_argc)
+       
         #Update deployment with functions
         config_template_args_patch = {f'funca_upload_url_{RESOURCE_PREFIX}':func_upload_urla, f'funcc_upload_url_{RESOURCE_PREFIX}':func_upload_urlc, 
                                        
@@ -131,6 +134,31 @@ def create(second_deploy=False):
 
         msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
         start_message += msg+'\n'
+
+    # scores funciton
+    #Generate scores key files
+    sa_keysc = iam.generate_service_account_key(f'scores')
+
+    func_pathsc = f'core/levels/{LEVEL_PATH}/scores'
+    func_namesc = f'{func_pathsc}/scores.json'
+
+    #write key file in scores function directory
+    with open(func_namesc, 'w') as f:
+        f.write(sa_keysc)
+    os.chmod(func_namesc, 0o700)
+    print(f'Key file: scores has been written to {func_namesc}')
+
+    #Generate scores function urls
+    func_template_arg = {'anws': FARS, 'level_names':LEVEL_NAMES}
+    func_upload_urlsc = cloudfunctions.upload_cloud_function(func_pathsc, FUNCTION_LOCATION,template_args=func_template_arg)
+
+    login_user = os.environ.get('USER', 'USER is not set.')
+    #Update deployment with functions
+    config_template_args_patch = {'funcc_upload_url_scores':func_upload_urlsc, 'login_user':login_user}
+    config_template_args.update(config_template_args_patch)
+
+    msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/scores-f-{nonce}'
+    start_message += '\nScores :\nLinks of level entrypoints included \n'+ msg+'\n'
 
 
     if second_deploy:
@@ -143,56 +171,93 @@ def create(second_deploy=False):
         levels.write_start_info(LEVEL_PATH, start_message)
         
     except Exception as e: 
-        print(' ')
+        exit()
 
+def read_nonce():
+    nonce_file =  f'core/levels/{LEVEL_PATH}/nonce.txt'
+    level_nonce = ''
+    try:
+        f = open(nonce_file, "r")
+        level_nonce = f.read()
+    except Exception as e: 
+        print(str(e))
+    return level_nonce
 
-def delete_custom_roles():
-    print(f'Deleting custom roles')
-    credentials, project_id = google.auth.default()
+def delete_nonce_file():
+    try:
+        print(f'Deleting nonce file')
+        nonce_file =  f'core/levels/{LEVEL_PATH}/nonce.txt'
+        if os.path.exists(nonce_file):
+            os.remove(nonce_file)
+    except Exception as e: 
+        print(str(e))
+
+def delete_key_files():
+    try:
+        print(f'Deleting json key files')
+        for RESOURCE_PREFIX in LEVEL_NAMES:
+            actpatha=f'core/levels/{LEVEL_PATH}/{RESOURCE_PREFIX}/functionaccess/{RESOURCE_PREFIX}-access.json'
+            # Delete key files
+            if os.path.exists(actpatha):
+                os.remove(actpatha)
+            actpathc=f'core/levels/{LEVEL_PATH}/{RESOURCE_PREFIX}/functioncheck/{RESOURCE_PREFIX}-check.json'
+            if os.path.exists(actpathc):
+                os.remove(actpathc)
+    except Exception as e: 
+        print(str(e))
+    
+
+def delete_custom_roles(credentials, project_id):
     service = discovery.build('iam','v1', credentials=credentials)
     parent = f'projects/{project_id}'
     try:
-        roles = service.projects().roles().list(parent= parent, showDeleted = False).execute()['roles']
-        if len(roles)!=0:
-            pattern = f'projects/{project_id}/roles/ct'
-            for role in roles:
-                if re.search(rf"{pattern}[0-9]_access_role_{NONCE}", role['name'], re.IGNORECASE):
-                    print(role['name'])
-                    try:
-                        service.projects().roles().delete(name= role['name']).execute()
-                    except Exception as e:
-                        print('Delete error: '+str(e))
+        response = service.projects().roles().list(parent= parent, showDeleted = False).execute()
+        if 'roles' in response:
+            roles = response['roles']
+            if len(roles)!=0:
+                print(f'Deleting custom roles ')
+                NONCE = read_nonce()
+                pattern = f'projects/{project_id}/roles/ct'
+                for role in roles:
+                    if re.search(rf"{pattern}[0-9]*_access_role_{NONCE}", role['name'], re.IGNORECASE):
+                        print(role['name'])
+                        try:
+                            service.projects().roles().delete(name= role['name']).execute()
+                        except Exception as e:
+                            print('Delete error: '+str(e))
+                
     except Exception as e: 
         print('Error: '+str(e))
 
-def destroy():
-    #Delete datastore
+def  delete_entities(project_id):
     print('Deleting entities')
+    nonce = read_nonce()
     try:
         client = datastore.Client()
         for k in KINDS:
-            query = client.query(kind=KINDS[k])
+            kind =f'{k}-Users-{nonce}-{project_id}'
+            query = client.query(kind=kind)
             entities = query.fetch()
             for entity in entities:
                 client.delete(entity.key)
     except Exception as e: 
         print(str(e))
 
+def destroy():
+
+    credentials, project_id = google.auth.default()
+    #Delete datastore entity
+    delete_entities(project_id)
 
     # Delete starting files
     levels.delete_start_files()
-    print(f'Deleting json key files')
-    for RESOURCE_PREFIX in LEVEL_NAMES:
-        actpatha=f'core/levels/{LEVEL_PATH}/{RESOURCE_PREFIX}/functionaccess/{RESOURCE_PREFIX}-access.json'
-        # Delete key files
-        if os.path.exists(actpatha):
-            os.remove(actpatha)
-        actpathc=f'core/levels/{LEVEL_PATH}/{RESOURCE_PREFIX}/functioncheck/{RESOURCE_PREFIX}-check.json'
-        if os.path.exists(actpathc):
-            os.remove(actpathc)
+
+    #delete sa keys
+    delete_key_files()
 
     # Delete deployment
     deployments.delete()
-    delete_custom_roles()
-    
 
+    delete_custom_roles(credentials, project_id)
+    
+    delete_nonce_file()
