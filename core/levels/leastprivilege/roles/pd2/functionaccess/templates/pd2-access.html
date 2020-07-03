@@ -2,6 +2,9 @@
 {% raw -%}
 <head>
   <title>Least Privileges - {{prefix}} {{level_name}}</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <style>
     body { width:100%;text-align:center }
     div {width:80%; word-wrap: break-word; text-align: left;}
@@ -13,9 +16,12 @@
         white-space: -o-pre-wrap;    /* Opera 7 */
         word-wrap: break-word;       /* Internet Explorer 5.5+ */
          }
-    .err {width:100%; background-color:teal;text-align:left;border-radius:5px;}
-   .main {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0;
-         border-radius: 8px; background-image: linear-gradient(to right, rgb(34, 230, 238),white,rgb(34, 230, 238));
+	.err {width:100%; text-align:left;border-radius:5px; 
+         background-image: linear-gradient(0.25turn,teal,rgb(176, 228, 231),rgb(226, 248, 250)); 
+          }
+    .main {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0;
+         border-radius: 8px; 
+         background-image: linear-gradient(0.25turn,rgb(74, 229, 235),rgb(209, 227, 228),white); 
          }
    .ins {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0; }
    .code {width:100%; background-color:rgb(209, 227, 228);border-radius:8px;}
