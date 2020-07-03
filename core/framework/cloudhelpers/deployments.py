@@ -182,6 +182,7 @@ def patch(level_path, template_files=[],
         print(str(e))
 
     if not second_deploy:
+        #destroy and restart deployment if error in patching operation
         _wait_for_patch(op_name, deployment_api,
                             project_id, level_path=level_path)
     else:
@@ -274,6 +275,7 @@ def _wait_for_operation(op_name, deployment_api, project_id, level_path=None):
 
 def _wait_for_patch(op_name, deployment_api, project_id, level_path=None):
     # Wait till  operation finishes, giving updates every 5 seconds
+    #destroy and restart deployment if error in patching operation
     op_done = False
     t = 0
     start_time = time.time()

@@ -137,7 +137,7 @@ def insert(level_path, template_files=[],
 
 
 def patch(level_path, template_files=[],
-           config_template_args={}, labels={}):
+           config_template_args={}, labels={}, second_deploy = False):
      &#39; &#39; &#39;Patches a deployment using deployment manager, importing any specified template files. 
         If template arguments are included, the top level configuration file will be rendered using Jinja2.
 
@@ -152,6 +152,7 @@ def patch(level_path, template_files=[],
             and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
             Labels are the recommended way to store any information that will be necessary for level deletion.
             The keyword  &#34;level &#34; is reserved for storing the active level path.
+        second_deploy (boolean): Automatically start destroy level and recreate if set to True
      &#39; &#39; &#39;
     # Get current credentials from environment variables and build deployment API object
     credentials, project_id = google.auth.default()
@@ -197,11 +198,21 @@ def patch(level_path, template_files=[],
                   &#34;content &#34;: _read_render_config(schema_path)})
     
     # Send patch request then wait for operation
-    operation = deployment_api.deployments().patch(
-        project=project_id, deployment= &#39;thunder &#39;, body=request_body).execute()
-    op_name = operation[ &#39;name &#39;]
-    _wait_for_operation(op_name, deployment_api,
-                        project_id, level_path=level_path)
+    try:
+        operation = deployment_api.deployments().patch(
+            project=project_id, deployment= &#39;thunder &#39;, body=request_body).execute()
+        op_name = operation[ &#39;name &#39;]
+    except Exception as e: 
+        print(str(e))
+
+    if not second_deploy:
+        #destroy and restart deployment if error in patching operation
+        _wait_for_patch(op_name, deployment_api,
+                            project_id, level_path=level_path)
+    else:
+
+        _wait_for_operation(op_name, deployment_api,
+                            project_id, level_path=level_path)
 
 def delete():
     &#39;&#39;&#39;Deletes the active deployment. 
@@ -281,6 +292,36 @@ def _wait_for_operation(op_name, deployment_api, project_id, level_path=None):
             level_module.destroy()
             exit()
 
+def _wait_for_patch(op_name, deployment_api, project_id, level_path=None):
+    # Wait till  operation finishes, giving updates every 5 seconds
+    #destroy and restart deployment if error in patching operation
+    op_done = False
+    t = 0
+    start_time = time.time()
+    time_string = &#39;&#39;
+    while not op_done:
+        time_string = f&#39;[{int(t/60)}m {(t%60)//10}{t%10}s]&#39;
+        sys.stdout.write(
+            f&#39;\r{time_string}Deployment patching in progress...&#39;)
+        t += 5
+        while t &lt; time.time()-start_time:
+            t += 5
+        time.sleep(t-(time.time()-start_time))
+        op_status = deployment_api.operations().get(
+            project=project_id,
+            operation=op_name).execute()[&#39;status&#39;]
+        op_done = (op_status == &#39;DONE&#39;)
+    sys.stdout.write(
+        f&#39;\r{time_string}Deployment patching in progress... Done\n&#39;)
+    operation = op_status = deployment_api.operations().get(
+        project=project_id,
+        operation=op_name).execute()
+    if &#39;error&#39; in operation and level_path:
+        print(&#34;\nDeployment patching Error:\n&#34; + yaml.dump(operation[&#39;error&#39;]))
+        print(&#34;\nSecond try of deploymnent&#34;)
+        level_module = levels.import_level(level_path)
+        level_module.destroy()
+        level_module.create(True)
 
 def get_labels():
     &#39;&#39;&#39;Queries the Deployment Manager API to retrieve the labels on the active level&#39;s deployment.
@@ -505,7 +546,7 @@ The keyword "level" is reserved for storing the active level path.</dd>
 </details>
 </dd>
 <dt id="framework.cloudhelpers.deployments.patch"><code class="name flex">
-    <span>def <span class="ident">patch</span></span>(<span>level_path, template_files=[], config_template_args={}, labels={})</span>
+    <span>def <span class="ident">patch</span></span>(<span>level_path, template_files=[], config_template_args={}, labels={}, second_deploy = False)</span>
     </code></dt>
     <dd>
     <section class="desc"><p>Patches a deployment using deployment manager, importing any specified template files.
@@ -526,11 +567,13 @@ The keyword "level" is reserved for storing the active level path.</dd>
     and can be retrieved later using <a title="framework.cloudhelpers.deployments.get_labels" href="#framework.cloudhelpers.deployments.get_labels"><code>get_labels()</code></a>.
     Labels are the recommended way to store any information that will be necessary for level deletion.
     The keyword "level" is reserved for storing the active level path.</dd>
+    <dt><strong><code>second_deploy</code></strong> :&ensp;<code>boolean</code></dt>
+    <dd>Automatically start destroy level and recreate if set to True</dd>
     </dl></section>
     <details class="source">
     <summary>Source code</summary>
     <pre><code class="python">def patch(level_path, template_files=[],
-               config_template_args={}, labels={}):
+               config_template_args={}, labels={},second_deploy = False):
          &#39; &#39; &#39;Patches a deployment using deployment manager, importing any specified template files. 
             If template arguments are included, the top level configuration file will be rendered using Jinja2.
     
@@ -545,6 +588,7 @@ The keyword "level" is reserved for storing the active level path.</dd>
                 and can be retrieved later using `framework.cloudhelpers.deployments.get_labels`.
                 Labels are the recommended way to store any information that will be necessary for level deletion.
                 The keyword  &#34;level &#34; is reserved for storing the active level path.
+            second_deploy (boolean): Automatically start destroy level and recreate if set to True
          &#39; &#39; &#39;
         # Get current credentials from environment variables and build deployment API object
         credentials, project_id = google.auth.default()
@@ -590,11 +634,20 @@ The keyword "level" is reserved for storing the active level path.</dd>
                       &#34;content &#34;: _read_render_config(schema_path)})
         
         # Send patch request then wait for operation
-        operation = deployment_api.deployments().patch(
-            project=project_id, deployment= &#39;thunder &#39;, body=request_body).execute()
-        op_name = operation[ &#39;name &#39;]
-        _wait_for_operation(op_name, deployment_api,
-                            project_id, level_path=level_path)</code></pre>
+        try:
+            operation = deployment_api.deployments().patch(
+                project=project_id, deployment= &#39;thunder &#39;, body=request_body).execute()
+            op_name = operation[ &#39;name &#39;]
+        except Exception as e: 
+            print(str(e))
+
+        if not second_deploy:
+            #destroy and restart deployment if error in patching operation
+            _wait_for_patch(op_name, deployment_api,
+                                project_id, level_path=level_path)
+        else:
+            _wait_for_operation(op_name, deployment_api,
+                                project_id, level_path=level_path)</code></pre>
     </details>
     </dd>    
 </dl>
