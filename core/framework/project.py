@@ -116,6 +116,8 @@ def setup_project():
                          'sourceRanges': ['0.0.0.0/0'],
                          'targetTags': ['http-server']}
         compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
+    
+    _enable_data_access_audit_logs(credentials, project_id, "storage.googleapis.com")
 
 
 def create_app_engine():
@@ -167,3 +169,45 @@ def _wait_for_api_op(op_name, services_api):
             op_done = response['done']
     sys.stdout.write(
         f'\r{time_string} Enabling APIs... Done\n')
+
+def _enable_data_access_audit_logs(credentials, project_id, service):
+    auditConfig = {
+        "service": service,
+        "auditLogConfigs": [
+          {
+            "logType": "ADMIN_READ"
+          },
+          {
+            "logType": "DATA_READ"
+          },
+          {
+            "logType": "DATA_WRITE"
+          }
+        ]
+      }
+    resource = project_id
+    try:
+        #get current iam policy
+        service = discovery.build('cloudresourcemanager', 'v1', credentials=credentials)
+        get_iam_policy_request_body = {}
+        current_policy = service.projects().getIamPolicy(resource=resource, body=get_iam_policy_request_body).execute()
+        if "auditConfigs" in current_policy:
+            auditConfigs = current_policy ["auditConfigs"].append(auditConfig)
+        else:
+            auditConfigs = [auditConfig]
+        
+        
+        set_iam_policy_request_body = {
+            "policy": {
+                "auditConfigs": auditConfigs
+            },
+            "updateMask": "auditConfigs,etag"
+        }
+
+        
+        #set iam policy to enable data access audit logs
+        set_iam = service.projects().setIamPolicy(resource=resource, body=set_iam_policy_request_body).execute()
+        
+    except Exception as e:
+        print(str(e))
+    
