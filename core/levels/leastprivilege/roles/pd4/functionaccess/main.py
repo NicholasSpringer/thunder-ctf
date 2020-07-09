@@ -25,7 +25,7 @@ def main(request):
 	err=[]
 	resources = []
 	try:
-		kind=f'{RESOURCE_PREFIX}-Users-{NONCE}-{PROJECT_ID}'
+		kind=f'{RESOURCE_PREFIX}-{NONCE}-{PROJECT_ID}'
 		query = client.query(kind=kind)
 		for q in list(query.fetch()):
 			resources.append({'kind':kind,'name': q['name'],'password': q['password'],'active': q['active']})

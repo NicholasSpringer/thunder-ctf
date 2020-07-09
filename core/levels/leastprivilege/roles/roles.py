@@ -80,7 +80,7 @@ def create(second_deploy=False):
     # Create and insert data in datastore
     for k in KINDS:
         entities =[{'name': f'admin-{k}','password': 'admin1234','active': True},{'name': f'editor-{k}','password': '1111','active': True}]
-        kind =f'{k}-Users-{nonce}-{project_id}'
+        kind =f'{k}-{nonce}-{project_id}'
         client = datastore.Client(project_id)
         for entity in entities:
             entity_key = client.key(kind)
@@ -235,7 +235,7 @@ def  delete_entities(project_id):
     try:
         client = datastore.Client()
         for k in KINDS:
-            kind =f'{k}-Users-{nonce}-{project_id}'
+            kind =f'{k}-{nonce}-{project_id}'
             query = client.query(kind=kind)
             entities = query.fetch()
             for entity in entities:

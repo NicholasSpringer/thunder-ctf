@@ -117,7 +117,9 @@ def setup_project():
                          'targetTags': ['http-server']}
         compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
     
-    _enable_data_access_audit_logs(credentials, project_id, "storage.googleapis.com")
+    services_logtypes = {"storage.googleapis.com":[],"compute.googleapis.com":[],"logging.googleapis.com":["DATA_READ"]}
+    _enable_data_access_audit_logs(credentials, project_id, services_logtypes)
+    
 
 
 def create_app_engine():
@@ -170,21 +172,33 @@ def _wait_for_api_op(op_name, services_api):
     sys.stdout.write(
         f'\r{time_string} Enabling APIs... Done\n')
 
-def _enable_data_access_audit_logs(credentials, project_id, service):
-    auditConfig = {
-        "service": service,
-        "auditLogConfigs": [
-          {
-            "logType": "ADMIN_READ"
-          },
-          {
-            "logType": "DATA_READ"
-          },
-          {
-            "logType": "DATA_WRITE"
-          }
-        ]
-      }
+def _enable_data_access_audit_logs(credentials, project_id, services_logtypes):
+    new_auditConfigs=[]
+    for service in services_logtypes:
+        if len(services_logtypes[service]) == 0:
+            auditConfig = {
+                "service": service,
+                "auditLogConfigs": [
+                {
+                    "logType": "ADMIN_READ"
+                },
+                {
+                    "logType": "DATA_READ"
+                },
+                {
+                    "logType": "DATA_WRITE"
+                }
+                ]
+            }
+            
+        else:
+            auditLogConfigs = []
+            for logType in services_logtypes[service]:
+                auditLogConfigs.append({ "logType": logType})
+            auditConfig = {"service": service, "auditLogConfigs": auditLogConfigs}
+
+        new_auditConfigs.append(auditConfig)
+
     resource = project_id
     try:
         #get current iam policy
@@ -192,9 +206,9 @@ def _enable_data_access_audit_logs(credentials, project_id, service):
         get_iam_policy_request_body = {}
         current_policy = service.projects().getIamPolicy(resource=resource, body=get_iam_policy_request_body).execute()
         if "auditConfigs" in current_policy:
-            auditConfigs = current_policy ["auditConfigs"].append(auditConfig)
+            auditConfigs = current_policy ["auditConfigs"].extend(new_auditConfigs)
         else:
-            auditConfigs = [auditConfig]
+            auditConfigs = new_auditConfigs
         
         
         set_iam_policy_request_body = {
@@ -204,7 +218,7 @@ def _enable_data_access_audit_logs(credentials, project_id, service):
             "updateMask": "auditConfigs,etag"
         }
 
-        
+        #print(str(set_iam_policy_request_body))
         #set iam policy to enable data access audit logs
         set_iam = service.projects().setIamPolicy(resource=resource, body=set_iam_policy_request_body).execute()
         
