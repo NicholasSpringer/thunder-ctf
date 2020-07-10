@@ -17,13 +17,16 @@ LEVEL_PATH = 'leastprivilege/roles'
 #RESOURCE_PREFIX = 'c6'
 FUNCTION_LOCATION = 'us-central1'
 #LEVEL_NAME ='project'
-LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute','pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore','ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'}
+LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute',
+                'pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore', 'pd5': 'PredefinedRole-Vision',
+               'ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'}
 FARS = {
-         'pr':'roles/viewer',
-         'pd1':'roles/storage.objectViewer',
-         'pd2':'roles/compute.viewer',
-         'pd3':'roles/logging.viewer',
-         'pd4':'roles/datastore.viewer',
+         'pr':['roles/viewer'],
+         'pd1':['roles/storage.objectViewer'],
+         'pd2':['roles/compute.viewer'],
+         'pd3':['roles/logging.viewer'],
+         'pd4':['roles/datastore.viewer'],
+         'pd5':['roles/datastore.user','roles/storage.admin'],
          'ct1':['storage.buckets.list','compute.instances.list'],
          'ct2':['storage.objects.list'],
          'ct3':['compute.instances.list'],
@@ -31,9 +34,10 @@ FARS = {
         }
 KINDS = ['pd4']
 BUCKETS = ['pd1','ct2']
+#entires created in cloud function
+F_KINDS =['pd5']
 
 
-()
 def create(second_deploy=False):
 
     # Create randomized bucket name to avoid namespace conflict
@@ -232,9 +236,12 @@ def delete_custom_roles(credentials, project_id):
 def  delete_entities(project_id):
     print('Deleting entities')
     nonce = read_nonce()
+    all_kinds = []
+    all_kinds .extend(KINDS)
+    all_kinds.extend(F_KINDS)
     try:
         client = datastore.Client()
-        for k in KINDS:
+        for k in all_kinds:
             kind =f'{k}-{nonce}-{project_id}'
             query = client.query(kind=kind)
             entities = query.fetch()

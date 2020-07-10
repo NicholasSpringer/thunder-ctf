@@ -18,7 +18,7 @@ def main(request):
 	# fvar1 = os.environ.get('fvar1', 'Specified environment variable is not set.').encode("utf-8") 
 	# f = Fernet(key)
 	# PRI = f.decrypt(fvar1).decode("utf-8") 
-	PRI = '{{fvar|safe}}'
+	PRI = {{fvar|safe}}[0]
 	
 	#pri="".join(PRI.split()).split(',')
 

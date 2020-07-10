@@ -1,0 +1,3 @@
+google-cloud-datastore
+google-cloud-storage
+google-cloud-vision

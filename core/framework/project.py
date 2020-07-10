@@ -90,7 +90,8 @@ def setup_project():
         'deploymentmanager.googleapis.com',
         'storage-api.googleapis.com',
         'storage-component.googleapis.com',
-        'appengine.googleapis.com'
+        'appengine.googleapis.com',
+        'vision.googleapis.com'
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
@@ -117,8 +118,11 @@ def setup_project():
                          'targetTags': ['http-server']}
         compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
     
-    services_logtypes = {"storage.googleapis.com":[],"compute.googleapis.com":[],"logging.googleapis.com":["DATA_READ"]}
-    _enable_data_access_audit_logs(credentials, project_id, services_logtypes)
+    services_logtypes = {"storage.googleapis.com":"all","compute.googleapis.com":"all","logging.googleapis.com":["DATA_READ"]}
+    confirmed = 'y' == input(
+            f'Turn on audit logging for selected services {services_logtypes}? [y/n]: ').lower().strip()[0]
+    if(confirmed):
+        _enable_data_access_audit_logs(credentials, project_id, services_logtypes)
     
 
 
@@ -175,7 +179,7 @@ def _wait_for_api_op(op_name, services_api):
 def _enable_data_access_audit_logs(credentials, project_id, services_logtypes):
     new_auditConfigs=[]
     for service in services_logtypes:
-        if len(services_logtypes[service]) == 0:
+        if len(services_logtypes[service]) == "all":
             auditConfig = {
                 "service": service,
                 "auditLogConfigs": [

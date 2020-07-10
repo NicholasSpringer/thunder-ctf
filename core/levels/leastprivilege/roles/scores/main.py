@@ -4,6 +4,7 @@ def main(request):
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	import os
+	import collections 
 	#from cryptography.fernet import Fernet
 
 	
@@ -72,7 +73,7 @@ def main(request):
 
 	for l in ANWS:	
 		if l.startswith('p'):
-			if len(level_bindings[l])==1 and level_bindings[l][0] == ANWS[l]:
+			if len(level_bindings[l])==len(ANWS[l]) and collections.Counter(level_bindings[l]) == collections.Counter(ANWS[l]):
 				scores[l] += 10 
 				sum_score += scores[l]
 
