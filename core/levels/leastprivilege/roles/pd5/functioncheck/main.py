@@ -14,11 +14,8 @@ def main(request):
 	RESOURCE_PREFIX = os.environ.get('RESOURCE_PREFIX', 'Specified environment variable is not set.')
 	LEVEL_NAME = os.environ.get('LEVEL_NAME', 'Specified environment variable is not set.')
 
-	# key = os.environ.get('fvar2', 'Specified environment variable is not set.').encode("utf-8") 
-	# fvar1 = os.environ.get('fvar1', 'Specified environment variable is not set.').encode("utf-8") 
-	# f = Fernet(key)
-	# PRI = f.decrypt(fvar1).decode("utf-8") 
-	PRI = {{fvar|safe}}[0]
+	
+	PRI = {{fvar|safe}}
 	
 	#pri="".join(PRI.split()).split(',')
 
@@ -34,34 +31,46 @@ def main(request):
 	get_iam_policy_request_body = {}
 	
 	roles =[]
-	permissions =[]
+	permissions ={}
 	msg = ''
 	err=''
 	try:
-		bindings = service_r.projects().getIamPolicy(resource=PROJECT_ID, body=get_iam_policy_request_body).execute()["bindings"]
+		bindings = service_r.projects().getIamPolicy(resource=PROJECT_ID, body=get_iam_policy_request_body).execute()['bindings']
 		for r in bindings:
-			if sa in r["members"]:
-				roles.append(r["role"])
+			if sa in r['members'] and r['role'].startswith('roles/'):
+				roles.append(r['role'])
+				permissions[r['role']]=[]
 	except Exception as e: 
-		permissions =[]
 		msg ='There is an error'
 		err = str(e)
-	if len(roles)>1 or PRI != roles[0]:
-		msg='Not least privilege role, please try again!'
+		return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, err=err, prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME,nonce=NONCE)
+	
+	if 'roles/owner' in roles:
+		msg='You have project owner role attached, please try again!'
 	else:
-		msg='Congratulations! You got the least privilege role.'
-		
-		
+
+		if  len(PRI)  > len(roles):
+			msg='Not sufficient roles, please try again!'
+		elif  len(PRI)  < len(roles):
+			msg='Too many roles, please try again!'
+		else :
+			msg='Congratulations! You got the least privilege role.'
+			for p in PRI:
+				if p not in roles:
+					msg='Not least privilege, please try again!'
+					break
+	
 	# Build iam  REST API python object
 	service_i = discovery.build('iam','v1', credentials=credentials)
 
 	
 	try:
-		permissions = service_i.roles().get(name=roles[0]).execute()["includedPermissions"]
+		for rn in permissions:
+			permissions[rn] = service_i.roles().get(name=rn).execute()["includedPermissions"]
 		
 		
 	except Exception as e: 
-		permission =[]
 		err = str(e)
+		msg ='There is an error'
 	
-	return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=roles[0], err=err, prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME,nonce=NONCE)
+	return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, err=err, prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME,nonce=NONCE)

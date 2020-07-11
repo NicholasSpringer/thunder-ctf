@@ -20,7 +20,7 @@ def main(request):
 	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 
 	#Build storage REST API python object
-	storage_api = discovery.build('storage', 'v1', credentials=credentials)
+	storage_api = discovery.build('storage', 'v1', credentials=credentials,cache_discovery=False)
 	name = f'{RESOURCE_PREFIX}-bucket-{NONCE}'
 	err=[]
 	resources = []

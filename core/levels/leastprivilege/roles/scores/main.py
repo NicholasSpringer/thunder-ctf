@@ -4,6 +4,7 @@ def main(request):
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	import os
+	import collections 
 	#from cryptography.fernet import Fernet
 
 	
@@ -72,29 +73,46 @@ def main(request):
 
 	for l in ANWS:	
 		if l.startswith('p'):
-			if len(level_bindings[l])==1 and level_bindings[l][0] == ANWS[l]:
+			if len(level_bindings[l])==len(ANWS[l]) and collections.Counter(level_bindings[l]) == collections.Counter(ANWS[l]):
 				scores[l] += 10 
 				sum_score += scores[l]
 
 		else:
 			#role name
 			role_name = f'projects/{PROJECT_ID}/roles/{l}_access_role_{NONCE}'
-			if len(level_bindings[l])==1 and level_bindings[l][0] == role_name:
-				for role in roles:
-					if role['name'] == role_name:
-						permissions = role['includedPermissions']
-						if len(permissions)==len(ANWS[l]):
-							least = True
-							for p in ANWS[l]:
-								if p not in permissions:
-									least = False
-									break	
-							if least == True:
-								scores[l] += 10	
-								sum_score += scores[l]
+			if 'predefined' not in ANWS[l]:
+				if len(level_bindings[l])==1 and level_bindings[l][0] == role_name:
+					for role in roles:
+						if role['name'] == role_name:
+							permissions = role['includedPermissions']
+							if len(permissions)==len(ANWS[l]):
+								least = True
+								for p in ANWS[l]:
+									if p not in permissions:
+										least = False
+										break	
+								if least == True:
+									scores[l] += 10	
+									sum_score += scores[l]
+			else:
+				if role_name in level_bindings[l]:
+					correct_bindings = [role_name]
+					correct_bindings.extend(ANWS[l]['predefined'])
+					if len(level_bindings[l])==len(correct_bindings) and collections.Counter(level_bindings[l]) == collections.Counter(correct_bindings):
+						scores[l] += 5 
+						sum_score += scores[l]
 
-	
-		
+					for role in roles:
+						if role['name'] == role_name:
+							permissions = role['includedPermissions']
+							if len(permissions)==len(ANWS[l]['custom']):
+								least = True
+								for p in ANWS[l]['custom']:
+									if p not in permissions:
+										least = False
+										break	
+								if least == True:
+									scores[l] += 5	
+									sum_score += scores[l]
 
-		
 	return render_template(f'scores.html', scores=scores, user=LOGIN_USER, err=err, level_names=LEVEL_NAMES, total=total, sum_score=sum_score,nonce=NONCE,c_urls=c_urls,a_urls=a_urls )

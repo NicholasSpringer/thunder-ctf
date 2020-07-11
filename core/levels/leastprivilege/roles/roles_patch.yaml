@@ -129,6 +129,30 @@
       service_account_id: allusers
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd4}},"LEVEL_NAME":{{level_name_pd4}}}
 
+- name: pd5-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_pd5 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd5}},"LEVEL_NAME":{{level_name_pd5}}}
+
+- name: pd5-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_pd5 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd5}},"LEVEL_NAME":{{level_name_pd5}}}
+
 - name: ct1-f-access
   type: cloud_function.jinja
   properties:
@@ -227,6 +251,29 @@
       service_account_id: allusers
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct4}},"LEVEL_NAME":{{level_name_ct4}}}
 
+- name: ct5-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct5 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct5}},"LEVEL_NAME":{{level_name_ct5}}}
+
+- name: ct5-f-check
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct5 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      service_account_id: allusers
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct5}},"LEVEL_NAME":{{level_name_ct5}}}
 
 - name: scores-f
   type: cloud_function.jinja
