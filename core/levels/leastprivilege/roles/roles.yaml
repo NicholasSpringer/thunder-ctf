@@ -124,6 +124,18 @@ resources:
 - name: ct4-check
   type: service_account.jinja
 
+- name: ct5-access
+  type: service_account.jinja
+
+- name: ct5-check
+  type: service_account.jinja
+
+- name: ct5-bucket
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }}
+    predefined_acl: private
+
 - name: scores
   type: service_account.jinja
 
@@ -236,6 +248,23 @@ resources:
         custom_nonce: {{ nonce }}
         permissions:
         - iam.roles.list
+        - resourcemanager.projects.getIamPolicy
+
+    - service_account_id: ct5-access
+      role:
+        name: roles/storage.admin
+
+    - service_account_id: ct5-access
+      role:
+        name: roles/datastore.owner
+
+    - service_account_id: ct5-check
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - iam.roles.list
+        - iam.roles.get
         - resourcemanager.projects.getIamPolicy
 
     - service_account_id: scores

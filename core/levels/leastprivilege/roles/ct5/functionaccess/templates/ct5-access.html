@@ -40,7 +40,7 @@
 
 <div class="ins">
 <ul>
-  <li>Service account {{prefix}}-access has the role with permissions to perform the following tasks (read source code for more details):<br>
+  <li>Service account {{prefix}}-access has two predefined roles attached to perform the following tasks (read source code for more details):<br>
       <small class="inlist">Upload image to cloud storage<br> </small>
       <small class="inlist">Analyze image with cloud vision API<br> </small>
       <small class="inlist">Insert analyzed resutls into datastore <br> </small>
@@ -48,11 +48,16 @@
       <small class="inlist">&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp; &vellip;<br> </small>
       <span class="inlist"></span>
   </li>
-  <li>Upload an image to see what would happen and look for the least privilege role(s) that allow you to complete the same tasks</li>
+  <li>Upload an image to see what would happen and look for the least privilege role(s) and permissions that allow you to complete the same tasks</li>
   <li>Use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-access</li>
-  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-access in the list  and edit role 
+  <li>In this level, you need to detatch the original roles of {{prefix}}-access and create custom role with least privilege permissions attach to it.</li>
+  <li>Certain pemissions are not supported in custom role by Google Cloud. In this case, you can attach an additional predefined role which contains the unsupported permissions.
+    <br><b>Note</b> that the predefined role(s) you choose has to be the one with least privileges
+  </li>
+  <li>Go to google cloud console IAM&Admin -> Roles, create a new role with ID <b>{{prefix}}_access_role_{{nonce}}</b>. Don't forget to add permissions </li>
+  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-access in the list and edit role 
     <br><b>Hint:</b>You can attach multiple roles</li>
-  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud IAM roles</b></li>
+  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct answer</li>
   <li>To validate if there are sufficient permissions, reload current function and upload another image.</li>
 </ul>  
 </div>

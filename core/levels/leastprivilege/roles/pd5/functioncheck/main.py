@@ -71,5 +71,6 @@ def main(request):
 		
 	except Exception as e: 
 		err = str(e)
+		msg ='There is an error'
 	
 	return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, err=err, prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME,nonce=NONCE)

@@ -20,7 +20,7 @@ def main(request):
 	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 
 	#Build instance REST API python object
-	instance_api = discovery.build('compute', 'v1', credentials=credentials)
+	instance_api = discovery.build('compute', 'v1', credentials=credentials,cache_discovery=False)
 	err=[]
 	resources=[]
 	url=f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'

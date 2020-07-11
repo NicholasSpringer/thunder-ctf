@@ -1,6 +1,5 @@
 from flask import render_template
 def main(request):
-	from googleapiclient import discovery
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	from google.cloud import datastore

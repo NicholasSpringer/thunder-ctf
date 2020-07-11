@@ -1,6 +1,7 @@
 #https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/codelabs/flex_and_vision/main.py
 from flask import render_template,redirect
 def main(request):
+	from googleapiclient import discovery
 	import google.oauth2.service_account
 	from google.oauth2.credentials import Credentials
 	from google.cloud import datastore, storage, vision
