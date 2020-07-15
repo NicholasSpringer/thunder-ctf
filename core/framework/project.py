@@ -118,7 +118,7 @@ def setup_project():
                          'targetTags': ['http-server']}
         compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
     
-    services_logtypes = {"storage.googleapis.com":"all","compute.googleapis.com":"all","logging.googleapis.com":["DATA_READ"]}
+    services_logtypes = {"storage.googleapis.com":"all","compute.googleapis.com":"all","logging.googleapis.com":["DATA_READ"],"iamcredentials.googleapis.com":"all"}
     confirmed = 'y' == input(
             f'Turn on audit logging for selected services {services_logtypes}? [y/n]: ').lower().strip()[0]
     if(confirmed):
