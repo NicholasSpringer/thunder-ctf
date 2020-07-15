@@ -19,6 +19,14 @@ resources:
   properties:
     zone: us-west1-b
     open_external: true
+    startup_script: |
+      #!/bin/bash
+      curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh
+      sudo bash add-logging-agent-repo.sh
+      sudo apt-get update
+      sudo apt-get install google-fluentd
+      sudo apt-get install -y google-fluentd-catch-all-config
+      sudo service google-fluentd start
     ssh_credentials:
       username: {{ ssh_username }}
       public_key: {{ ssh_public_key }}
@@ -39,3 +47,7 @@ resources:
     - service_account_id: a2-logging-instance-sa
       role:
         name: roles/logging.viewer
+
+    - service_account_id: a2-logging-instance-sa
+      role:
+        name: roles/logging.logWriter

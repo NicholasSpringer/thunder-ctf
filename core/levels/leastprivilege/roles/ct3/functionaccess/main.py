@@ -1,8 +1,7 @@
 from flask import render_template
 def main(request):
 	from googleapiclient import discovery
-	import google.oauth2.service_account
-	from google.oauth2.credentials import Credentials
+	import google.auth
 	import os
 
 	
@@ -13,8 +12,8 @@ def main(request):
 	RESOURCE_PREFIX = os.environ.get('RESOURCE_PREFIX', 'Specified environment variable is not set.')
 	LEVEL_NAME = os.environ.get('LEVEL_NAME', 'Specified environment variable is not set.')
 	
-	SERVICE_ACCOUNT_KEY_FILE = f'{RESOURCE_PREFIX}-access.json'
-	credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
+	# Get credential of cloud function account
+	credentials, project_id = google.auth.default()
 
 	#score function url
 	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'

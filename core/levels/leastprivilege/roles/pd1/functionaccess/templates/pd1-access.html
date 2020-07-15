@@ -34,10 +34,10 @@
 <div class="ins">
 <ul>
   <li>A Bucket was created with the level and a txt file has been placed into the bucket</li>
-  <li>Service account {{prefix}}-access has the role with permission to list content in bucket. However it's a role with permissions more than necessary</li>
-  <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-access</li>
-  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-access in the list  and edit role </li>
-  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud Storage Role</b>with least privileges to list file in bucket</li>
+  <li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permission to list content in bucket. However it's a role with permissions more than necessary</li>
+  <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
+  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list  and edit role </li>
+  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud Storage Role</b> with least privileges to list file in bucket</li>
   <li>To validate if there are sufficient permissions, reload the current function.</li>
 </ul>  
 </div>
@@ -67,7 +67,7 @@
   
   <div class="ins">
   <div>
-    <h4>Source code of function that checks what roles bind with {{prefix}}-access :</h4>
+    <h4>Source code of function that checks what roles bind with {{prefix}}-f-access-{{nonce}} :</h4>
   </div>
   <div class="code">
 <pre >name = f'{RESOURCE_PREFIX}-bucket-{NONCE}'

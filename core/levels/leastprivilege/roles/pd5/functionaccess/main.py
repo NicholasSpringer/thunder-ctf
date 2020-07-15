@@ -1,8 +1,7 @@
 #https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/codelabs/flex_and_vision/main.py
 from flask import render_template,redirect
 def main(request):
-	import google.oauth2.service_account
-	from google.oauth2.credentials import Credentials
+	import google.auth
 	from google.cloud import datastore, storage, vision
 	import os
 	from datetime import datetime
@@ -18,8 +17,8 @@ def main(request):
 	CLOUD_STORAGE_BUCKET = f'{RESOURCE_PREFIX}-bucket-{NONCE}'
 	KIND =  f'{RESOURCE_PREFIX}-{NONCE}-{PROJECT_ID}'
 
-	SERVICE_ACCOUNT_KEY_FILE = f'{RESOURCE_PREFIX}-access.json'
-	credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
+	# Get credential of cloud function account
+	credentials, project_id = google.auth.default()
 
 	#score function url
 	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'

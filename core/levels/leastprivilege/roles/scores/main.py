@@ -1,8 +1,7 @@
 from flask import render_template
 def main(request):
 	from googleapiclient import discovery
-	import google.oauth2.service_account
-	from google.oauth2.credentials import Credentials
+	import google.auth
 	import os
 	import collections 
 	#from cryptography.fernet import Fernet
@@ -32,7 +31,7 @@ def main(request):
 	for k in LEVEL_NAMES:
 		scores[k] = 0
 		# Level Service Accounts 
-		levels_sa[k] = f'serviceAccount:{k}-access@{PROJECT_ID}.iam.gserviceaccount.com'
+		levels_sa[k] = f'serviceAccount:{k}-f-access-{NONCE}-sa@{PROJECT_ID}.iam.gserviceaccount.com'
 		level_bindings[k] = []
 		a_urls[k] = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{k}-f-access-{NONCE}'
 		c_urls[k] = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{k}-f-check-{NONCE}'
@@ -40,8 +39,8 @@ def main(request):
 	
 
 
-	SERVICE_ACCOUNT_KEY_FILE = 'scores.json'
-	credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
+	# Get credential of cloud function account
+	credentials, project_id = google.auth.default()
 
 
 	
