@@ -1,8 +1,7 @@
 from flask import render_template
 def main(request):
 	from googleapiclient import discovery
-	import google.oauth2.service_account
-	from google.oauth2.credentials import Credentials
+	import google.auth
 	from google.cloud import logging
 	#from google.cloud.logging import DESCENDING
 	import os
@@ -15,18 +14,17 @@ def main(request):
 	RESOURCE_PREFIX = os.environ.get('RESOURCE_PREFIX', 'Specified environment variable is not set.')
 	LEVEL_NAME = os.environ.get('LEVEL_NAME', 'Specified environment variable is not set.')
 
-	SERVICE_ACCOUNT_KEY_FILE = f'{RESOURCE_PREFIX}-access.json'
 	
 	#score function url
 	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 	
-	
+	# Get credential of cloud function account
+	credentials, project_id = google.auth.default()
 	
 	err=[]
 	resources = []
 	try:
 		#Build logging REST API python object
-		credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
 		client = logging.Client(credentials=credentials )
 		filter = f"projects.setIamPolicy AND {NONCE} AND logName=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
 		#entry = list(client.list_entries(order_by="timestamp desc", filter_=filter))[0]

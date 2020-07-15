@@ -40,7 +40,7 @@
 
 <div class="ins">
 <ul>
-  <li>Service account {{prefix}}-access has the role with permissions to perform the following tasks (read source code for more details):<br>
+  <li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permissions to perform the following tasks (read source code for more details):<br>
       <small class="inlist">Upload image to cloud storage<br> </small>
       <small class="inlist">Analyze image with cloud vision API<br> </small>
       <small class="inlist">Insert analyzed resutls into datastore <br> </small>
@@ -49,8 +49,8 @@
       <span class="inlist"></span>
   </li>
   <li>Upload an image to see what would happen and look for the least privilege role(s) that allow you to complete the same tasks</li>
-  <li>Use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-access</li>
-  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-access in the list  and edit role 
+  <li>Use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
+  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list  and edit role 
     <br><b>Hint:</b>You can attach multiple roles</li>
   <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud IAM roles</b></li>
   <li>To validate if there are sufficient permissions, reload current function and upload another image.</li>
@@ -102,7 +102,7 @@
 
 <div class="ins">
 	<div>
-		<h4>Source code from current function {{prefix}}-access :</h4>
+		<h4>Source code from current function {{prefix}}-f-access-{{nonce}} :</h4>
 	</div>
 <div class="code">
 <pre>#https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/codelabs/flex_and_vision/main.py

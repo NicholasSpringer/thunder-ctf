@@ -1,8 +1,7 @@
 from flask import render_template
 def main(request):
 	from googleapiclient import discovery
-	import google.oauth2.service_account
-	from google.oauth2.credentials import Credentials
+	import google.auth
 	import os
 	#from cryptography.fernet import Fernet
 	
@@ -22,14 +21,14 @@ def main(request):
 	
 	#pri="".join(PRI.split()).split(',')
 
-	SERVICE_ACCOUNT_KEY_FILE = f'{RESOURCE_PREFIX}-check.json'
-	credentials = google.oauth2.service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_KEY_FILE)
+	# Get credential of cloud function account
+	credentials, project_id = google.auth.default()
 
 	# Build cloudresourcemanager REST API python object
 	service_r = discovery.build('cloudresourcemanager','v1', credentials=credentials)
 	
 	# Service account 
-	sa = f'serviceAccount:{RESOURCE_PREFIX}-access@{PROJECT_ID}.iam.gserviceaccount.com'
+	sa = f'serviceAccount:{RESOURCE_PREFIX}-f-access-{NONCE}-sa@{PROJECT_ID}.iam.gserviceaccount.com'
 
 	get_iam_policy_request_body = {}
 	
