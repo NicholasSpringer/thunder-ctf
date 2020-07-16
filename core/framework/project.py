@@ -118,7 +118,7 @@ def setup_project():
                          'targetTags': ['http-server']}
         compute_api.firewalls().insert(project=project_id, body=firewall_body).execute()
     
-    services_logtypes = {"storage.googleapis.com":"all","compute.googleapis.com":"all","logging.googleapis.com":["DATA_READ"],"iamcredentials.googleapis.com":"all"}
+    services_logtypes = {"storage.googleapis.com":"all","compute.googleapis.com":"all","logging.googleapis.com":["DATA_READ"],"iam.googleapis.com":"all"}
     confirmed = 'y' == input(
             f'Turn on audit logging for selected services {services_logtypes}? [y/n]: ').lower().strip()[0]
     if(confirmed):
@@ -179,7 +179,7 @@ def _wait_for_api_op(op_name, services_api):
 def _enable_data_access_audit_logs(credentials, project_id, services_logtypes):
     new_auditConfigs=[]
     for service in services_logtypes:
-        if len(services_logtypes[service]) == "all":
+        if services_logtypes[service] == "all":
             auditConfig = {
                 "service": service,
                 "auditLogConfigs": [
