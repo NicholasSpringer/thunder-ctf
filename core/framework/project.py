@@ -177,8 +177,7 @@ def _wait_for_api_op(op_name, services_api):
             op_done = False
         else:
             op_done = response['done']
-    sys.stdout.write( "iam.googleapis.com":"all",
-                         "cloudfunctions.googleapis.com":"all"}
+    sys.stdout.write(
         f'\r{time_string} Enabling APIs... Done\n')
 
 def _enable_data_access_audit_logs(credentials, project_id, services_logtypes):
