@@ -32,6 +32,12 @@ resources:
     open_external: true
     startup_script: |
       #!/bin/bash
+      curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh
+      sudo bash add-logging-agent-repo.sh
+      sudo apt-get update
+      sudo apt-get install google-fluentd
+      sudo apt-get install -y google-fluentd-catch-all-config
+      sudo service google-fluentd start
       sudo -i
       mkdir /home/secretuser
       cd /home/secretuser
@@ -62,3 +68,6 @@ resources:
     - service_account_id: a4-func-{{ nonce }}-sa
       role:
         name: roles/iam.serviceAccountUser
+    - service_account_id: a4-instance-sa
+      role:
+        name: roles/logging.logWriter
