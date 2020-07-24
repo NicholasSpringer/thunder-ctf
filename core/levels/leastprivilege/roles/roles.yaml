@@ -27,7 +27,7 @@ resources:
     upload_url: {{ funca_upload_url_pr }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pr}},"LEVEL_NAME":{{level_name_pr}}}
 
 - name: pr-f-check
@@ -39,7 +39,7 @@ resources:
     upload_url: {{ funcc_upload_url_pr }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables:  {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pr}},"LEVEL_NAME":{{level_name_pr}}}
 
 
@@ -58,7 +58,7 @@ resources:
     upload_url: {{ funca_upload_url_pd1 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers  
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd1}},"LEVEL_NAME":{{level_name_pd1}}}
 
 - name: pd1-f-check
@@ -70,7 +70,7 @@ resources:
     upload_url: {{ funcc_upload_url_pd1 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd1}},"LEVEL_NAME":{{level_name_pd1}}}
 
 
@@ -89,7 +89,7 @@ resources:
     upload_url: {{ funca_upload_url_pd2 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd2}},"LEVEL_NAME":{{level_name_pd2}}}
 
 - name: pd2-f-check
@@ -101,7 +101,7 @@ resources:
     upload_url: {{ funcc_upload_url_pd2 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd2}},"LEVEL_NAME":{{level_name_pd2}}}
 
 
@@ -114,7 +114,7 @@ resources:
     upload_url: {{ funca_upload_url_pd3 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd3}},"LEVEL_NAME":{{level_name_pd3}}}
 
 - name: pd3-f-check
@@ -126,7 +126,7 @@ resources:
     upload_url: {{ funcc_upload_url_pd3 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd3}},"LEVEL_NAME":{{level_name_pd3}}}
 
 
@@ -139,7 +139,7 @@ resources:
     upload_url: {{ funca_upload_url_pd4 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd4}},"LEVEL_NAME":{{level_name_pd4}}}
 
 - name: pd4-f-check
@@ -151,7 +151,7 @@ resources:
     upload_url: {{ funcc_upload_url_pd4 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd4}},"LEVEL_NAME":{{level_name_pd4}}}
 
 - name: pd5-bucket
@@ -169,7 +169,7 @@ resources:
     upload_url: {{ funca_upload_url_pd5 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd5}},"LEVEL_NAME":{{level_name_pd5}}}
 
 - name: pd5-f-check
@@ -181,7 +181,7 @@ resources:
     upload_url: {{ funcc_upload_url_pd5 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_pd5}},"LEVEL_NAME":{{level_name_pd5}}}
 
 
@@ -206,7 +206,7 @@ resources:
     upload_url: {{ funca_upload_url_ct1 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct1}},"LEVEL_NAME":{{level_name_ct1}}}
 
 - name: ct1-f-check
@@ -218,7 +218,7 @@ resources:
     upload_url: {{ funcc_upload_url_ct1 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct1}},"LEVEL_NAME":{{level_name_ct1}}}
 
 - name: ct2-bucket
@@ -236,7 +236,7 @@ resources:
     upload_url: {{ funca_upload_url_ct2 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct2}},"LEVEL_NAME":{{level_name_ct2}}}
 
 - name: ct2-f-check
@@ -248,7 +248,7 @@ resources:
     upload_url: {{ funcc_upload_url_ct2 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct2}},"LEVEL_NAME":{{level_name_ct2}}}
 
 - name: ct3-instance
@@ -266,7 +266,7 @@ resources:
     upload_url: {{ funca_upload_url_ct3 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct3}},"LEVEL_NAME":{{level_name_ct3}}}
 
 - name: ct3-f-check
@@ -278,7 +278,7 @@ resources:
     upload_url: {{ funcc_upload_url_ct3 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct3}},"LEVEL_NAME":{{level_name_ct3}}}
 
 - name: ct4-f-access
@@ -290,7 +290,7 @@ resources:
     upload_url: {{ funca_upload_url_ct4 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct4}},"LEVEL_NAME":{{level_name_ct4}}}
 
 - name: ct4-f-check
@@ -302,7 +302,7 @@ resources:
     upload_url: {{ funcc_upload_url_ct4 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct4}},"LEVEL_NAME":{{level_name_ct4}}}
 
 
@@ -321,7 +321,7 @@ resources:
     upload_url: {{ funca_upload_url_ct5 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct5}},"LEVEL_NAME":{{level_name_ct5}}}
 
 - name: ct5-f-check
@@ -333,7 +333,7 @@ resources:
     upload_url: {{ funcc_upload_url_ct5 }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct5}},"LEVEL_NAME":{{level_name_ct5}}}
 
 - name: scores-f
@@ -345,7 +345,7 @@ resources:
     upload_url: {{ funcc_upload_url_scores }}
     policyBindings:
     - role: roles/cloudfunctions.invoker
-      service_account_id: allusers
+      all_users: allusers 
     env_variables: {"NONCE":{{nonce}}, "LOGIN_USER":{{login_user}}}
 
 
