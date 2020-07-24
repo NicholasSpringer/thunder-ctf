@@ -10,7 +10,7 @@ RESOURCE_PREFIX = 'a3'
 FUNCTION_LOCATION = 'us-central1'
 
 
-def create():
+def create(second_deploy=True):
     print("Level initialization started for: " + LEVEL_PATH)
     # Create randomized nonce name to avoid namespace conflicts
     nonce = str(random.randint(100000000000, 999999999999))
@@ -34,28 +34,33 @@ def create():
         'core/framework/templates/cloud_function.jinja',
         'core/framework/templates/service_account.jinja',
         'core/framework/templates/iam_policy.jinja']
-    deployments.insert(LEVEL_PATH, template_files=template_files,
+    
+    if second_deploy:
+        deployments.insert(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args, second_deploy=True)
+    else:
+        deployments.insert(LEVEL_PATH, template_files=template_files,
                        config_template_args=config_template_args)
+    try:
+        print("Level setup started for: " + LEVEL_PATH)
+        # Insert secret into bucket
 
-    print("Level setup started for: " + LEVEL_PATH)
-    # Insert secret into bucket
+        storage_client = storage.Client()
+        bucket = storage_client.get_bucket(bucket_name)
+        secret_blob = storage.Blob('secret.txt', bucket)
+        secret = levels.make_secret(LEVEL_PATH)
+        secret_blob.upload_from_string(secret)
 
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
-    secret_blob = storage.Blob('secret.txt', bucket)
-    secret = levels.make_secret(LEVEL_PATH)
-    secret_blob.upload_from_string(secret)
-
-    # Create service account key file
-    sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
-    print(f'Level creation complete for: {LEVEL_PATH}')
-    start_message = (
-        f'Use the given compromised credentials to find the secret hidden in the level.')
-    levels.write_start_info(
-        LEVEL_PATH, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
-    print(
-        f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
-
+        # Create service account key file
+        sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
+        print(f'Level creation complete for: {LEVEL_PATH}')
+        start_message = (
+            f'Use the given compromised credentials to find the secret hidden in the level.')
+        levels.write_start_info(
+            LEVEL_PATH, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
+        print(
+            f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
+    except Exception as e: 
+        exit()
 
 def destroy():
     # Delete starting files

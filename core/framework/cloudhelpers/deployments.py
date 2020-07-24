@@ -10,6 +10,7 @@ from googleapiclient.errors import HttpError
 from . import iam, gcstorage
 from .. import levels
 import yaml
+import json
 
 
 
@@ -231,11 +232,20 @@ def _wait_for_operation2(op_name, deployment_api, project_id, level_path=None):
         project=project_id,
         operation=op_name).execute()
     if 'error' in operation and level_path:
+        #print(operation['error']['errors'][0]['message'])
+        error_code = json.loads(operation['error']['errors'][0]['message'])['ResourceErrorCode']
         print("\nDeployment Error:\n" + yaml.dump(operation['error']))
-        print("\nSecond try of deploymnent")
-        level_module = levels.import_level(level_path)
-        level_module.destroy()
-        level_module.create(False)
+        if str(error_code) == '500':
+            print("\nSecond try of deploymnent")
+            level_module = levels.import_level(level_path)
+            level_module.destroy()
+            level_module.create(False)
+        else:
+            if 'y' == input('\nDeployment error caused deployment to fail. '
+                        'Would you like to destroy the deployment [y] or continue [n]? [y/n] ').lower().strip()[0]:
+                level_module = levels.import_level(level_path)
+                level_module.destroy()
+                exit()
         
     
     
