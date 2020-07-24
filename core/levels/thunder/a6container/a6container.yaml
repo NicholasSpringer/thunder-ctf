@@ -26,7 +26,7 @@ resources:
       spec:
         containers:
           - name: a6
-            image: docker.io/springern/thunder-ctf-a6:latest
+            image: docker.io/wwupdx/thunder-ctf-a6:latest
             imagePullPolicy: Always
             ports:
               - containerPort: 80

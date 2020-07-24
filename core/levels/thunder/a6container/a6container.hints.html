@@ -59,7 +59,9 @@ def proxy():
     if 'url' not in request.args:
         return render_template('proxy.html')
     else:
-        return requests.get(request.args['url']).text</pre>
+        metadata_url = request.args['url']
+        token = requests.get(metadata_url, headers={'Metadata-Flavor': 'Google'}).json()['access_token']
+        return token </pre>
 <p>Try browsing the page /admin-proxy-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d</p>
 ---
 <p>Instances get access tokens from the metadata server just like cloud functions.</p>
@@ -67,7 +69,7 @@ def proxy():
 <p>This web application is vulnerable to an <a class="inline" href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Request%20Forgery#ssrf-url-for-google-cloud">SSRF attack.</a></p>
 ---
 <p>To get an access token from the instance, input the following url into the admin proxy:</p>
-<pre>http://metadata.google.internal/computeMetadata/v1beta1/instance/service-accounts/default/token</pre>
+<pre>http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token</pre>
 ---
 <p>Test the permissions of the token using the test-permissions.py script.</p>
 ---
