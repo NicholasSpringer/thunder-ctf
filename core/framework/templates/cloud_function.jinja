@@ -29,10 +29,13 @@ resources:
       bindings:
       {% for binding in properties['policyBindings'] %}
       - role: {{ binding['role'] }}
-      {% if binding['service_account_id'] == 'allusers' %}
+      {% if 'all_users' in binding and binding['all_users'] == 'allusers' %}
         members:
-        - allUsers
-      {% else %}
+        - allUsers 
+      {% elif 'user' in binding  %}
+        members:
+        - user: {{binding['user']}}
+      {% elif 'service_account_id' in binding  %}
         members:
         - serviceAccount:$(ref.{{ binding['service_account_id'] }}.email)
       {% endif %}
