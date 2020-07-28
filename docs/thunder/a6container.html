@@ -96,7 +96,7 @@
       spec:
         containers:
           - name: a6
-            image: docker.io/springern/thunder-ctf-a6:latest
+            image: docker.io/[DOCKER_ACCOUNT]/[REPOSITORY_NAME]:[TAG]
             imagePullPolicy: Always
             ports:
               - containerPort: 80
@@ -106,7 +106,7 @@
     <li>
       <span>Hint 5</span>
       <p>The container image specified in the manifest is publicly available on Docker Hub. See if there's anything you can find on the container image.</p>
-      <pre>image: docker.io/springern/thunder-ctf-a6:latest</pre>
+      <pre>image: docker.io/[DOCKER_ACCOUNT]/[REPOSITORY_NAME]:[TAG]</pre>
     </li>
     
     <li>
@@ -114,7 +114,7 @@
       <p>Pull the image:</p>
       <pre>docker pull springern/thunder-ctf-a6:latest</pre>
       <p>Create a container from the image and start an interactive shell session:</p>
-      <pre>docker run -it --entrypoint=/bin/bash springern/thunder-ctf-a6</pre>
+      <pre>docker run -it --entrypoint=/bin/bash [DOCKER_ACCOUNT]/[REPOSITORY_NAME]</pre>
     </li>
     
     <li>
