@@ -36,7 +36,7 @@ def create():
     
     # Print complete message and print/save start info
     print(f'Level creation complete for: {LEVEL_PATH}\n'
-          f'Instruction for the level can be accessed at thunder-ctf.cloud/levels/{LEVEL_PATH}.html')
+          f'Instruction for the level can be accessed at thunder-ctf.cloud/thunder/{LEVEL_PATH}.html')
     start_message = f'The secret for this level can be found in the Google Cloud Storage (GCS) bucket {bucket_name}'
     levels.write_start_info(LEVEL_PATH, start_message)
     # --------------------------------------
