@@ -37,7 +37,9 @@
   <li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permission to view entities in datastore. However it's a role with permissions more than necessary</li>
   <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
   <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list  and edit role </li>
-  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud IAM roles</b> with least privileges to read entites from cloud datastore</li>
+  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud IAM roles</b> with least privileges to read entites from cloud Datastore.
+    <br><b>Hint:</b> Look for roles in google <a href="https://cloud.google.com/datastore/docs/access/iam" target="_blank">doc</a>.
+	</li> 
   <li>To validate if there are sufficient permissions, reload the current function.</li>
 </ul>  
 </div>
