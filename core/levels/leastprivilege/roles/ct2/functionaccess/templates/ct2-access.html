@@ -36,8 +36,10 @@
   <li>A Bucket was created with the level and a txt file has been placed into the bucket</li>
   <li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permission to list content in bucket. However it's a role with permissions more than necessary</li>
   <li>You need to detatch the original role of {{prefix}}-f-access-{{nonce}}-sa and create custom role with least privilege permission attach to it.</li>
-  <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
-  <li>Go to google cloud console IAM&Admin -> Roles, create a new role with ID <b>{{prefix}}_access_role_{{nonce}}</b>. Don't forget to add permissions </li>
+  <li>Load the check <a href="{{url}}" target="_blank">function</a> to view current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
+  <li>Go to google cloud console IAM&Admin -> Roles, create a new role with ID <b>{{prefix}}_access_role_{{nonce}}</b>. Don't forget to add permissions
+    <br><b>Hint:</b> Look for permissions in google <a href="https://cloud.google.com/storage/docs/access-control/iam-roles" target="_blank">doc</a>
+  </li>
   <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list and edit role. Add the custom role you just created and remove its original role</li>
 	<li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the least-privilege permissions to list file in bucket</li>
   <li>To validate if there are sufficient permissions, reload the current function.</li>

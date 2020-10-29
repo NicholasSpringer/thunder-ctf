@@ -12,9 +12,7 @@ def proxy():
     if 'url' not in request.args:
         return render_template('proxy.html')
     else:
-	metadata_url = request.args['url']
-	token = requests.get(metadata_url, headers={'Metadata-Flavor': 'Google'}).json()['access_token']
-        return token 
+        return requests.get(request.args['url']).text
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
