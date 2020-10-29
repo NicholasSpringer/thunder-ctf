@@ -56,7 +56,9 @@
   </li>
   <li>Go to google cloud console IAM&Admin -> Roles, create a new role with ID <b>{{prefix}}_access_role_{{nonce}}</b>. Don't forget to add permissions </li>
   <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list and edit role 
-    <br><b>Hint:</b>You can attach multiple roles</li>
+    <br><b>Hint:</b>You can attach predefined role(s) and custom role(s) to a service account
+    (look for permissions/roles in google <a href="https://cloud.google.com/storage/docs/access-control/iam-roles" target="_blank">doc1</a> 
+    and <a href="https://cloud.google.com/datastore/docs/access/iam" target="_blank">doc2</a>). </li>
   <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct answer</li>
   <li>To validate if there are sufficient permissions, reload current function and upload another image.</li>
 </ul>  
