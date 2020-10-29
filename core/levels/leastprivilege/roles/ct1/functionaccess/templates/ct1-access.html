@@ -37,7 +37,7 @@
   <li>An instance and a bucket were generated with the level</li>
   <li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permissions to list resources in the project. However it's a role with permissions more than necessary</li>
   <li>You need to detatch the original role of {{prefix}}-f-access-{{nonce}}-sa and create custom role with least privilege permission attach to it.</li>
-  <li>You can use this <a href="{{url}}" target="_blank">function</a> to check current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
+  <li>Load the check <a href="{{url}}" target="_blank">function</a> to view current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
   <li>Go to google cloud console IAM&Admin -> Roles, create a new role with ID <b>{{prefix}}_access_role_{{nonce}}</b>. Don't forget to add permissions 
     <br><b>Hint:</b> Look for permissions in google <a href="https://cloud.google.com/storage/docs/access-control/iam-roles" target="_blank">doc1</a>
      and <a href="https://cloud.google.com/compute/docs/access/iam" target="_blank">doc2</a>
