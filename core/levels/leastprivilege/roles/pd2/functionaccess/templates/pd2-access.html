@@ -34,14 +34,21 @@
 
 <div class="ins">
 <ul>
-	<li>A compute instance was created with the level </li>
-	<li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permission to list instances. However it's a role with permissions more than necessary</li>
-	<li>Load the check <a href="{{url}}" target="_blank">function</a> to view current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
-	<li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list  and edit role </li>
-	<li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Compute Engine role</b> with least privileges to list an instance
-	<br><b>Hint:</b> Look for roles in google <a href="https://cloud.google.com/compute/docs/access/iam" target="_blank">doc</a>.
+	<li>Level service account {{prefix}}-f-access-{{nonce}}-sa is bound with an over-privileged <b>Predefined Role</b> to list a Compute Engine instance.</li>
+	<li>Your goal is to find a <b>Predefined Role</b> with minimum permissions but still enough to list the instance.</li>
+	<li>Load the <a href="{{url}}" target="_blank">check function</a> to view current role and permissions of {{prefix}}-f-access-{{nonce}}-sa.</li>
+	<li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, click the pencil icon to edit service acount {{prefix}}-f-access-{{nonce}}-sa in the table.</li>
+	<li>Replace the current role with the new one you found. To keep the process simple, do not leave the service account with empty role.
+		<br>Because if all roles are removed, service account will disappear from the IAM memeber table 
+		(can be added back via 
+		<a href="https://cloud.google.com/iam/docs/granting-changing-revoking-access#granting-console" target="_blank"> granting access</a>).</li>
+	<li>Refresh the <a href="{{url}}" target="_blank">check function</a> to validate your answer.
+		<br><b>Hint:</b> Look for a <a href="https://cloud.google.com/compute/docs/access/iam" target="_blank"><b>Predefined Compute Engine role</b></a> in google doc.
+	</li> 
+	<li>Note that we are not going to use the Predefined Lagacy Role</li>
+	<li>You can submit a new request to this access function by pressing ENTER in the browser's address bar and see if sufficient permissions are granted to level SA.
+		<br> (The change may take a couple submits to show up.)
 	</li>
-	<li>To validate if there are sufficient permissions, reload the current function.</li>
 </ul>  
 </div>
 
