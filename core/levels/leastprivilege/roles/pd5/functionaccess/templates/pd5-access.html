@@ -40,22 +40,30 @@
 
 <div class="ins">
 <ul>
-  <li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permissions to perform the following tasks (read source code for more details):<br>
-    <small class="inlist">Return metadata for a bucket<br> </small>
-    <small class="inlist">Upload image to cloud storage<br> </small>
-    <small class="inlist">Insert resutls analyzed through cloud vision API into datastore <br> </small>
-    <small class="inlist">Query analyzed resutls from datastore <br> </small>
-    <small class="inlist">&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp; &vellip;<br> </small>
+  <li>Upload a face image to see the results analyzed by google Cloud Vision</li>
+  <li>Level service account {{prefix}}-f-access-{{nonce}}-sa is bound with Owner Role to perform the following tasks (read source code for more details):<br>
+    <small class="inlist">Get metadata of a bucket<br> </small>
+    <small class="inlist">Create blob to upload image(object) in cloud storage<br> </small>
+    <small class="inlist">Insert data entries into datastore <br> </small>
+    <small class="inlist">Query data entries from datastore <br> </small>
+    
   </li>
-  <li>Upload an image to see what would happen and look for the least privilege role(s) that allow you to complete the same tasks</li>
-  <li>Load the check <a href="{{url}}" target="_blank">function</a> to view current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
-  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list  and edit role 
-    <br><b>Hint:</b>You can attach multiple predefined roles to a service account
-    (look for roles in google <a href="https://cloud.google.com/storage/docs/access-control/iam-roles#standard-roles" target="_blank">doc1</a> 
-   and <a href="https://cloud.google.com/datastore/docs/access/iam" target="_blank">doc2</a>) </li>
+  <li>Your goal is to replace the Owner role with two Predefined Roles that have fewer permissions to perform the same tasks.</li>
+  <li>Use the <a href="{{url}}" target="_blank">check function</a> to view roles and permissions of {{prefix}}-f-access-{{nonce}}-sa.</li>
+  <li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, click the pencil icon to edit service acount {{prefix}}-f-access-{{nonce}}-sa in the table.</li>
+  <li>Replace the current role with the new ones you found. To keep the process simple, do not leave the service account with empty role.
+    <br>Because if all roles are removed, service account will disappear from the IAM memeber table 
+    (can be added back via 
+    <a href="https://cloud.google.com/iam/docs/granting-changing-revoking-access#granting-console" target="_blank"> granting access</a>).</li>
+  <li>Refresh the <a href="{{url}}" target="_blank">check function</a> to validate your answer.
+    <br><b>Hint:</b> Look for a <a href="https://cloud.google.com/storage/docs/access-control/iam-roles#standard-roles" target="_blank"><b>Predefined Cloud Storage Role</b></a> 
+    and a <a href="https://cloud.google.com/datastore/docs/access/iam" target="_blank"><b>Predefined Datastore Role</b></a>
+    in google doc.
+	</li> 
   <li>Note that we are not going to use the Predefined Lagacy Role</li>
-  <li>Refresh the check <a href="{{url}}" target="_blank">function</a> to see if you get the correct <b>Predefined Cloud IAM roles</b></li>
-  <li>To validate if there are sufficient permissions, reload current function and upload another image.</li>
+  <li>You can submit a new request to this access function by pressing ENTER in the browser's address bar and see if sufficient permissions are granted to level SA.
+    <br> (The change may take a couple submits to show up.)
+  </li>
 </ul>  
 </div>
 

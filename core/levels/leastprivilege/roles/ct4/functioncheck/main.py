@@ -92,13 +92,13 @@ def main(request):
 			msg='Congratulations! You get the least privileges. '
 			
 			if len(permissions)>len(PRI):
-				msg='Not least privilege, please try again!'
+				msg='Not least privileges, please try again!'
 			elif len(permissions)<len(PRI):
-				msg='Insufficient privilege, please try again!'	
+				msg='Insufficient privileges, please try again!'	
 			else:
 				for p in PRI:
 					if p not in permissions:
-						msg='Not least privilege, please try again!'
+						msg='Incorrect privileges, please try again!'
 						return render_template(f'{RESOURCE_PREFIX}-check.html',  pers=permissions, msg=msg, rn=role_name, err=err,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, nonce=NONCE)
 		
 
