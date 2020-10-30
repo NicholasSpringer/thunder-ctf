@@ -34,7 +34,7 @@
 
 <div class="ins">
 <ul>
-	<li>An instance was created with the level </li>
+	<li>A compute instance was created with the level </li>
 	<li>Service account {{prefix}}-f-access-{{nonce}}-sa has the role with permission to list instances. However it's a role with permissions more than necessary</li>
 	<li>Load the check <a href="{{url}}" target="_blank">function</a> to view current permissions of {{prefix}}-f-access-{{nonce}}-sa</li>
 	<li>Go to google cloud console IAM&Admin -> IAM -> MEMBERS, find service acount {{prefix}}-f-access-{{nonce}}-sa in the list  and edit role </li>
@@ -47,7 +47,7 @@
 
 <div class="main">
 	<div>
-	  <h3>Instance:</h3>
+	  <h3>Compute Instance:</h3>
 	  <ul>
 	  {% for r in resources %} 
 		<li>{{ r }}</li>
