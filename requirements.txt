@@ -18,3 +18,4 @@ Jinja2
 pyyaml
 
 grpcio
+rsa>=4.7 # not directly required, pinned by Snyk to avoid a vulnerability
