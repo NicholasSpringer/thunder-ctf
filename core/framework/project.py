@@ -151,7 +151,7 @@ def check_app_engine():
         found = True
     except Exception as e:
         #print(str(e))
-        print('Project App Engine does not found')
+        print('App Engine not configured')
 
     return found
 
