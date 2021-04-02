@@ -1,4 +1,5 @@
 from flask import Flask, redirect, request, url_for, render_template
+import logging
 import requests
 
 app = Flask(__name__)
@@ -15,4 +16,7 @@ def proxy():
         return requests.get(request.args['url']).text
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    logger = logging.getLogger('werkzeug')
+    handler = logging.FileHandler('./access_log')
+    logger.addHandler(handler)
+    app.run(host='0.0.0.0', debug=True)
