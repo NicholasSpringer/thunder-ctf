@@ -19,4 +19,4 @@ if __name__ == '__main__':
     logger = logging.getLogger('werkzeug')
     handler = logging.FileHandler('./access_log')
     logger.addHandler(handler)
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
