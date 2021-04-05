@@ -13,7 +13,9 @@ def proxy():
     if 'url' not in request.args:
         return render_template('proxy.html')
     else:
-        return requests.get(request.args['url']).text
+        metadata_url = request.args['url']
+        resp = requests.get(metadata_url, headers={'Metadata-Flavor': 'Google'})
+        return resp.text
 
 if __name__ == '__main__':
     logger = logging.getLogger('werkzeug')
