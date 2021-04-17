@@ -1,0 +1,30 @@
+imports:
+- path: service_account.jinja
+
+{% set DATABASE_NAME = env['name'] + "-db" %}
+{% set DATABASE_INSTANCE_NAME = env['name'] + "-instance" %}
+
+resources:
+  - type: sqladmin.v1beta4.database
+    name: {{ DATABASE_NAME }}
+    properties:
+      name: {{ DATABASE_NAME }}
+      instance: $(ref.{{ DATABASE_INSTANCE_NAME }}.name)
+
+  - type: sqladmin.v1beta4.instance
+    name: {{ DATABASE_INSTANCE_NAME }}
+    properties:
+      name: {{ DATABASE_INSTANCE_NAME }}
+      databaseVersion: POSTGRES_13
+      instanceType: CLOUD_SQL_INSTANCE
+      region: {{ properties["region"] }}
+      settings:
+        tier: db-f1-micro
+        availabilityType: ZONAL
+        pricingPlan: PER_USE
+        storageAutoResize: false
+        dataDiskType: PD_HDD
+        dataDiskSizeGb: 10
+        backupConfiguration:
+          enabled: false
+        rootPassword: {{ properties["root_password"] }}
