@@ -1,0 +1,23 @@
+imports:
+- path: sql_db.jinja
+- path: cloud_function.jinja
+- path: iam_policy.jinja
+
+resources:
+- name: userdata-db
+  type: sql_db.jinja
+  properties:
+    region: us-west1
+    root_password: {{ root_password }}
+    nonce: {{ nonce }}
+
+- name: register-func
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ register_url }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      all_users: allusers
