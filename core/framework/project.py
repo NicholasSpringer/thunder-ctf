@@ -91,7 +91,8 @@ def setup_project():
         'storage-api.googleapis.com',
         'storage-component.googleapis.com',
         'appengine.googleapis.com',
-        'vision.googleapis.com'
+        'vision.googleapis.com',
+        'sqladmin.googleapis.com'
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
