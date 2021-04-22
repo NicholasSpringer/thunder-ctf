@@ -21,3 +21,12 @@ resources:
     policyBindings:
     - role: roles/cloudfunctions.invoker
       all_users: allusers
+
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+      - service_account_id: register-func-{{ nonce }}-sa
+        role:
+          name: roles/iam.serviceAccountAdmin
+
