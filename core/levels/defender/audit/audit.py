@@ -12,7 +12,7 @@ from core.framework.cloudhelpers import (
     cloudfunctions
 )
 
-LEVEL_PATH = 'defender/compromised_key'
+LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
 
 
@@ -24,17 +24,18 @@ def create(second_deploy=True):
 
     register_func_template_args = {'db_name': user_db_name}
     register_func_url = cloudfunctions.upload_cloud_function(
-            'core/levels/defender/resources/register_func',
+            'core/levels/defender/audit/resources/register_func',
             FUNCTION_LOCATION,
             template_args=register_func_template_args
             )
 
     config_template_args = {'nonce': nonce,
-                            'register_func_url': register_func_url,
+                            'register_url': register_func_url,
                             'root_password': 'Ax4**7^bBjwMz43*'}
 
     template_files = [
         'core/framework/templates/cloud_function.jinja',
+        'core/framework/templates/service_account.jinja',
         'core/framework/templates/iam_policy.jinja',
         'core/framework/templates/sql_db.jinja']
 

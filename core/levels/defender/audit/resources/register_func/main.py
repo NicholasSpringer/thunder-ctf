@@ -3,3 +3,4 @@ DB_NAME = '{{ db_name }}'
 
 def main(request):
     # vulnerable function here that exposes it's auth token
+    return 'new user added\n'
