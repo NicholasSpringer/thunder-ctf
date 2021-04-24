@@ -91,7 +91,7 @@ def init_tcp_connection_engine(db_config, db_name):
         sqlalchemy.engine.url.URL(
             drivername="postgresql+pg8000",
             username="postgres",  # e.g. "my-database-user"
-            password="Ax4**7^bBjwMz43*",  # e.g. "my-database-password"
+            password="psw",  # e.g. "my-database-password"
             host=db_hostname,  # e.g. "127.0.0.1"
             port=db_port,  # e.g. 5432
             database=db_name  # e.g. "my-database-name"
