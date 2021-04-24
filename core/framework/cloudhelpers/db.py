@@ -1,5 +1,6 @@
 import os
 import sqlalchemy
+import google.auth
 
 def init_connection_engine():
     db_config = {
@@ -32,21 +33,54 @@ def init_connection_engine():
         # [END cloud_sql_postgres_sqlalchemy_lifetime]
     }
 
-    if os.environ.get("DB_HOST"):
-        return init_tcp_connection_engine(db_config)
-    else:
-        return init_unix_connection_engine(db_config)
+    return init_tcp_connection_engine(db_config)
 
+def get_db_hostname():
+    """
+    BEFORE RUNNING:
+    ---------------
+    1. If not already done, enable the Cloud SQL Administration API
+    and check the quota for your project at
+    https://console.developers.google.com/apis/api/sqladmin
+    2. This sample uses Application Default Credentials for authentication.
+    If not already done, install the gcloud CLI from
+    https://cloud.google.com/sdk and run
+    `gcloud beta auth application-default login`.
+    For more information, see
+    https://developers.google.com/identity/protocols/application-default-credentials
+    3. Install the Python client library for Google APIs by running
+    `pip install --upgrade google-api-python-client`
+    """
+    from pprint import pprint
+
+    from googleapiclient import discovery
+    from oauth2client.client import GoogleCredentials
+
+    credentials, project_id = google.auth.default()
+
+    service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
+
+
+
+    request = service.instances().list(project=project_id)
+    while request is not None:
+        response = request.execute()
+
+        for database_instance in response['items']:
+            # TODO: Change code below to process each `database_instance` resource:
+            pprint(database_instance)
+
+        request = service.instances().list_next(previous_request=request, previous_response=response)
 
 def init_tcp_connection_engine(db_config):
     # [START cloud_sql_postgres_sqlalchemy_create_tcp]
     # Remember - storing secrets in plaintext is potentially unsafe. Consider using
     # something like https://cloud.google.com/secret-manager/docs/overview to help keep
     # secrets secret.
-    db_user = os.environ["DB_USER"]
-    db_pass = os.environ["DB_PASS"]
     db_name = os.environ["DB_NAME"]
     db_host = os.environ["DB_HOST"]
+
+
 
     # Extract host and port from db_host
     host_args = db_host.split(":")
@@ -57,52 +91,17 @@ def init_tcp_connection_engine(db_config):
         # postgres+pg8000://<db_user>:<db_pass>@<db_host>:<db_port>/<db_name>
         sqlalchemy.engine.url.URL(
             drivername="postgresql+pg8000",
-            username=db_user,  # e.g. "my-database-user"
-            password=db_pass,  # e.g. "my-database-password"
+            username="postgres",  # e.g. "my-database-user"
+            password="Ax4**7^bBjwMz43*",  # e.g. "my-database-password"
             host=db_hostname,  # e.g. "127.0.0.1"
             port=db_port,  # e.g. 5432
-            database=db_name  # e.g. "my-database-name"
+            database="userdata-db"  # e.g. "my-database-name"
         ),
         **db_config
     )
     # [END cloud_sql_postgres_sqlalchemy_create_tcp]
     pool.dialect.description_encoding = None
     return pool
-
-
-def init_unix_connection_engine(db_config):
-    # [START cloud_sql_postgres_sqlalchemy_create_socket]
-    # Remember - storing secrets in plaintext is potentially unsafe. Consider using
-    # something like https://cloud.google.com/secret-manager/docs/overview to help keep
-    # secrets secret.
-    db_user = os.environ["DB_USER"]
-    db_pass = os.environ["DB_PASS"]
-    db_name = os.environ["DB_NAME"]
-    db_socket_dir = os.environ.get("DB_SOCKET_DIR", "/cloudsql")
-    cloud_sql_connection_name = os.environ["CLOUD_SQL_CONNECTION_NAME"]
-
-    pool = sqlalchemy.create_engine(
-
-        # Equivalent URL:
-        # postgres+pg8000://<db_user>:<db_pass>@/<db_name>
-        #                         ?unix_sock=<socket_path>/<cloud_sql_instance_name>/.s.PGSQL.5432
-        sqlalchemy.engine.url.URL(
-            drivername="postgresql+pg8000",
-            username=db_user,  # e.g. "my-database-user"
-            password=db_pass,  # e.g. "my-database-password"
-            database=db_name,  # e.g. "my-database-name"
-            query={
-                "unix_sock": "{}/{}/.s.PGSQL.5432".format(
-                    db_socket_dir,  # e.g. "/cloudsql"
-                    cloud_sql_connection_name)  # i.e "<PROJECT-NAME>:<INSTANCE-REGION>:<INSTANCE-NAME>"
-            }
-        ),
-        **db_config
-    )
-    # [END cloud_sql_postgres_sqlalchemy_create_socket]
-    pool.dialect.description_encoding = None
-    return pool
-
 
 # This global variable is declared with a value of `None`, instead of calling
 # `init_connection_engine()` immediately, to simplify testing. In general, it
