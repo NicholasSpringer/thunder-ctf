@@ -32,7 +32,7 @@ def create(second_deploy=True):
 
     config_template_args = {'nonce': nonce,
                             'register_url': register_func_url,
-                            'root_password': 'Ax4**7^bBjwMz43*'}
+                            'root_password': 'psw'}
 
     template_files = [
         'core/framework/templates/cloud_function.jinja',
