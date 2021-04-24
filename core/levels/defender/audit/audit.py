@@ -9,12 +9,12 @@ from core.framework.cloudhelpers import (
     deployments,
     iam,
     gcstorage,
-    cloudfunctions
+    cloudfunctions,
+    db
 )
 
 LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
-
 
 def create(second_deploy=True):
     print("Level initialization started for: " + LEVEL_PATH)
@@ -55,7 +55,7 @@ def create(second_deploy=True):
     try:
         print("Level setup started for: " + LEVEL_PATH)
 
-        create_userdata_tables()
+        db.audit_create_tables()
         user_keys = register_users()
         post_statuses()
 
@@ -69,20 +69,18 @@ def create(second_deploy=True):
 def destroy():
     deployments.delete()
 
-
-def create_userdata_tables():
-    # Create the schema in the db for users and statuses
-    sql = """CREATE TABLE users (
-                ID       INT PRIMARY KEY   NOT NULL,
-                NAME     TEXT              NOT NULL,
-                PHONE    TEXT              NOT NULL,
-                ADDRESS  TEXT              NOT NULL
-            );"""
-
-
 def register_users():
     # Load the synthetic user and developer information
     users = csv.DictReader(open('resources/users.csv', newline=''))
+    stmt = "INSERT INTO users (name, phone, address) VALUES "
+    for line in users:
+        user = line.split(",")
+        if(user[0] == "name"):
+            continue
+        stmt += "(" + user[0] + "," + user[2] + "," + user[1] + "),"
+    stmt = stmt[:-1] + ";"
+    
+
     devs = csv.DictReader(open('resources/devs.csv', newline=''))
 
     # Hit the db api to add users to the table and generate a bunch
