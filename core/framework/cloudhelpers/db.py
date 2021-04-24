@@ -1,6 +1,8 @@
 import os
 import sqlalchemy
 import google.auth
+from pprint import pprint
+from googleapiclient import discovery
 
 def init_connection_engine(db_name):
     db_config = {
@@ -51,11 +53,6 @@ def get_db_hostname():
     3. Install the Python client library for Google APIs by running
     `pip install --upgrade google-api-python-client`
     """
-    from pprint import pprint
-
-    from googleapiclient import discovery
-    from oauth2client.client import GoogleCredentials
-
     credentials, project_id = google.auth.default()
 
     service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
@@ -69,6 +66,7 @@ def get_db_hostname():
         for database_instance in response['items']:
             # TODO: Change code below to process each `database_instance` resource:
             pprint(database_instance)
+            return database_instance
 
         request = service.instances().list_next(previous_request=request, previous_response=response)
 
@@ -77,14 +75,15 @@ def init_tcp_connection_engine(db_config, db_name):
     # Remember - storing secrets in plaintext is potentially unsafe. Consider using
     # something like https://cloud.google.com/secret-manager/docs/overview to help keep
     # secrets secret.
-    db_name = os.environ["DB_NAME"]
-    db_host = os.environ["DB_HOST"]
+
 
 
 
     # Extract host and port from db_host
-    host_args = db_host.split(":")
-    db_hostname, db_port = host_args[0], int(host_args[1])
+    db_stuff = get_db_hostname()
+
+    db_hostname = db_stuff["ipAddresses"][0]["ipAddress"]
+    db_port = 5432
 
     pool = sqlalchemy.create_engine(
         # Equivalent URL:

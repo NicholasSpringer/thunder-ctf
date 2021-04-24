@@ -73,11 +73,11 @@ def register_users():
     # Load the synthetic user and developer information
     users = csv.DictReader(open('resources/users.csv', newline=''))
     stmt = "INSERT INTO users (name, phone, address) VALUES "
-    for line in users:
-        user = line.split(",")
-        if(user[0] == "name"):
-            continue
-        stmt += "(" + user[0] + "," + user[2] + "," + user[1] + "),"
+    
+    user = line.split(",")
+    if(user[0] == "name"):
+        continue
+    stmt += "(" + user[0] + "," + user[2] + "," + user[1] + ");"
     stmt = stmt[:-1] + ";"
     
 
