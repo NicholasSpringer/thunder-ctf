@@ -2,7 +2,7 @@ import os
 import sqlalchemy
 import google.auth
 
-def init_connection_engine():
+def init_connection_engine(db_name):
     db_config = {
         # [START cloud_sql_postgres_sqlalchemy_limit]
         # Pool size is the maximum number of permanent connections to keep.
@@ -33,7 +33,7 @@ def init_connection_engine():
         # [END cloud_sql_postgres_sqlalchemy_lifetime]
     }
 
-    return init_tcp_connection_engine(db_config)
+    return init_tcp_connection_engine(db_config, db_name)
 
 def get_db_hostname():
     """
@@ -72,7 +72,7 @@ def get_db_hostname():
 
         request = service.instances().list_next(previous_request=request, previous_response=response)
 
-def init_tcp_connection_engine(db_config):
+def init_tcp_connection_engine(db_config, db_name):
     # [START cloud_sql_postgres_sqlalchemy_create_tcp]
     # Remember - storing secrets in plaintext is potentially unsafe. Consider using
     # something like https://cloud.google.com/secret-manager/docs/overview to help keep
@@ -95,7 +95,7 @@ def init_tcp_connection_engine(db_config):
             password="Ax4**7^bBjwMz43*",  # e.g. "my-database-password"
             host=db_hostname,  # e.g. "127.0.0.1"
             port=db_port,  # e.g. 5432
-            database="userdata-db"  # e.g. "my-database-name"
+            database=db_name  # e.g. "my-database-name"
         ),
         **db_config
     )
@@ -103,57 +103,8 @@ def init_tcp_connection_engine(db_config):
     pool.dialect.description_encoding = None
     return pool
 
-# This global variable is declared with a value of `None`, instead of calling
-# `init_connection_engine()` immediately, to simplify testing. In general, it
-# is safe to initialize your database connection pool when your script starts
-# -- there is no need to wait for the first request.
-db = None
-
-#Table creation for  audit
-def audit_create_tables():
-    global db
-    db = init_connection_engine()
-    # Create tables (if they don't already exist)
-    with db.connect() as conn:
-        conn.execute(
-            """CREATE TABLE users (
-                ID       INT PRIMARY KEY   NOT NULL,
-                NAME     TEXT              NOT NULL,
-                PHONE    TEXT              NOT NULL,
-                ADDRESS  TEXT              NOT NULL
-            );"""
-        )
-
-
-def get_index_context():
-    votes = []
-
-    with db.connect() as conn:
-        # Execute the query and fetch all results
-        recent_votes = conn.execute(
-            "SELECT candidate, time_cast FROM votes "
-            "ORDER BY time_cast DESC LIMIT 5"
-        ).fetchall()
-        # Convert the results into a list of dicts representing votes
-        for row in recent_votes:
-            votes.append({
-                'candidate': row[0],
-                'time_cast': row[1]
-            })
-
-        stmt = sqlalchemy.text(
-            "SELECT COUNT(vote_id) FROM votes WHERE candidate=:candidate")
-        # Count number of votes for tabs
-        tab_result = conn.execute(stmt, candidate="TABS").fetchone()
-        tab_count = tab_result[0]
-        # Count number of votes for spaces
-        space_result = conn.execute(stmt, candidate="SPACES").fetchone()
-        space_count = space_result[0]
-
-    return {
-        'space_count': space_count,
-        'recent_votes': votes,
-        'tab_count': tab_count,
-    }
+#Connect to DB
+def connect(db_name):
+    return init_connection_engine(db_name)
 
 

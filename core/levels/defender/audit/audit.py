@@ -55,7 +55,7 @@ def create(second_deploy=True):
     try:
         print("Level setup started for: " + LEVEL_PATH)
 
-        db.audit_create_tables()
+        create_tables(user_db_name)
         user_keys = register_users()
         post_statuses()
 
@@ -91,3 +91,52 @@ def register_users():
 def post_statuses():
     # Load statuses and post to db
     statuses = csv.DictReader(open('resources/statuses.csv', newline=''))
+
+#Table creation for  audit
+def create_tables(user_db_name):
+    db.connect(user_db_name)
+    # Create tables (if they don't already exist)
+    with db.connect() as conn:
+        conn.execute(
+            """CREATE TABLE users (
+                ID       INT PRIMARY KEY   NOT NULL,
+                NAME     TEXT              NOT NULL,
+                PHONE    TEXT              NOT NULL,
+                ADDRESS  TEXT              NOT NULL
+            );"""
+        )
+
+def get_index_context():
+    votes = []
+
+    with db.connect() as conn:
+        # Execute the query and fetch all results
+        recent_votes = conn.execute(
+            "SELECT candidate, time_cast FROM votes "
+            "ORDER BY time_cast DESC LIMIT 5"
+        ).fetchall()
+        # Convert the results into a list of dicts representing votes
+        for row in recent_votes:
+            votes.append({
+                'candidate': row[0],
+                'time_cast': row[1]
+            })
+
+        stmt = sqlalchemy.text(
+            "SELECT COUNT(vote_id) FROM votes WHERE candidate=:candidate")
+        # Count number of votes for tabs
+        tab_result = conn.execute(stmt, candidate="TABS").fetchone()
+        tab_count = tab_result[0]
+        # Count number of votes for spaces
+        space_result = conn.execute(stmt, candidate="SPACES").fetchone()
+        space_count = space_result[0]
+
+    return {
+        'space_count': space_count,
+        'recent_votes': votes,
+        'tab_count': tab_count,
+    }
+
+
+
+
