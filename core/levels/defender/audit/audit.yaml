@@ -11,22 +11,33 @@ resources:
     root_password: {{ root_password }}
     nonce: {{ nonce }}
 
-- name: register-func
-  type: cloud_function.jinja
+- name: api-engine
+  type: container_vm.jinja
   properties:
-    region: us-central1
-    nonce: {{ nonce }}
-    entry_point: main
-    upload_url: {{ register_url }}
-    policyBindings:
-    - role: roles/cloudfunctions.invoker
-      all_users: allusers
+    zone: us-west1-b
+    open_external: true
+    open_http: true
+    container_manifest: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: a6
+      spec:
+        containers:
+          - name: a6
+            image: docker.io/aujxn/defender-audit:latest
+            imagePullPolicy: Always
+            ports:
+              - containerPort: 80
+                hostPort: 80
 
 - name: iam_policy
   type: iam_policy.jinja
   properties:
     bindings:
-      - service_account_id: register-func-{{ nonce }}-sa
-        role:
-          name: roles/iam.serviceAccountAdmin
-
+    - service_account_id: api-engine-sa
+      role:
+        name: roles/iam.serviceAccountAdmin
+    - service_account_id: api-engine-sa
+      role:
+        name: roles/cloudsql.admin

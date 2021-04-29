@@ -21,3 +21,4 @@ grpcio
 
 #db
 sqlalchemy
+pg8000
