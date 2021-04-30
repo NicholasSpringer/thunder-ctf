@@ -39,6 +39,7 @@ db = sqlalchemy.create_engine(
 )
 db.dialect.description_encoding = None
 
+
 @app.route("/", methods=["POST"])
 def new_user():
     keys = request.form.keys()
@@ -59,6 +60,7 @@ def new_user():
         
     # vulnerable function here that exposes it's auth token
     return Response(status=200, response='User added')
+
 
 @app.route("/add-friend", methods=["POST"])
 def follow():

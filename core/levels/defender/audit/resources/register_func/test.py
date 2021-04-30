@@ -11,7 +11,7 @@ service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
 response = service.instances().list(project=project_id).execute()
 instance_name = response['items'][0]['connectionName']
 
-subprocess.Popen(['./cloud_sql_proxy', f'-instances={instance_name}=tcp:5432'])
+#subprocess.Popen(['./cloud_sql_proxy', f'-instances={instance_name}=tcp:5432'])
 time.sleep(5)
 
 db_config = {
@@ -36,18 +36,25 @@ db.dialect.description_encoding = None
 devs = csv.DictReader(open('devs.csv', newline=''))
 with db.connect() as conn:
     conn.execute(
-        """CREATE TABLE users (
-            id       SERIAL,
-            name     TEXT              NOT NULL,
-            phone    TEXT              NOT NULL,
-            address  TEXT              NOT NULL
-        );
-        CREATE TABLE devs (
-            id       SERIAL,
-            name     TEXT              NOT NULL,
-            phone    TEXT              NOT NULL,
-            address  TEXT              NOT NULL
-        );"""
+            """
+            CREATE TABLE users (
+                user_id  SERIAL PRIMARY KEY,
+                name     TEXT              NOT NULL,
+                phone    TEXT              NOT NULL,
+                address  TEXT              NOT NULL
+            );
+            CREATE TABLE devs (
+                dev_id   SERIAL PRIMARY KEY,
+                name     TEXT              NOT NULL,
+                phone    TEXT              NOT NULL,
+                address  TEXT              NOT NULL
+            );
+            CREATE TABLE follows (
+                friend_id SERIAL PRIMARY KEY,
+                follower INT   NOT NULL REFERENCES users(user_id),
+                followee INT   NOT NULL REFERENCES users(user_id)
+            );
+        """
     )
 
     for dev in devs:

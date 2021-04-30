@@ -87,7 +87,7 @@ def create_tables():
     )
     db.dialect.description_encoding = None
 
-    devs = csv.DictReader(open('resources/devs.csv', newline=''))
+    devs = csv.DictReader(open('/home/ajn6/thunder-ctf/core/levels/defender/audit/resources/devs.csv', newline=''))
     with db.connect() as conn:
         conn.execute(
             """
@@ -98,7 +98,7 @@ def create_tables():
                 address  TEXT              NOT NULL
             );
             CREATE TABLE devs (
-                dev_id   SERIAL PRIMAY KEY,
+                dev_id   SERIAL PRIMARY KEY,
                 name     TEXT              NOT NULL,
                 phone    TEXT              NOT NULL,
                 address  TEXT              NOT NULL
