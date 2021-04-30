@@ -1,16 +1,16 @@
 import sqlalchemy
 import google.auth
-import logging
 import subprocess
 import time
 import csv
+from google.cloud import logging as glogging
 from googleapiclient import discovery
 from flask import Flask, request, Response
 from sqlalchemy.sql import text
 
 app = Flask(__name__)
 
-logger = logging.getLogger()
+logger = glogging.Client().logger("API-Engine")
 
 credentials, project_id = google.auth.default()
 service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
@@ -47,7 +47,9 @@ def new_user():
         payload = ''
         for key in request.form.keys():
             payload = payload + key + ' '
-        logger.error('Invalid post: ' + payload)
+        logger.log_struct(
+            {'endpoint': "new user",
+             'error': "Invalid post: " + payload})
         return Response(response='Request failed. Must include name, phone, and address in payload. keys:'+payload, status=400)
     
     try:
@@ -73,7 +75,9 @@ def follow():
     if 'follower' not in keys or 'followee' not in keys:
         for key in request.form.keys():
             payload = payload + key + ' '
-        logger.exception('Invalid post: ' + payload)
+        logger.log_struct(
+            {'endpoint': "follow",
+             'error': "Invalid post: " + payload})
         return Response(response='Request failed. Must include follower and followee:'+payload, status=400)
 
     try:

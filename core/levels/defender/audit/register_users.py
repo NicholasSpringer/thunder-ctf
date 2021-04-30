@@ -23,5 +23,5 @@ for user in users:
 
 follow_url = url + '/follow'
 print(follow_url)
-r = requests.post(follow_url, data={'follower':1,'followee':2})
+r = requests.post(follow_url, data={'follower': 1, 'followee': 2})
 print(r.text)
