@@ -65,7 +65,7 @@ def create_tables():
     user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':'psw'}
     service.users().insert(project=project_id, instance=instance_name, body=user).execute()
 
-    proxy = subprocess.Popen(['./cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'])
+    proxy = subprocess.Popen(['/home/ajn6/thunder-ctf/core/levels/defender/audit/cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'])
     time.sleep(5)
 
     db_config = {
@@ -87,7 +87,7 @@ def create_tables():
     )
     db.dialect.description_encoding = None
 
-    devs = csv.DictReader(open('devs.csv', newline=''))
+    devs = csv.DictReader(open('resources/devs.csv', newline=''))
     with db.connect() as conn:
         conn.execute(
             """CREATE TABLE users (
