@@ -46,6 +46,7 @@ def new_user():
         payload = ''
         for key in request.form.keys():
             payload = payload + key + ' '
+        logger.exception('Invalid post: ' + payload)
         return Response(response='Request failed. Must include name, phone, and address in payload. keys:'+payload, status=400)
     
     try:
@@ -58,6 +59,28 @@ def new_user():
         
     # vulnerable function here that exposes it's auth token
     return Response(status=200, response='User added')
+
+@app.route("/add-friend", methods=["POST"])
+def follow():
+    keys = request.form.key()
+    if 'follower' not in keys or 'followee' not in keys:
+        for key in request.form.keys():
+            payload = payload + key + ' '
+        logger.exception('Invalid post: ' + payload)
+        return Response(response='Request failed. Must include follower and followee:'+payload, status=400)
+
+    try:
+        #check if already following 
+        with db.connect() as conn:
+            stmt = text("INSERT INTO follows (follower, followee) VALUES (:follower, :followee)")
+            conn.execute(stmt, follower=request.form['follower'], followee=request.form['followee'])
+    except Exception as e:
+        logger.exception(e)
+        return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
+        
+    # vulnerable function here that exposes it's auth token
+    return Response(status=200, response='User added')
+
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=80)
