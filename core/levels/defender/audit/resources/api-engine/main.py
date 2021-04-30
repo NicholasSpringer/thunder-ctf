@@ -58,17 +58,17 @@ def new_user():
         logger.exception(e)
         return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
         
-    # vulnerable function here that exposes it's auth token
     return Response(status=200, response='User added')
 
 
-@app.route("/test", methods=["get"])
+@app.route("/test", methods=["GET"])
 def test():
-    return "<p>hello test<\p>"
+    return "<p>hello test</p>"
 
 
 @app.route("/follow", methods=["POST"])
 def follow():
+    return Response(status=200, response='User followed')
     keys = request.form.key()
     if 'follower' not in keys or 'followee' not in keys:
         for key in request.form.keys():
@@ -80,13 +80,12 @@ def follow():
         #check if already following 
         with db.connect() as conn:
             stmt = text("INSERT INTO follows (follower, followee) VALUES (:follower, :followee)")
-            conn.execute(stmt, follower=request.form['follower'], followee=request.form['followee'])
+            conn.execute(stmt, follower=int(request.form['follower']), followee=int(request.form['followee']))
     except Exception as e:
         logger.exception(e)
         return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
         
-    # vulnerable function here that exposes it's auth token
-    return Response(status=200, response='User added')
+    return Response(status=200, response='User followed')
 
 
 if __name__ == "__main__":
