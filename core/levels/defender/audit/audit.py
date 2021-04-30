@@ -6,9 +6,9 @@ import json
 import csv
 import sqlalchemy
 import google.auth
-from pprint import pprint
-from googleapiclient import discovery
 
+from googleapiclient import discovery
+from sqlalchemy.sql import text
 from google.oauth2 import service_account
 from core.framework import levels
 from core.framework.cloudhelpers import (
@@ -104,9 +104,9 @@ def create_tables():
                 address  TEXT              NOT NULL
             );
             CREATE TABLE follows (
-                friend_id SERIAL PRIMARY KEY,
-                follower INT   NOT NULL REFERENCES user_id,
-                followee INT   NOT NULL REFERENCES user_id
+                follow_id SERIAL PRIMARY KEY,
+                follower INT   NOT NULL REFERENCES users(user_id),
+                followee INT   NOT NULL REFERENCES users(user_id)
             );
             """
         )
