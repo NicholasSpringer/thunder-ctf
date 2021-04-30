@@ -90,18 +90,25 @@ def create_tables():
     devs = csv.DictReader(open('resources/devs.csv', newline=''))
     with db.connect() as conn:
         conn.execute(
-            """CREATE TABLE users (
-                id       SERIAL,
+            """
+            CREATE TABLE users (
+                user_id  SERIAL PRIMARY KEY,
                 name     TEXT              NOT NULL,
                 phone    TEXT              NOT NULL,
                 address  TEXT              NOT NULL
             );
             CREATE TABLE devs (
-                id       SERIAL,
+                dev_id   SERIAL PRIMAY KEY,
                 name     TEXT              NOT NULL,
                 phone    TEXT              NOT NULL,
                 address  TEXT              NOT NULL
-            );"""
+            );
+            CREATE TABLE follows (
+                friend_id SERIAL PRIMARY KEY,
+                follower INT   NOT NULL REFERENCES user_id,
+                followee INT   NOT NULL REFERENCES user_id
+            );
+            """
         )
 
         for dev in devs:
