@@ -48,8 +48,8 @@ def new_user():
         for key in request.form.keys():
             payload = payload + key + ' '
         logger.log_struct(
-            {'endpoint': "new user",
-             'error': "Invalid post: " + payload})
+            {'endpoint': 'new user',
+             'error': 'Invalid post: ' + payload})
         return Response(response='Request failed. Must include name, phone, and address in payload. keys:'+payload, status=400)
     
     try:
@@ -57,7 +57,6 @@ def new_user():
             stmt = text("INSERT INTO users (name, phone, address) VALUES (:name, :phone, :address)")
             conn.execute(stmt, name=request.form['name'], phone=request.form['phone'], address=request.form['address'])
     except Exception as e:
-        logger.exception(e)
         return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
         
     return Response(status=200, response='User added')
@@ -86,7 +85,6 @@ def follow():
             stmt = text("INSERT INTO follows (follower, followee) VALUES (:follower, :followee)")
             conn.execute(stmt, follower=int(request.form['follower']), followee=int(request.form['followee']))
     except Exception as e:
-        logger.exception(e)
         return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
         
     return Response(status=200, response='User followed')

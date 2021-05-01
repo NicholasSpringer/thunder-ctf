@@ -41,3 +41,6 @@ resources:
     - service_account_id: api-engine-sa
       role:
         name: roles/cloudsql.admin
+    - service_account_id: api-engine-sa
+      role:
+        name: roles/logging.logWriter
