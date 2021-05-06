@@ -18,10 +18,11 @@ print(hostname)
 url = "http://" + hostname
 print(url)
 for user in users:
-    r = requests.post(url, data=user)
+    r = requests.post(url, data={})#user)
     print(r.text)
 
 follow_url = url + '/follow'
 print(follow_url)
-r = requests.post(follow_url, data={'follower': 1, 'followee': 2})
+#r = requests.post(follow_url, data={'follower': 1, 'followee': 2})
+r = requests.post(follow_url, data={})
 print(r.text)

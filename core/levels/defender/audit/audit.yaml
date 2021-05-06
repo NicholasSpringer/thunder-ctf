@@ -2,6 +2,7 @@ imports:
 - path: sql_db.jinja
 - path: cloud_function.jinja
 - path: iam_policy.jinja
+- path: service_account.jinja
 
 resources:
 - name: userdata-db
@@ -31,6 +32,9 @@ resources:
               - containerPort: 80
                 hostPort: 80
 
+- name: compute-admin
+  type: service_account.jinja
+
 - name: iam_policy
   type: iam_policy.jinja
   properties:
@@ -44,3 +48,9 @@ resources:
     - service_account_id: api-engine-sa
       role:
         name: roles/logging.logWriter
+    - service_account_id: compute-admin
+      role:
+        name: roles/compute.admin
+    - service_account_id: compute-admin
+      role:
+        name: roles/iam.serviceAccountUser

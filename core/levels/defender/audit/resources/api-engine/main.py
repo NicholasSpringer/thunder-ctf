@@ -69,7 +69,6 @@ def test():
 
 @app.route("/follow", methods=["POST"])
 def follow():
-    return Response(status=200, response='User followed')
     keys = request.form.keys()
     if 'follower' not in keys or 'followee' not in keys:
         for key in request.form.keys():
