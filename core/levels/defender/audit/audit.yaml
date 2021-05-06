@@ -5,6 +5,10 @@ imports:
 - path: service_account.jinja
 
 resources:
+- name: log-viewer
+  type: service_account.jinja
+- name: dev-account
+  type: service_account.jinja
 - name: userdata-db
   type: sql_db.jinja
   properties:
@@ -48,9 +52,19 @@ resources:
     - service_account_id: api-engine-sa
       role:
         name: roles/logging.logWriter
+
     - service_account_id: compute-admin
       role:
         name: roles/compute.admin
     - service_account_id: compute-admin
+      role:
+        name: roles/iam.serviceAccountUser
+    - service_account_id: log-viewer
+      role:
+        name: roles/logging.viewer
+    - service_account_id: log-viewer
+      role:
+        name: roles/logging.configWriter
+    - service_account_id: dev-account
       role:
         name: roles/iam.serviceAccountUser
