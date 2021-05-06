@@ -6,13 +6,7 @@ imports:
 - path: service_account.jinja
 
 resources:
-- name: vm-image-bucket
-  type: bucket_acl.jinja
-  properties:
-    nonce: {{ nonce }}
-    acl_entries:
-      - service_account_id: dev-account
-        role: OWNER
+
 - name: log-viewer
   type: service_account.jinja
 - name: dev-account
