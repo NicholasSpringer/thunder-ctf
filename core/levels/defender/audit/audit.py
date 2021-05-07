@@ -11,6 +11,7 @@ from googleapiclient import discovery
 from sqlalchemy.sql import text
 from google.oauth2 import service_account
 from core.framework import levels
+from google.cloud import storage
 from core.framework.cloudhelpers import (
     deployments,
     iam,
@@ -53,6 +54,10 @@ def create(second_deploy=True):
 
     print("Level setup started for: " + LEVEL_PATH)
     create_tables()
+    dev_key = iam.generate_service_account_key('dev-account')
+    logging_key = iam.generate_service_account_key('log-viewer')
+    #storage_client = storage.Client()
+    #vm_image_bucket = storage_client.get_bucket('vm-image-bucket')
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = ('Helpful start message')
 
