@@ -119,8 +119,9 @@ def create_tables():
         for dev in devs:
             stmt = text("INSERT INTO devs (name, phone, address) VALUES (:name, :phone, :address)")
             conn.execute(stmt, dev)
-    proxy.terminate()
     db.dispose()
+    proxy.terminate()
+
 
 def destroy():
     deployments.delete()
