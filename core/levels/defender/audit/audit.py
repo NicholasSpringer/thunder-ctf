@@ -35,7 +35,8 @@ def create(second_deploy=True):
         'core/framework/templates/service_account.jinja',
         'core/framework/templates/iam_policy.jinja',
         'core/framework/templates/sql_db.jinja',
-        'core/framework/templates/container_vm.jinja'
+        'core/framework/templates/container_vm.jinja',
+        'core/framework/templates/bucket_acl.jinja'
         ]
 
     if second_deploy:
@@ -56,8 +57,8 @@ def create(second_deploy=True):
     create_tables()
     dev_key = iam.generate_service_account_key('dev-account')
     logging_key = iam.generate_service_account_key('log-viewer')
-    #storage_client = storage.Client()
-    #vm_image_bucket = storage_client.get_bucket('vm-image-bucket')
+    storage_client = storage.Client()
+    vm_image_bucket = storage_client.get_bucket('vm-image-bucket')
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = ('Helpful start message')
 
