@@ -19,6 +19,9 @@ resources:
   type: service_account.jinja
 - name: dev-account
   type: service_account.jinja
+- name: compute-admin
+  type: service_account.jinja
+
 - name: userdata-db
   type: sql_db.jinja
   properties:
@@ -46,8 +49,17 @@ resources:
               - containerPort: 80
                 hostPort: 80
 
-- name: compute-admin
-  type: service_account.jinja
+- name: rm-user
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{nonce}}
+    entry_point: main
+    upload_url: {{func_upload_url}}
+    policyBindings:
+      - role: roles/cloudfunctions.invoker
+        service_account_id: dev-account
+          
 
 - name: iam_policy
   type: iam_policy.jinja
@@ -78,3 +90,11 @@ resources:
     - service_account_id: dev-account
       role:
         name: roles/iam.serviceAccountUser
+    - service_account_id: dev-account
+      role:
+        name: custom
+        custom_nonce: {{nonce}}
+        permissions:
+        - cloudfunctions.functions.get
+        - cloudfunctions.functions.list
+
