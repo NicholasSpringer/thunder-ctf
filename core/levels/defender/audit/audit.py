@@ -69,6 +69,12 @@ def create(second_deploy=True):
     vm_image_bucket = storage_client.get_bucket(f'vm-image-bucket-{nonce}')
     storage_blob = storage.Blob('main.py', vm_image_bucket)
     storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/main.py')
+    storage_blob = storage.Blob('Dockerfile', vm_image_bucket)
+    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/Dockerfile')
+    storage_blob = storage.Blob('requirements.txt', vm_image_bucket)
+    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/requirements.txt')
+    storage_blob = storage.Blob('cloud_sql_proxy', vm_image_bucket)
+    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/cloud_sql_proxy')
 
 
     print(f'Level creation complete for: {LEVEL_PATH}')
