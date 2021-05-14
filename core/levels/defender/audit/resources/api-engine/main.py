@@ -89,5 +89,26 @@ def follow():
     return Response(status=200, response='User followed')
 
 
+@app.route("/delete", methods=["POST"])
+def delete():
+    keys = request.form.keys()
+    if 'name' not in keys or 'user_id' not in keys:
+        for key in request.form.keys():
+            payload = payload + key + ' '
+        logger.log_struct(
+            {'endpoint': "delete",
+             'error': "Invalid post: " + payload})
+        return Response(response='Request failed. Must include user\'s name and user_id:'+payload, status=400)
+
+    try:
+        #attempt to delete user
+        with db.connect() as conn:
+            stmt = text("DELETE FROM users WHERE name = :name AND user_id = :user_id")
+            conn.execute(stmt, user_id=request.form['user_id'], name=request.form['name'])
+    except Exception as e:
+        return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
+        
+    return Response(status=200, response='User deleted')
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=80)
