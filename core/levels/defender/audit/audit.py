@@ -11,7 +11,10 @@ from googleapiclient import discovery
 from sqlalchemy.sql import text
 from google.oauth2 import service_account
 from core.framework import levels
-from google.cloud import storage
+from google.cloud import {
+    storage,
+    secretmanager
+}
 from core.framework.cloudhelpers import (
     deployments,
     iam,
@@ -79,6 +82,32 @@ def create(second_deploy=True):
 
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = ('Helpful start message')
+
+
+def create_secret(secret_id, secret_value):
+
+    _, project_id = google.auth.default()
+
+    # Create Secrets Manager client
+    sm_client = secretmanager.SecretManagerServiceClient()
+
+    # Create secret
+    secret = sm_client.create_secret(
+        request={
+            "parent": f'projects/{project_id}',
+            "secret_id": secret_id,
+            "secret": {
+                "name": secret_value,
+                "replication": {"automatic": {}}
+            }
+        }
+    )
+
+    # Add the secret version.
+    version = sm_client.add_secret_version(
+        request={"parent": secret.name, "payload": {"data": secret_value.encode()}}
+    )
+
 
 def create_tables():
     credentials, project_id = google.auth.default()
