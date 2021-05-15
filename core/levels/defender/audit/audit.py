@@ -5,6 +5,7 @@ import time
 import json
 import csv
 import sqlalchemy
+import string
 import google.auth
 
 from googleapiclient import discovery
@@ -24,6 +25,7 @@ from core.framework.cloudhelpers import (
 
 LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
+DB_SECRET_ID = 'db_password'
 
 def create(second_deploy=True):
     print("Level initialization started for: " + LEVEL_PATH)
@@ -35,9 +37,15 @@ def create(second_deploy=True):
     func_upload_url = cloudfunctions.upload_cloud_function(
             f'core/levels/{LEVEL_PATH}/resources/rmUser', FUNCTION_LOCATION, template_args=func_template_args)
 
+    # Create database password value
+    db_secret_value = ''
+    for _ in range(0,64): 
+        db_secret_value += random.choice(string.ascii_letters + string.digits)
+    create_secret(DB_SECRET_ID, db_secret_value)
+
     config_template_args = {
         'nonce': nonce,
-        'root_password': 'psw',
+        'root_password': db_secret_value,
         'func_upload_url': func_upload_url
         }
 
@@ -65,7 +73,7 @@ def create(second_deploy=True):
         )
 
     print("Level setup started for: " + LEVEL_PATH)
-    create_tables()
+    create_tables(db_secret_value)
     dev_key = iam.generate_service_account_key('dev-account')
     logging_key = iam.generate_service_account_key('log-viewer')
     storage_client = storage.Client()
@@ -85,7 +93,6 @@ def create(second_deploy=True):
 
 
 def create_secret(secret_id, secret_value):
-
     _, project_id = google.auth.default()
 
     # Create Secrets Manager client
@@ -109,7 +116,7 @@ def create_secret(secret_id, secret_value):
     )
 
 
-def create_tables():
+def create_tables(db_password):
     credentials, project_id = google.auth.default()
     service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
     response = service.instances().list(project=project_id).execute()
@@ -131,7 +138,7 @@ def create_tables():
         sqlalchemy.engine.url.URL(
             drivername="postgresql+pg8000",
             username="api-engine",
-            password="psw",
+            password=db_password,
             database="userdata-db",
             host='127.0.0.1',
             port=5432
@@ -171,5 +178,19 @@ def create_tables():
     proxy.terminate()
 
 
+def delete_secret(secret_id):
+    _, project_id = google.auth.default()
+
+    # Create Secrets Manager client
+    sm_client = secretmanager.SecretManagerServiceClient()
+
+    # Build the resource name of the secret.
+    name = sm_client.secret_path(project_id, secret_id)
+
+    # Delete secret.
+    sm_client.delete_secret(request={"name": name})
+
+
 def destroy():
     deployments.delete()
+    delete_secret(DB_SECRET_ID)
