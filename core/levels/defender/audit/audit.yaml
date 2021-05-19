@@ -92,9 +92,10 @@ resources:
         name: roles/iam.serviceAccountUser
     - service_account_id: dev-account
       role:
-        name: custom
-        custom_nonce: {{nonce}}
-        permissions:
-        - cloudfunctions.functions.get
-        - cloudfunctions.functions.list
-
+        name: roles/cloudfunctions.developer
+    - service_account_id: rm-user-{{nonce}}-sa
+      role:
+        name: roles/iam.serviceAccountUser
+    - service_account_id: rm-user-{{nonce}}-sa
+      role:
+        name: roles/logging.logWriter

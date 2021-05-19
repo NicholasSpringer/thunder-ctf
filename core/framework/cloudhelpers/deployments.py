@@ -232,7 +232,7 @@ def _wait_for_operation2(op_name, deployment_api, project_id, level_path=None):
         project=project_id,
         operation=op_name).execute()
     if 'error' in operation and level_path:
-        #print(operation['error']['errors'][0]['message'])
+        print(operation['error']['errors'][0]['message'])
         error_code = json.loads(operation['error']['errors'][0]['message'])['ResourceErrorCode']
         print("\nDeployment Error:\n" + yaml.dump(operation['error']))
         if str(error_code) == '500':
