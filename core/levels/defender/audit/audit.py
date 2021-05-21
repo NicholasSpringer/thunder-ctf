@@ -89,14 +89,15 @@ def create(second_deploy=True):
     data = {'name':'Robert Caldwell', 'authentication':dev_key}
     resp = req(url, method = 'POST', body = data, headers = headers)
 
-    time.sleep(15)
-    exploit(nonce, logging_key)
-    time.sleep(15)
-    hack()
+    time.sleep(5)
+    hostname = exploit(nonce, logging_key)
+    time.sleep(5)
+    hack(hostname)
 
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = ('Helpful start message')
     levels.write_start_info(LEVEL_PATH, start_message, file_name="dev-account.json", file_content=dev_key)
+
 
 def create_tables():
     credentials, project_id = google.auth.default()
@@ -206,20 +207,19 @@ def exploit(nonce, logging_key):
         time.sleep(2)
     shutil.rmtree(temp_dir)
 
-def hack():
-    credentials, project_id = google.auth.default()
-    compute_api = discovery.build('compute', 'v1', credentials=credentials)
-    response = compute_api.instances().list(project=project_id, zone='us-west1-b').execute()
+    #returns External IP of the restarted vm
+    #time.sleep(60)
+    return compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
 
-    for instance in response['items']:
-        if instance['name'] == 'api-engine':
-            hostname = instance['networkInterfaces'][0]['accessConfigs'][0]['natIP']
-            break
 
+def hack(hostname):
     url = f'http://{hostname}/hacked'
 
     payload = {'sql': 'select * from devs;'}
     response = requests.post(url, data=payload)
+    while(response.status_code != 200):
+        time.sleep(10)
+        response = requests.post(url, data=payload)
     print(response.text)
 
 
