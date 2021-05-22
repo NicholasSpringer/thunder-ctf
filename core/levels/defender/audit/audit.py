@@ -12,10 +12,10 @@ from googleapiclient import discovery
 from sqlalchemy.sql import text
 from google.oauth2 import service_account
 from core.framework import levels
-from google.cloud import {
+from google.cloud import (
     storage,
     secretmanager
-}
+)
 from core.framework.cloudhelpers import (
     deployments,
     iam,
@@ -25,7 +25,7 @@ from core.framework.cloudhelpers import (
 
 LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
-DB_SECRET_ID = 'db_password'
+DB_SECRET_ID = 'defender_db_password'
 
 def create(second_deploy=True):
     print("Level initialization started for: " + LEVEL_PATH)
@@ -122,59 +122,63 @@ def create_tables(db_password):
     response = service.instances().list(project=project_id).execute()
     connection_name = response['items'][0]['connectionName']
     instance_name = response['items'][0]['name']
-    user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':'psw'}
+    user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':db_password}
     service.users().insert(project=project_id, instance=instance_name, body=user).execute()
 
     proxy = subprocess.Popen([f'core/levels/{LEVEL_PATH}/cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'])
-    time.sleep(5)
+    try:
+        time.sleep(5)
 
-    db_config = {
-        "pool_size": 5,
-        "max_overflow": 2,
-        "pool_recycle": 1800,  # 30 minutes
-    }
+        db_config = {
+            "pool_size": 5,
+            "max_overflow": 2,
+            "pool_recycle": 1800,  # 30 minutes
+        }
 
-    db = sqlalchemy.create_engine(
-        sqlalchemy.engine.url.URL(
-            drivername="postgresql+pg8000",
-            username="api-engine",
-            password=db_password,
-            database="userdata-db",
-            host='127.0.0.1',
-            port=5432
-        ),
-        **db_config
-    )
-    db.dialect.description_encoding = None
-
-    devs = csv.DictReader(open(f'core/levels/{LEVEL_PATH}/resources/devs.csv', newline=''))
-    with db.connect() as conn:
-        conn.execute(
-            """
-            CREATE TABLE users (
-                user_id  SERIAL PRIMARY KEY,
-                name     TEXT              NOT NULL,
-                phone    TEXT              NOT NULL,
-                address  TEXT              NOT NULL
-            );
-            CREATE TABLE devs (
-                dev_id   SERIAL PRIMARY KEY,
-                name     TEXT              NOT NULL,
-                phone    TEXT              NOT NULL,
-                address  TEXT              NOT NULL
-            );
-            CREATE TABLE follows (
-                follow_id SERIAL PRIMARY KEY,
-                follower INT   NOT NULL REFERENCES users(user_id),
-                followee INT   NOT NULL REFERENCES users(user_id)
-            );
-            """
+        db = sqlalchemy.create_engine(
+            sqlalchemy.engine.url.URL(
+                drivername="postgresql+pg8000",
+                username="api-engine",
+                password=db_password,
+                database="userdata-db",
+                host='127.0.0.1',
+                port=5432
+            ),
+            **db_config
         )
+        db.dialect.description_encoding = None
 
-        for dev in devs:
-            stmt = text("INSERT INTO devs (name, phone, address) VALUES (:name, :phone, :address)")
-            conn.execute(stmt, dev)
-    db.dispose()
+        devs = csv.DictReader(open(f'core/levels/{LEVEL_PATH}/resources/devs.csv', newline=''))
+        with db.connect() as conn:
+            conn.execute(
+                """
+                CREATE TABLE users (
+                    user_id  SERIAL PRIMARY KEY,
+                    name     TEXT              NOT NULL,
+                    phone    TEXT              NOT NULL,
+                    address  TEXT              NOT NULL
+                );
+                CREATE TABLE devs (
+                    dev_id   SERIAL PRIMARY KEY,
+                    name     TEXT              NOT NULL,
+                    phone    TEXT              NOT NULL,
+                    address  TEXT              NOT NULL
+                );
+                CREATE TABLE follows (
+                    follow_id SERIAL PRIMARY KEY,
+                    follower INT   NOT NULL REFERENCES users(user_id),
+                    followee INT   NOT NULL REFERENCES users(user_id)
+                );
+                """
+            )
+
+            for dev in devs:
+                stmt = text("INSERT INTO devs (name, phone, address) VALUES (:name, :phone, :address)")
+                conn.execute(stmt, dev)
+        db.dispose()
+    except Exception as e:
+        proxy.terminate()
+        raise e
     proxy.terminate()
 
 
