@@ -5,6 +5,7 @@ import time
 import json
 import csv
 import sqlalchemy
+import string
 import google.auth
 import requests
 import shutil
@@ -13,7 +14,11 @@ from googleapiclient import discovery
 from sqlalchemy.sql import text
 from google.oauth2 import service_account, id_token
 from core.framework import levels
-from google.cloud import storage, logging as glogging
+from google.cloud import (
+    storage,
+    secretmanager,
+    logging as glogging
+)
 from core.framework.cloudhelpers import (
     deployments,
     iam,
@@ -25,6 +30,7 @@ from google.auth.transport.requests import AuthorizedSession
 
 LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
+DB_SECRET_ID = 'defender_db_password'
 
 def create(second_deploy=True):
     print("Level initialization started for: " + LEVEL_PATH)
@@ -37,9 +43,15 @@ def create(second_deploy=True):
     func_upload_url = cloudfunctions.upload_cloud_function(
             f'core/levels/{LEVEL_PATH}/resources/rmUser', FUNCTION_LOCATION, template_args=func_template_args)
 
+    # Create database password value
+    db_secret_value = ''
+    for _ in range(0,64): 
+        db_secret_value += random.choice(string.ascii_letters + string.digits)
+    create_secret(DB_SECRET_ID, db_secret_value)
+
     config_template_args = {
         'nonce': nonce,
-        'root_password': 'psw',
+        'root_password': db_secret_value,
         'func_upload_url': func_upload_url
         }
 
@@ -67,7 +79,7 @@ def create(second_deploy=True):
         )
 
     print("Level setup started for: " + LEVEL_PATH)
-    create_tables()
+    create_tables(db_secret_value)
     dev_key = iam.generate_service_account_key('dev-account')
     dev_sa = service_account.Credentials.from_service_account_info(json.loads(dev_key))
     compute_admin_key = iam.generate_service_account_key('compute-admin')
@@ -99,65 +111,93 @@ def create(second_deploy=True):
     levels.write_start_info(LEVEL_PATH, start_message, file_name="dev-account.json", file_content=dev_key)
 
 
-def create_tables():
+def create_secret(secret_id, secret_value):
+    _, project_id = google.auth.default()
+
+    # Create Secrets Manager client
+    sm_client = secretmanager.SecretManagerServiceClient()
+
+    # Create secret
+    secret = sm_client.create_secret(
+        request={
+            "parent": f'projects/{project_id}',
+            "secret_id": secret_id,
+            "secret": {
+                "name": secret_value,
+                "replication": {"automatic": {}}
+            }
+        }
+    )
+
+    # Add the secret version.
+    version = sm_client.add_secret_version(
+        request={"parent": secret.name, "payload": {"data": secret_value.encode()}}
+    )
+
+
+def create_tables(db_password):
     credentials, project_id = google.auth.default()
     service = discovery.build('sqladmin', 'v1beta4', credentials=credentials)
     response = service.instances().list(project=project_id).execute()
     connection_name = response['items'][0]['connectionName']
     instance_name = response['items'][0]['name']
-    user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':'psw'}
+    user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':db_password}
     service.users().insert(project=project_id, instance=instance_name, body=user).execute()
 
     proxy = subprocess.Popen([f'core/levels/{LEVEL_PATH}/cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'])
-    time.sleep(5)
+    try:
+        time.sleep(5)
 
-    db_config = {
-        "pool_size": 5,
-        "max_overflow": 2,
-        "pool_recycle": 1800,  # 30 minutes
-    }
+        db_config = {
+            "pool_size": 5,
+            "max_overflow": 2,
+            "pool_recycle": 1800,  # 30 minutes
+        }
 
-    db = sqlalchemy.create_engine(
-        sqlalchemy.engine.url.URL(
-            drivername="postgresql+pg8000",
-            username="api-engine",
-            password="psw",
-            database="userdata-db",
-            host='127.0.0.1',
-            port=5432
-        ),
-        **db_config
-    )
-    db.dialect.description_encoding = None
-
-    devs = csv.DictReader(open(f'core/levels/{LEVEL_PATH}/resources/devs.csv', newline=''))
-    with db.connect() as conn:
-        conn.execute(
-            """
-            CREATE TABLE users (
-                user_id  SERIAL PRIMARY KEY,
-                name     TEXT              NOT NULL,
-                phone    TEXT              NOT NULL,
-                address  TEXT              NOT NULL
-            );
-            CREATE TABLE devs (
-                dev_id   SERIAL PRIMARY KEY,
-                name     TEXT              NOT NULL,
-                phone    TEXT              NOT NULL,
-                address  TEXT              NOT NULL
-            );
-            CREATE TABLE follows (
-                follow_id SERIAL PRIMARY KEY,
-                follower INT   NOT NULL REFERENCES users(user_id),
-                followee INT   NOT NULL REFERENCES users(user_id)
-            );
-            """
+        db = sqlalchemy.create_engine(
+            sqlalchemy.engine.url.URL(
+                drivername="postgresql+pg8000",
+                username="api-engine",
+                password=db_password,
+                database="userdata-db",
+                host='127.0.0.1',
+                port=5432
+            ),
+            **db_config
         )
+        db.dialect.description_encoding = None
 
-        for dev in devs:
-            stmt = text("INSERT INTO devs (name, phone, address) VALUES (:name, :phone, :address)")
-            conn.execute(stmt, dev)
-    db.dispose()
+        devs = csv.DictReader(open(f'core/levels/{LEVEL_PATH}/resources/devs.csv', newline=''))
+        with db.connect() as conn:
+            conn.execute(
+                """
+                CREATE TABLE users (
+                    user_id  SERIAL PRIMARY KEY,
+                    name     TEXT              NOT NULL,
+                    phone    TEXT              NOT NULL,
+                    address  TEXT              NOT NULL
+                );
+                CREATE TABLE devs (
+                    dev_id   SERIAL PRIMARY KEY,
+                    name     TEXT              NOT NULL,
+                    phone    TEXT              NOT NULL,
+                    address  TEXT              NOT NULL
+                );
+                CREATE TABLE follows (
+                    follow_id SERIAL PRIMARY KEY,
+                    follower INT   NOT NULL REFERENCES users(user_id),
+                    followee INT   NOT NULL REFERENCES users(user_id)
+                );
+                """
+            )
+
+            for dev in devs:
+                stmt = text("INSERT INTO devs (name, phone, address) VALUES (:name, :phone, :address)")
+                conn.execute(stmt, dev)
+        db.dispose()
+    except Exception as e:
+        proxy.terminate()
+        raise e
     proxy.terminate()
 
 
@@ -222,7 +262,20 @@ def hack(hostname):
         response = requests.post(url, data=payload)
     print(response.text)
 
+def delete_secret(secret_id):
+    _, project_id = google.auth.default()
+
+    # Create Secrets Manager client
+    sm_client = secretmanager.SecretManagerServiceClient()
+
+    # Build the resource name of the secret.
+    name = sm_client.secret_path(project_id, secret_id)
+
+    # Delete secret.
+    sm_client.delete_secret(request={"name": name})
+
 
 def destroy():
     levels.delete_start_files()
     deployments.delete()
+    delete_secret(DB_SECRET_ID)

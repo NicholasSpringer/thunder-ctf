@@ -3,10 +3,39 @@ import google.auth
 import subprocess
 import time
 import csv
-from google.cloud import logging as glogging
+from google.cloud import (
+    logging as glogging,
+    secretmanager
+)
 from googleapiclient import discovery
 from flask import Flask, request, Response
 from sqlalchemy.sql import text
+
+DB_SECRET_ID = 'defender_db_password'
+
+def get_secret_value(secret_id):
+
+    _, project_id = google.auth.default()
+
+    # Create Secrets Manager client
+    sm_client = secretmanager.SecretManagerServiceClient()
+
+    # Build the resource name of the secret.
+    name = sm_client.secret_path(project_id, secret_id)
+
+    # Build the resource name of the parent secret.
+    parent = sm_client.secret_path(project_id, secret_id)
+
+    # Get latest version.
+    versions = sm_client.list_secret_versions(request={"parent": parent})
+    version = list(versions)[0]
+
+    # Access the secret version.
+    response = sm_client.access_secret_version(request={"name": version.name})
+
+    payload = response.payload.data.decode("UTF-8")
+    return payload
+
 
 app = Flask(__name__)
 
@@ -30,7 +59,7 @@ db = sqlalchemy.create_engine(
     sqlalchemy.engine.url.URL(
         drivername="postgresql+pg8000",
         username="api-engine",
-        password="psw",
+        password=get_secret_value(DB_SECRET_ID),
         database="userdata-db",
         host='127.0.0.1',
         port=5432
