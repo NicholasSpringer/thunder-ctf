@@ -1,13 +1,10 @@
 FROM ubuntu:18.04
 COPY requirements.txt ./
-ENV VIRTUAL_ENV=/opt/venv
 RUN set -ex; \
     apt-get update; \
-    apt-get install -y python3 python3-venv
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-RUN pip install -r requirements.txt; \
-    pip install gunicorn
+    apt-get install -y python3 python3-pip
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
