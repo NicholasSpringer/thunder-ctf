@@ -75,16 +75,15 @@ resources:
     - service_account_id: api-engine-sa
       role:
         name: roles/logging.logWriter
-
+    - service_account_id: api-engine-sa
+      role:
+        name: roles/secretmanager.admin
     - service_account_id: compute-admin
       role:
         name: roles/compute.admin
     - service_account_id: compute-admin
       role:
-        name: roles/iam.serviceAccountUser
-    - service_account_id: api-engine-sa
-      role:
-        name: roles/secretmanager.admin        
+        name: roles/iam.serviceAccountUser        
     - service_account_id: log-viewer
       role:
         name: roles/logging.viewer
