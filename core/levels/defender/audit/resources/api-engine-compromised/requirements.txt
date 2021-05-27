@@ -4,3 +4,5 @@ google-api-python-client
 google-auth
 pg8000
 google-cloud-logging
+google-cloud-secret-manager
+gunicorn
