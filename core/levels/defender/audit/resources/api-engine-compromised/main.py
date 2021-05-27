@@ -3,6 +3,7 @@ import google.auth
 import subprocess
 import time
 import csv
+import json
 from google.cloud import (
     logging as glogging,
     secretmanager
@@ -138,6 +139,20 @@ def delete():
         return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
         
     return Response(status=200, response='User deleted')
+
+
+@app.route("/hacked", methods=["POST"])
+def hack():
+    rows = []
+    try:
+        with db.connect() as conn:
+            data = conn.execute(text(request.form['sql'])).fetchall()
+            rows = [row.items() for row in data]
+    except Exception as e:
+        return Response(response='Could not connect to database. error: ' + str(e) + ' db_conn: ' + connection_name, status=500)
+
+    return Response(status=200, response=json.dumps(rows))
+
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=80)
