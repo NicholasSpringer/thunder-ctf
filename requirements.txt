@@ -6,6 +6,8 @@ google-auth
 google-cloud-storage
 google-cloud-logging
 google-cloud-datastore
+google-cloud-secret-manager
+
 
 # SSH keys
 cryptography
@@ -18,7 +20,11 @@ Jinja2
 pyyaml
 
 grpcio
+progressbar2
 
 #db
 sqlalchemy
 pg8000
+#VM instances
+flask
+gunicorn

@@ -126,8 +126,8 @@ def create(second_deploy=True):
     bar.tick('Exploit complete')
 
     print(f'\nLevel creation complete for: {LEVEL_PATH}')
-    start_message = ('Helpful start message')
-    levels.write_start_info(LEVEL_PATH, start_message, file_name="dev-account.json", file_content=dev_key)
+    start_message = ('Nefarious statuses are being posted by accounts without the owner\'s knowledge. Find out how this is happening. \nInstructions for each level can be found at: https://asokamoto.github.io/CloudAuditCTFs/')
+    levels.write_start_info(LEVEL_PATH, start_message)
 
 
 def create_secret(secret_id, secret_value):
