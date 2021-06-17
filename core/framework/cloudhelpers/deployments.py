@@ -240,6 +240,7 @@ def _wait_for_operation2(op_name, deployment_api, project_id, level_path=None):
             level_module = levels.import_level(level_path)
             level_module.destroy()
             level_module.create(False)
+            exit()
         else:
             if 'y' == input('\nDeployment error caused deployment to fail. '
                         'Would you like to destroy the deployment [y] or continue [n]? [y/n] ').lower().strip()[0]:

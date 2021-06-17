@@ -19,7 +19,8 @@ def main(request):
                 {'action': 'Remove User',
                     'error': 'Invalid request: ' + payload,
                     'target': target,
-                    'auth': auth})
+                    'auth': auth,
+                    'logger': 'rmUser'})
         return Response(response = 'Request failed. Must include name, user_id, and id token for authentication in payload. keys: ' + payload + '\n', status = 400)
 
         #need to hit api endpoint for removing user here
