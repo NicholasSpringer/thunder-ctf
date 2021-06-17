@@ -92,7 +92,8 @@ def setup_project():
         'storage-component.googleapis.com',
         'appengine.googleapis.com',
         'vision.googleapis.com',
-        'sqladmin.googleapis.com'
+        'sqladmin.googleapis.com',
+        'secretmanager.googleapis.com'
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
