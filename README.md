@@ -8,5 +8,5 @@ Thunder CTF was built to be extensible, and we encourage players to make their o
 - [Thunder CTF framework documentation](http://thunder-ctf.cloud/pydocs/framework/)
 
 ### CTFs included
-- [Least Privileges](https://thunder-ctf.cloud/lstpri)
+- [Least Privileges](https://thunder-ctf.cloud/leastprivilege)
 - [Cloud Audit](https://asokamoto.github.io/CloudAuditCTFs)
