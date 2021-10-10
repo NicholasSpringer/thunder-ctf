@@ -1,0 +1,17 @@
+info:
+  title: Sql instance and database template
+  author: Mark Garvey
+  description: Creates a new instance and database with POSTGRES version 13
+
+required:
+- region
+- root_password
+
+properties:
+  region:
+    description: Region of sql instance
+    type: string
+  
+  root_password:
+    description: Root password for database
+    type: string

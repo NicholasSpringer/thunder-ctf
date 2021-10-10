@@ -1,0 +1,22 @@
+imports:
+- path: bucket_acl.jinja
+- path: service_account.jinja
+
+resources:
+- name: intro-npc
+  type: service_account.jinja
+- name: intro-bucket
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }}
+    acl_entries:
+    - service_account_id: intro-npc
+      role: OWNER
+- name: intro-bucket2
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }}
+    acl_entries:
+      - service_account_id: intro-npc
+        role: OWNER
+
