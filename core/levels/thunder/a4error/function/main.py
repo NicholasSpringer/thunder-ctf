@@ -5,10 +5,8 @@ BUCKET_NAME = '{{ bucket_name }}'
 def main(request):
     # If the user did not
     if not 'file' in request.args:
-        return ('Querying REST API to access bucket: gs://{{ bucket_name }}. File list:\n'
-                '- file1.txt\n'
-                '- file2.txt\n'
-                'To read a file include "file" argument: ?file=[filename]\n')
+        return ('Querying REST API to access bucket: gs://{{ bucket_name }}.\n'
+                'To read a specific file include "file" argument: ?file=[filename]\n')
     else:
         token = requests.get('http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token',
                              headers={'Metadata-Flavor': 'Google'}).json()['access_token']

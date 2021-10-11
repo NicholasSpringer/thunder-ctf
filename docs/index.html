@@ -20,13 +20,11 @@
     </div>
   </header>
   <div style="width:90%; max-width: 800px; text-align: center; margin: auto;">
-    <p style="width:70%">Nicholas Springer, Wu-chang Feng, <b>"Thunder CTF: Learning Cloud Security on a Dime"</b>, Cyber Security Symposium 2020,
-          April 2020.  <a href="https://thefengs.com/wuchang/papers/cybersec20_thunder.pdf">pdf</a> |
-          <a href="https://bit.ly/pdx-thunder">slides</a> | <a href="https://youtu.be/vlsv2UoLexI">talk</a>.</p>
     <p>Thunder CTF allows players to practice attacking vulnerable cloud projects on Google Cloud Platform (GCP).
       In each level, players are tasked with exploiting a cloud deployment to find a "secret" integer stored within it.
       Key to the CTF is a progressive set of hints that can be used by players when they are stuck so that
       levels can be solved by players of all levels from novices to experts.</p>
+    <p style="text-align: center"><a class="inline" href="https://youtu.be/vlsv2UoLexI">Talk</a> | <a class="inline" href="https://bit.ly/pdx-thunder">Slides</a></p>
     <p>Thunder CTF deploys level infrastructure on demand to a player's Google Cloud Platform project.
       Players new to Google Cloud can get a free $300 credit <a class="inline"
         href="https://cloud.google.com/free">here</a>.  Thunder CTF is very cheap to run, with its resource
@@ -36,15 +34,17 @@
       resources. It can be accessed by clicking on the Cloud Shell icon in the <a
         class="inline" href="https://console.cloud.google.com">GCP console</a>:</p>
     <img src="img/index/cloudshell.png">
-    <p>After creating a new project and enabling <a class="inline"
-      href="https://cloud.google.com/billing/docs/how-to/modify-project">billing</a> for it, simply open Cloud Shell and
-      run the following commands to set up the CTF</p>
-    <pre>gcloud config set project [PROJECT-ID]
-virtualenv -v env-tctf
-source env-tctf/bin/activate
-git clone https://github.com/NicholasSpringer/thunder-ctf.git
+    <p>After creating a new project and enabling <a class="inline" href="https://cloud.google.com/billing/docs/how-to/modify-project">billing</a> for it, open Cloud Shell and ensure that it points to the project you just created.</p>
+    <pre>gcloud config set project [PROJECT-ID]</pre>
+    <p>Then, create a Python virtual environment that will be used to launch the exercises.</p>
+    <pre>virtualenv -v env-tctf
+source env-tctf/bin/activate</pre>
+    <p>Then, clone the CTF and install its required packages</p>
+    <pre>git clone https://github.com/NicholasSpringer/thunder-ctf.git
 cd thunder-ctf
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt</pre>
+    <p>Finally, set up the project to run the CTF by enabling all the services and logging features required by it.</p>
+<pre>#If you want to do the defender path labs later, enter y to turn on audit logging.
 python3 thunder.py activate_project [PROJECT-ID]</pre>
     <p>You are now ready to play the CTF! A full list of commands can be found by running: </p>
     <pre>python3 thunder.py help</pre>

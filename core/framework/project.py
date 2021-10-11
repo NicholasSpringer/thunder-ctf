@@ -30,8 +30,8 @@ def test_application_default_credentials(tctf_project=None):
     # Try to extract application default credentials
     try:
         credentials, project_id = google.auth.default()
-    except google.auth.exceptions.DefaultCredentialsError:
-        exit('Application default credentials not set. To set credentials, run:\n'
+    except (google.auth.exceptions.DefaultCredentialsError, google.auth.exceptions.RefreshError):
+        exit('Application default credentials not valid. To set credentials, run:\n'
              '  gcloud auth application-default login')
 
     # Make sure application default project is the same as the project in thunder ctf config
@@ -91,7 +91,9 @@ def setup_project():
         'storage-api.googleapis.com',
         'storage-component.googleapis.com',
         'appengine.googleapis.com',
-        'vision.googleapis.com'
+        'vision.googleapis.com',
+        'sqladmin.googleapis.com',
+        'secretmanager.googleapis.com'
     ]
     request_body = {'serviceIds': apis}
     op_name = services_api.services().batchEnable(
@@ -151,7 +153,7 @@ def check_app_engine():
         found = True
     except Exception as e:
         #print(str(e))
-        print('Project App Engine does not found')
+        print('App Engine not configured')
 
     return found
 

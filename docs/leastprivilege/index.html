@@ -20,22 +20,11 @@
     </div>
   </header>
   <div style="width:90%; max-width: 800px; text-align: center; margin: auto;">
-    
-    
     <h2 class="toggle toggle_thunder" >About Thunder CTF</h2>
     <div id="about_thunder" style="display: none;">
-        <p >Nicholas Springer, Wu-chang Feng, <b>"Thunder CTF: Learning Cloud Security on a Dime"</b>, Cyber Security Symposium 2020,
-            April 2020.  <a href="https://thefengs.com/wuchang/papers/cybersec20_thunder.pdf">pdf</a> |
-            <a href="https://bit.ly/pdx-thunder">slides</a> | <a href="https://youtu.be/vlsv2UoLexI">talk</a>.</p>
-      <p>Thunder CTF allows players to practice attacking vulnerable cloud projects on Google Cloud Platform (GCP).
-        In each level, players are tasked with exploiting a cloud deployment to find a "secret" integer stored within it.
-        Key to the CTF is a progressive set of hints that can be used by players when they are stuck so that
-        levels can be solved by players of all levels from novices to experts.</p>
-      <p>Thunder CTF deploys level infrastructure on demand to a player's Google Cloud Platform project.
-        Players new to Google Cloud can get a free $300 credit <a class="inline"
-          href="https://cloud.google.com/free">here</a>.  Thunder CTF is very cheap to run, with its resource
-        consumption fitting almost entirely into GCP's free tier.  To save cloud credits, we recommend deploying levels
-        only while you are playing and destroying them as soon as levels are completed.</p>
+        <p>Nicholas Springer, Wu-chang Feng, <b>"Thunder CTF: Learning Cloud Security on a Dime"</b>, Cyber Security Symposium 2020, April 2020.  <a href="https://thefengs.com/wuchang/papers/cybersec20_thunder.pdf">pdf</a> | <a href="https://bit.ly/pdx-thunder">slides</a> | <a href="https://youtu.be/vlsv2UoLexI">talk</a>.</p>
+      <p>Thunder CTF allows players to practice attacking vulnerable cloud projects on Google Cloud Platform (GCP).  In each level, players are tasked with exploiting a cloud deployment to find a "secret" integer stored within it.  Key to the CTF is a progressive set of hints that can be used by players when they are stuck so that levels can be solved by players of all levels from novices to experts.</p>
+      <p>Thunder CTF deploys level infrastructure on demand to a player's Google Cloud Platform project.  Players new to Google Cloud can get a free $300 credit <a class="inline" href="https://cloud.google.com/free">here</a>.  Thunder CTF is very cheap to run, with its resource consumption fitting almost entirely into GCP's free tier.  To save cloud credits, we recommend deploying levels only while you are playing and destroying them as soon as levels are completed.</p>
         <p>Thunder CTF was built to be extensible, and we encourage players to make their own levels. For more information on how to create a level, visit the 
             <a class="inline" href="https://github.com/NicholasSpringer/thunder-ctf/wiki">Level Development Guide</a> and the 
             <a class="inline" href="pydocs/framework">Thunder CTF framework documentation.</a>
@@ -44,23 +33,14 @@
     </div>
     <h2 class="toggle toggle_lst"> Thunder CTF - Least Privilege</h2>
     <div id="about_lst"  >
-        <p>Thunder CTF - Least Privilege is an extension of Thunder CTF. Both were built based on Google Cloud Platform.</p>
-        <p>Least Privilege levels were desgined to help understand google cloud iam roles and permissions. 
-          Related google documentaion can be found <a href="https://cloud.google.com/iam/docs/understanding-roles">here</a>
-        </p>
-        <p>Least Privilege levels do not have "secret". Instead, at each level you should get a success message similar to below:
-        </p>
-        <img src="img/index/success.png">
-        
+        <p>Least Privilege CTF <a href = "https://docs.google.com/presentation/d/1it9l3h6FxFqDhL23WlaWC3mWdLwNrv7xKcch344glfw/edit?usp=sharing">(slides)</a> is an extension of Thunder CTF.  Least Privilege levels have been desgined to help understand Google Cloud Platform's IAM roles and permissions.  Related GCP documentaion can be found <a href="https://cloud.google.com/iam/docs/understanding-roles">here</a>.  Least Privilege levels do not have "secret". Instead, at each level you should get a &quot;Congratulations&quot; message</p>
     </div>
     <br >
 
-    
- 
     <div class=hints>
         <div>
           <span id="prev" class="hintbanner hintbutton buttondisabled">Prev</span>
-          <span id="hint_title" class="hintbanner hintbannertext"></span>
+         <!-- <span id="hint_title" class="hintbanner hintbannertext"></span>-->
           <span id="next" class="hintbanner hintbutton">Next</span>
         </div>
         <div id="hint_display" class="hintdisplay">
@@ -68,38 +48,18 @@
         <div>
           <span id="writeup_button" class="hintbanner writeupbutton">Show Level Writeup</span>
         </div>
-        
       </div>
-    
-    
   </div>
 
-  
   <p></p>
   <footer class="bottombanner">Thunder CTF was created at Portland State University under NSF Award #1821841</footer>
   <ul id="hint_content" style="display: none">
     <li>
       <span>leastprivilege/roles</span>
-      <h3>Setup:</h3>
-      <p>First, <a class="inline" href="https://cloud.google.com/resource-manager/docs/creating-managing-projects">create a google cloud project</a> and and enabling 
-          <a class="inline" href="https://cloud.google.com/billing/docs/how-to/modify-project">billing</a> 
-        for it.
-        <br>
-        <small>
-            (Players new to Google Cloud can get a free $300 credit <a class="inline" style="font-size: 1em;"
-            href="https://cloud.google.com/free">here</a>.)
-        </small>
+      <h3>Setup</h3>
+      <p>First, <a class="inline" href="https://cloud.google.com/resource-manager/docs/creating-managing-projects">create a new google cloud project</a> and enable <a class="inline" href="https://cloud.google.com/billing/docs/how-to/modify-project">billing</a> for it. The deployment should ideally be done on a new to ensure that playing the levels won't affect your existing or future work on GCP.  Players new to Google Cloud can get a free $300 credit <a class="inline" style="font-size: 1em;" href="https://cloud.google.com/free">here</a>.
      </p>
-      
-      <p>Seond, open Cloud Shell and run the following commands to set up the CTF:
-        <br>
-        <small>
-            (The CTF is played through Cloud Shell, a command line interface that is already set up for accessing cloud
-            resources. It can be accessed in the 
-            <a style="font-size: 1em;" class="inline" href="https://console.cloud.google.com">GCP console</a>
-            by clicking on the <a style="font-size: 1em;" class="inline" >Cloud Shell icon<img src="img/index/cloudshell.png"></a>.)
-        </small>
-
+      <p>Second, the CTF is played through Cloud Shell which is accessible in the <a style="font-size: 1em;" class="inline" href="https://console.cloud.google.com">GCP console</a> by clicking on the <a style="font-size: 1em;" class="inline" >Cloud Shell icon<img src="img/index/cloudshell.png"></a>.  Open Cloud Shell and run the following commands to set up the CTF:
       </p>
       <pre>
 # Optional: Can skip if cloud shell is started from the project you want to use
@@ -114,22 +74,17 @@ python3 thunder.py activate_project  $GOOGLE_CLOUD_PROJECT</pre>
 <p>A full list of commands can be found by running: </p>
         <pre>python3 thunder.py help</pre>
       <h3>Deploy:</h3>
-      <p>You are now ready to play the CTF! <br>Create level with commad below:</p>
+      <p>You are now ready to play. Create level with command below:</p>
       <pre>python3 thunder.py create leastprivilege/roles</pre>
-        
         <h3>Level Access:</h3>
-        <p>If deployment is successful,  a list of function entrypoints will be printed in cloud shell. You can also find them in start/roles.txt</p>
-        <p>Click each entrypoint link to see its associated level instruction.</p>
-        <p>Note: If level requires creating custom role, you have to create the role with the exact ID specified in level instruction </p>
+        <p>If deployment is successful,  a list of function entrypoints will be printed in Cloud Shell. You can also find them in start/roles.txt .  Click each entrypoint link to see its associated level instruction. Note: If level requires creating custom role, you have to create the role with the exact ID specified in level instruction </p>
         <h3>Destroy:</h3>
-        <p>Don't forget to destroy levels after you are done.</p>
+        <p>Don't forget to destroy levels after you are done using the command below:</p>
         <pre>python3 thunder.py destroy</pre>
-        
+        <h3>Survey:</h3>
+        <p>We will be really apprecialte if you could rate our Least Privilege CTF <a class="inline" href = "https://docs.google.com/forms/d/e/1FAIpQLSeIn-DD_1jOrL_Xhvb4pZt1ruerlDPSI0_kQzxO5A4gpVME5A/viewform?usp=sf_link">here</a>.</p>
+        <p>Your feedback is very important to us, since it will help developers optimize user experiences and extend level designs.</p>
     </li>
-    
-      
-    
-    
   </ul>
   <div id="writeup_content" style="display: none">
     <p><a href="https://cloud.google.com/iam/docs/understanding-roles">Understanding Google Cloud IAM Roles</a>  </p>

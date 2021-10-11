@@ -1,7 +1,8 @@
 resources:
 {% for binding in properties['bindings'] %}
+{% set role_name = 
+    binding['service_account_id'] + "-role-" + binding['role']['custom_nonce']|string if binding['role']['name'] == 'custom' else binding['role']['name']%}
 {% if binding['role']['name'] == 'custom' %}
-{% set role_name = binding['service_account_id'] + "-role-" + binding['role']['custom_nonce']|string %}
 {% set role_id = role_name|replace('-','_') %}
 - name: {{ role_name }}
   type: gcp-types/iam-v1:projects.roles
@@ -15,24 +16,23 @@ resources:
       - {{ permission }}
       {% endfor %}
 {% endif %}
+
+{% set bind_name = (binding['service_account_id'] + "-bind-" + 
+    ((binding['role']['custom_nonce']|string) if binding['role']['name'] == 'custom' else binding['role']['name'])) %}
+- name: {{ bind_name }}
+  type: gcp-types/cloudresourcemanager-v1:virtual.projects.iamMemberBinding
+  properties:
+    resource: {{ env['project']}}
+    {% if binding['role']['name'] == 'custom' %}
+    role: $(ref.{{ role_name }}.name)
+    {% else %}
+    role: {{ role_name }}
+    {% endif %}
+    member: serviceAccount:$(ref.{{ binding['service_account_id'] }}.email)
+  metadata:
+    dependsOn: 
+    - {{ binding['service_account_id'] }}
+    {% if binding['role']['name'] == 'custom' %}
+    - {{ role_name }}
+    {% endif %}
 {% endfor %}
-- name: {{ env['project'] }}-get-iam
-  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.getIamPolicy
-  properties:
-    resource: {{ env['project'] }}
-- name: {{ env['project'] }}-set-iam
-  action: gcp-types/cloudresourcemanager-v1:cloudresourcemanager.projects.setIamPolicy
-  properties:
-    resource: {{ env['project'] }}
-    policy: $(ref.{{ env['project'] }}-get-iam)
-    gcpIamPolicyPatch:
-      add:
-      {% for binding in properties['bindings'] %}
-        {% if binding['role']['name'] == 'custom' %}
-      - role: $(ref.{{ binding['service_account_id'] + "-role-" + binding['role']['custom_nonce']|string }}.name)
-        {% else %}
-      - role: {{ binding['role']['name'] }}
-        {% endif %}
-        members:
-        - serviceAccount:$(ref.{{ binding['service_account_id'] }}.email)
-      {% endfor %}

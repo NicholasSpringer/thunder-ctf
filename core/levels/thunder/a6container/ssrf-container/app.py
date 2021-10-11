@@ -1,4 +1,5 @@
 from flask import Flask, redirect, request, url_for, render_template
+import logging
 import requests
 
 app = Flask(__name__)
@@ -12,9 +13,12 @@ def proxy():
     if 'url' not in request.args:
         return render_template('proxy.html')
     else:
-	metadata_url = request.args['url']
-	token = requests.get(metadata_url, headers={'Metadata-Flavor': 'Google'}).json()['access_token']
-        return token 
+        metadata_url = request.args['url']
+        resp = requests.get(metadata_url, headers={'Metadata-Flavor': 'Google'})
+        return resp.text
 
 if __name__ == '__main__':
+    logger = logging.getLogger('werkzeug')
+    handler = logging.FileHandler('./access_log')
+    logger.addHandler(handler)
     app.run(host='0.0.0.0', port=80, debug=True)

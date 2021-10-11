@@ -73,23 +73,25 @@
     
     <li>
       <span>Hint 4</span>
-      <p>Try calling the function using the service account's access token:</p>
-      <pre>curl https://[location]-[project-id].cloudfunctions.net/[function-name] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
+      <p>URL endpoints for HTTP-based Cloud Functions have the following format:</p>
+      <pre>https://[region]-[project-id].cloudfunctions.net/[function-name]</pre>
+      <p>Retrieve the URL via curl</p>
     </li>
     
     <li>
       <span>Hint 5</span>
-      <p>Try reading one of the files by adding "?file=[filename] to the end of the url</p>
+      <p>The function is protected and requires authorization.  Attempt to access it using the service account's token:</p>
+      <pre>curl [URL] -H "Authorization: Bearer $(gcloud auth print-identity-token)"</pre>
     </li>
     
     <li>
       <span>Hint 6</span>
-      <p>See what happens if you try to read a file that doesn't exist.</p>
+      <p>The function takes an argument.  Try reading a random file by adding "?file=[filename] to the end of the url</p>
     </li>
     
     <li>
       <span>Hint 7</span>
-      <p>The cloud function throws an error when a non-existent file is queried. Cloud function runtime errors are logged in StackDriver logging.</p>
+      <p>The cloud function throws an error when a non-existent file is queried. Cloud function runtime errors are logged.  If one has access to the logs, the error message can be read.</p>
     </li>
     
     <li>
@@ -116,7 +118,7 @@ Authorization: Bearer ya29.c.EqEBZwepkOFych006VjfVDFAJxSb5ErvGmBsVqq8S83NiJXZ_ja
       <span>Hint 11</span>
       <p>Check the permissions of the access token using the test-permissions.py script by supplying an access token instead of a JSON credential file.</p>
       <p>Example:</p>
-      <pre>python scripts/test-permissions ya29.c...2iFM</pre>
+      <pre>python scripts/test-permissions.py ya29.c...2iFM</pre>
     </li>
     
     <li>
@@ -138,7 +140,7 @@ Authorization: Bearer ya29.c.EqEBZwepkOFych006VjfVDFAJxSb5ErvGmBsVqq8S83NiJXZ_ja
     
     <li>
       <span>Hint 15</span>
-      <p>To generate an SSH key to connect to the instance we are creating, run the following:</p>
+      <p>To generate an SSH key to connect to the instance we are creating, run the following in Cloud Shell:</p>
       <pre>ssh-keygen -f ./a4_key -t rsa -b 2048</pre>
       <pre>chmod 400 a4_key</pre>
       <p>The public key is stored in a4_key.pub</p>

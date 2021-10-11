@@ -92,11 +92,11 @@ def activate_project(*args):
     
     # Check if there is an app engine exist in current project
     if not project.check_app_engine():
-        app_confirmed = 'y' == input(
-                f'Create app engine for project {project_id}? Required for Firestore. [y/n]: ').lower().strip()[0]
+        #app_confirmed = 'y' == input(
+                #f'Create app engine for project {project_id}? Required for Firestore. [y/n]: ').lower().strip()[0]
         # Create an app engine in current project, only requried if firestore is used in the level 
-        if(app_confirmed):   
-            project.create_app_engine()
+        #if(app_confirmed):   
+         project.create_app_engine()
 
 
 
@@ -122,7 +122,18 @@ Developer commands:
 
 if __name__ == '__main__':
     warnings.filterwarnings("ignore", module="google.auth")
-    os.chdir(os.getcwd()+'/'+os.path.dirname(__file__))
+    if sys.version_info[0] == 2:
+        print("Must be using Python 3")
+        exit()
+
+    ctf_path = None
+    if sys.version_info[1] < 9:
+        ctf_path = os.getcwd()+'/'+os.path.dirname(__file__)
+    else: 
+        ctf_path = os.path.dirname(__file__)
+    
+    os.chdir(ctf_path)
+    
     # python3 thunder.py action [args]
     args = sys.argv[1:]
     if len(args) == 0:
