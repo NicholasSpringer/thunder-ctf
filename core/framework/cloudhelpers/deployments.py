@@ -235,7 +235,7 @@ def _wait_for_operation2(op_name, deployment_api, project_id, level_path=None):
         print(operation['error']['errors'][0]['message'])
         error_code = json.loads(operation['error']['errors'][0]['message'])['ResourceErrorCode']
         print("\nDeployment Error:\n" + yaml.dump(operation['error']))
-        if str(error_code) == '500':
+        if str(error_code) == '500' or str(error_code) == '429' :
             print("\nSecond try of deploymnent")
             level_module = levels.import_level(level_path)
             level_module.destroy()
