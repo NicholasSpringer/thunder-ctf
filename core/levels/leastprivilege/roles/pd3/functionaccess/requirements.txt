@@ -1,2 +1,3 @@
 google-cloud-logging
 google-api-core
+pyparsing==2.4.7
