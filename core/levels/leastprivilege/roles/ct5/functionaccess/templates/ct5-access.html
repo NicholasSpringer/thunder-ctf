@@ -49,14 +49,13 @@
     <small class="inlist">Query data entries from datastore <br> </small>
   </li>
   <li>Your goal is to replace the Predefined Roles with roles that have least permissions to perform the same tasks.</li>
-  <li>Note that not all permissions are supported in custom role, so we can use a combination of Custom Role and Predefined Role in this level.</li>
   <li>Open the <a href="{{url}}" target="_blank">check function</a> to view roles and permissions of {{prefix}}-f-access-{{nonce}}-sa.</li>
   <li>Go to IAM&Admin -> Roles in google cloud console, create a new role with ID <b>{{prefix}}_access_role_{{nonce}}</b> and attach the least privilege permissions.
-    <br><b>Hint:</b> Look for permissions under <a href="https://cloud.google.com/storage/docs/access-control/iam-roles" target="_blank"><b>Predefined Cloud Storage Role</b></a> 
-    in google doc.
+    <br><b>Hint:</b> Look for permissions under <a href="https://cloud.google.com/storage/docs/access-control/iam-roles" target="_blank"><b>Predefined Cloud Storage Role</b></a> and 
+    <a href="https://cloud.google.com/datastore/docs/access/iam" target="_blank"><b>Predefined Datastore Role</b></a> in google doc.
  </li> 
   <li>Go to IAM&Admin -> IAM -> MEMBERS, click the pencil icon to edit service acount {{prefix}}-f-access-{{nonce}}-sa in the table.</li>
-  <li> Add the custom role and a <a href="https://cloud.google.com/datastore/docs/access/iam" target="_blank"><b>Predefined Datastore Role</b></a> and detach the original roles. 
+  <li> Add the custom role and detach the original roles. 
     <br>To keep the process simple, do not leave the service account with empty role.
     <br>Because if all roles are removed, service account will disappear from the IAM memeber table 
     (can be added back via 

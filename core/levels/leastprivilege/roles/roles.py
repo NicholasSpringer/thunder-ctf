@@ -32,7 +32,8 @@ FARS = {
          'ct2':['storage.objects.list'],
          'ct3':['compute.instances.list'],
          'ct4':['logging.logEntries.list'],
-         'ct5':{'predefined':['roles/datastore.user'],'custom':['storage.buckets.get','storage.objects.create']},
+         #'ct5':{'predefined':['roles/datastore.user'],'custom':['storage.buckets.get','storage.objects.create']},
+         'ct5':['datastore.entities.create','datastore.entities.get','storage.buckets.get','storage.objects.create'],
         }
 KINDS = ['pd4']
 BUCKETS = ['pd1','ct2']

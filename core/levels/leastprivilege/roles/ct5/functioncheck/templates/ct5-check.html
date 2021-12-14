@@ -27,21 +27,17 @@
   <li>{{ msg }}</li>
 </ul> 
 </div>
-{% if pers|length>0 %}
-{% for rn in pers %} 
-<div> 
-<h3>Permissions of role {{rn}}:</h3>
-<ol>
-{% for p in pers[rn] %} 
-  <li>{{ p }}</li>
- {% endfor %}
-</ol>
-</div>
-{% endfor %}
-{% endif %}
-<div>
-<span >{{err}}</span>   
-</div>
-</div>
-</body>
-{%- endraw %}
+ <div> 
+  <h3>Permissions of custom role {{rn}}:</h3>
+  <ol>
+  {% for p in pers %} 
+    <li>{{ p }}</li>
+   {% endfor %}
+  </ol>
+  </div>
+  <div>
+  <span >{{err}}</span>   
+  </div>
+  </div>
+  </body>
+  {%- endraw %}

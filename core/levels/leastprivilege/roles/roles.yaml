@@ -471,7 +471,6 @@ resources:
         custom_nonce: {{ nonce }}
         permissions:
         - iam.roles.list
-        - iam.roles.get
         - resourcemanager.projects.getIamPolicy
 
     - service_account_id: scores-f-{{nonce}}-sa
