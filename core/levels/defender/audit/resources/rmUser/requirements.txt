@@ -1,3 +1,3 @@
 google-auth
 google-cloud-logging
-google-api-client
+google-api-python-client
