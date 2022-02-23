@@ -24,7 +24,7 @@ else:
     credentials = Credentials(token=sys.argv[1])
 
 # Change current working directory to top level of repo
-os.chdir(os.path.dirname(os.getcwd()+'/'+os.path.dirname(__file__)))
+#os.chdir(os.path.dirname(os.getcwd()+'/'+os.path.dirname(__file__)))
 # Load testable permissions into list
 #with open('scripts/testable-permissions.txt') as f:
     #testable_permissions = f.read().split('\n')
