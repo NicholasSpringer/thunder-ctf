@@ -15,7 +15,9 @@ from core.framework.cloudhelpers import deployments, iam, cloudfunctions
 
 LEVEL_PATH = 'leastprivilege/roles'
 
-FUNCTION_LOCATION = 'us-central1'
+FUNCTION_LOCATION_A = 'us-central1'
+FUNCTION_LOCATION_C = 'europe-west1'
+
 
 LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute',
                 'pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore', 'pd5': 'PredefinedRole-Vision',
@@ -86,8 +88,8 @@ def create(second_deploy=True):
         
         #Generate function urls
         func_template_argc = {'fvar': fvar}
-        func_upload_urla = cloudfunctions.upload_cloud_function(func_patha, FUNCTION_LOCATION)
-        func_upload_urlc = cloudfunctions.upload_cloud_function(func_pathc, FUNCTION_LOCATION,template_args=func_template_argc)
+        func_upload_urla = cloudfunctions.upload_cloud_function(func_patha, FUNCTION_LOCATION_A)
+        func_upload_urlc = cloudfunctions.upload_cloud_function(func_pathc, FUNCTION_LOCATION_C,template_args=func_template_argc)
        
         #Update deployment with functions
         config_template_args_patch = {f'funca_upload_url_{RESOURCE_PREFIX}':func_upload_urla, f'funcc_upload_url_{RESOURCE_PREFIX}':func_upload_urlc, 
@@ -95,7 +97,7 @@ def create(second_deploy=True):
                                         f'level_name_{RESOURCE_PREFIX}': LEVEL_NAME, f'resource_prefix_{RESOURCE_PREFIX}':RESOURCE_PREFIX }
         config_template_args.update(config_template_args_patch)
 
-        msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
+        msg= f'https://{FUNCTION_LOCATION_A}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
         start_message += msg+'\n'
 
     # scores funciton
@@ -103,14 +105,14 @@ def create(second_deploy=True):
 
     #Generate scores function urls
     func_template_arg = {'anws': FARS, 'level_names':LEVEL_NAMES}
-    func_upload_urlsc = cloudfunctions.upload_cloud_function(func_pathsc, FUNCTION_LOCATION,template_args=func_template_arg)
+    func_upload_urlsc = cloudfunctions.upload_cloud_function(func_pathsc, FUNCTION_LOCATION_C,template_args=func_template_arg)
 
     login_user = os.environ.get('USER', 'USER is not set.')
     #Update deployment with functions
     config_template_args_patch = {'funcc_upload_url_scores':func_upload_urlsc, 'login_user':login_user}
     config_template_args.update(config_template_args_patch)
 
-    msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/scores-f-{nonce}'
+    msg= f'https://{FUNCTION_LOCATION_A}-{project_id}.cloudfunctions.net/scores-f-{nonce}'
     start_message += '\n Or access levels through Score Board: \n'+ msg+'\n'
 
     if second_deploy:

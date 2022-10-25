@@ -24,7 +24,7 @@ def main(request):
 	instance_api = discovery.build('compute', 'v1', credentials=credentials,cache_discovery=False)
 	err=[]
 	resources=[]
-	url=f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
+	url=f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
 	try:
 		instances= instance_api.instances().list(zone="us-west1-b", project=PROJECT_ID).execute()["items"]
 		for instance in instances:

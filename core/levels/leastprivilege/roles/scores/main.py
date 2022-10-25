@@ -34,7 +34,7 @@ def main(request):
 		levels_sa[k] = f'serviceAccount:{k}-f-access-{NONCE}-sa@{PROJECT_ID}.iam.gserviceaccount.com'
 		level_bindings[k] = []
 		a_urls[k] = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{k}-f-access-{NONCE}'
-		c_urls[k] = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{k}-f-check-{NONCE}'
+		c_urls[k] = f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{k}-f-check-{NONCE}'
 
 	
 

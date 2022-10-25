@@ -19,7 +19,7 @@ def main(request):
 
 
 	#score function url
-	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
+	surl  = f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 	
 	
 	err=[]

@@ -23,7 +23,7 @@ def main(request):
 	#score function url
 	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 	#check function url
-	url=f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
+	url=f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
 	#upload url
 	up_url = f'/{RESOURCE_PREFIX}-f-access-{NONCE}'
 	#err_build=request.args['err_build'] if request.args and 'err_build' in request.args else ''
