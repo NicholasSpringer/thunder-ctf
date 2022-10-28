@@ -24,6 +24,6 @@ resources:
     storageClass: STANDARD
     {% if properties['publicaccessprevention'] %}
     iamConfiguration:
-      publicAccessPrevention: {{ properties['publicAccessPrevention'] }}
+      publicAccessPrevention: {{ properties['publicaccessprevention'] }}
     {% endif %}
 
