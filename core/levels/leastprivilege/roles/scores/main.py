@@ -93,7 +93,7 @@ def main(request):
 								if least == True:
 									scores[l] += 10	
 									sum_score += scores[l]
-			else: # level with misture of custom role and predefined role (used for ct5 but no level fits in this category anymore)
+			else: # level with mixture of custom role and predefined role (used for ct5 but no level fits in this category anymore)
 				if role_name in level_bindings[l]:
 					correct_bindings = [role_name]
 					correct_bindings.extend(ANWS[l]['predefined'])
