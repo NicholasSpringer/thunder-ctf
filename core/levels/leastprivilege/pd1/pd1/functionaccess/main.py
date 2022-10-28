@@ -15,8 +15,6 @@ def main(request):
 	# Get credential of cloud function account
 	credentials, project_id = google.auth.default()
 
-	#score function url
-	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
 
 	#Build storage REST API python object
 	storage_api = discovery.build('storage', 'v1', credentials=credentials,cache_discovery=False)
@@ -35,7 +33,7 @@ def main(request):
 	url=f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
 	
 	
-	return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME, nonce=NONCE, surl=surl)
+	return render_template(f'{RESOURCE_PREFIX}-access.html', resources=resources, url=url, err=err,prefix=RESOURCE_PREFIX,level_name=LEVEL_NAME, nonce=NONCE)
 
 	
 

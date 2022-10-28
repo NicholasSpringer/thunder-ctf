@@ -82,20 +82,9 @@ def create(second_deploy=True):
         msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
         start_message += msg+'\n'
 
-    # scores funciton
-    func_pathsc = f'core/levels/{LEVEL_PATH}/scores'
+    
 
-    #Generate scores function urls
-    func_template_arg = {'anws': FARS, 'level_names':LEVEL_NAMES}
-    func_upload_urlsc = cloudfunctions.upload_cloud_function(func_pathsc, FUNCTION_LOCATION,template_args=func_template_arg)
-
-    login_user = os.environ.get('USER', 'USER is not set.')
-    #Update deployment with functions
-    config_template_args_patch = {'funcc_upload_url_scores':func_upload_urlsc, 'login_user':login_user}
-    config_template_args.update(config_template_args_patch)
-
-    msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/scores-f-{nonce}'
-    start_message += '\n Or access levels through Score Board: \n'+ msg+'\n'
+    
 
     if second_deploy:
         deployments.insert(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args, second_deploy=True)
