@@ -21,9 +21,9 @@ FUNCTION_LOCATION_C = 'europe-west1'
 
 LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute',
                 'pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore', 'pd5': 'PredefinedRole-Vision',
-               'ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'
+               'ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'}
                 #,'ct5': 'CustomdRole-Vision'
-                }
+                
 FARS = {
          'pr':['roles/viewer'],
          'pd1':['roles/storage.objectViewer'],
