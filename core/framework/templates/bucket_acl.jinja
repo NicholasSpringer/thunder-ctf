@@ -22,3 +22,8 @@ resources:
     projection: full
     location: US
     storageClass: STANDARD
+    {% if properties['publicaccessprevention'] %}
+    iamConfiguration:
+    - publicAccessPrevention: {{ properties['publicAccessPrevention'] }}
+    {% endif %}
+

@@ -12,6 +12,7 @@ resources:
   properties:
     nonce: {{ nonce }}
     predefined_acl: private
+    publicaccessprevention: enforced
 - name: a5-func
   type: cloud_function.jinja
   properties:
