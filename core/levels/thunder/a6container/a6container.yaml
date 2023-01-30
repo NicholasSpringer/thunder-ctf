@@ -12,6 +12,7 @@ resources:
   properties:
     nonce: {{ nonce }} 
     predefined_acl: private
+    publicaccessprevention: enforced
 - name: a6-container-vm
   type: container_vm.jinja
   properties:

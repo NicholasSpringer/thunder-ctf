@@ -34,7 +34,7 @@ def main(request):
 		levels_sa[k] = f'serviceAccount:{k}-f-access-{NONCE}-sa@{PROJECT_ID}.iam.gserviceaccount.com'
 		level_bindings[k] = []
 		a_urls[k] = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{k}-f-access-{NONCE}'
-		c_urls[k] = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{k}-f-check-{NONCE}'
+		c_urls[k] = f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{k}-f-check-{NONCE}'
 
 	
 
@@ -93,7 +93,7 @@ def main(request):
 								if least == True:
 									scores[l] += 10	
 									sum_score += scores[l]
-			else: # level with misture of custom role and predefined role (used for ct5 but no level fits in this category anymore)
+			else: # level with mixture of custom role and predefined role (used for ct5 but no level fits in this category anymore)
 				if role_name in level_bindings[l]:
 					correct_bindings = [role_name]
 					correct_bindings.extend(ANWS[l]['predefined'])

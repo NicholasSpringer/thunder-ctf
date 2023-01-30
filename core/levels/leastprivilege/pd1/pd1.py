@@ -13,37 +13,16 @@ from core.framework.cloudhelpers import deployments, iam, cloudfunctions
 
 
 
-LEVEL_PATH = 'leastprivilege/roles'
+LEVEL_PATH = 'leastprivilege/pd1'
 
-FUNCTION_LOCATION_A = 'us-central1'
-FUNCTION_LOCATION_C = 'europe-west1'
+FUNCTION_LOCATION = 'us-central1'
 
-
-LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute',
-                'pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore', 'pd5': 'PredefinedRole-Vision',
-               'ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'}
-                #,'ct5': 'CustomdRole-Vision'
-                
-FARS = {
-         'pr':['roles/viewer'],
-         'pd1':['roles/storage.objectViewer'],
-         'pd2':['roles/compute.viewer'],
-         'pd3':['roles/logging.viewer'],
-         'pd4':['roles/datastore.viewer'],
-         'pd5':['roles/datastore.user','roles/storage.admin'],
-         'ct1':['storage.buckets.list','compute.instances.list'],
-         'ct2':['storage.objects.list'],
-         'ct3':['compute.instances.list'],
-         'ct4':['logging.logEntries.list'],
-         #'ct5':{'predefined':['roles/datastore.user'],'custom':['storage.buckets.get','storage.objects.create']},
-         #'ct5':['datastore.entities.create','datastore.entities.get','storage.buckets.get','storage.objects.create'],
-         #'ct5':['datastore.entities.create','datastore.entities.update','datastore.entities.get','datastore.entities.list','storage.buckets.get','storage.objects.create','storage.objects.delete']
-        }
-KINDS = ['pd4']
-BUCKETS = ['pd1','ct2']
+LEVEL_NAMES = {'pd1':'PredefinedRole-Storage'}
+FARS = {'pd1':['roles/storage.objectViewer']}
+KINDS = []
+BUCKETS = ['pd1']
 #entires created in cloud function
-#F_KINDS =['pd5','ct5']
-F_KINDS =['pd5']
+F_KINDS =[]
 
 
 def create(second_deploy=True):
@@ -91,8 +70,8 @@ def create(second_deploy=True):
         
         #Generate function urls
         func_template_argc = {'fvar': fvar}
-        func_upload_urla = cloudfunctions.upload_cloud_function(func_patha, FUNCTION_LOCATION_A)
-        func_upload_urlc = cloudfunctions.upload_cloud_function(func_pathc, FUNCTION_LOCATION_C,template_args=func_template_argc)
+        func_upload_urla = cloudfunctions.upload_cloud_function(func_patha, FUNCTION_LOCATION)
+        func_upload_urlc = cloudfunctions.upload_cloud_function(func_pathc, FUNCTION_LOCATION,template_args=func_template_argc)
        
         #Update deployment with functions
         config_template_args_patch = {f'funca_upload_url_{RESOURCE_PREFIX}':func_upload_urla, f'funcc_upload_url_{RESOURCE_PREFIX}':func_upload_urlc, 
@@ -100,23 +79,12 @@ def create(second_deploy=True):
                                         f'level_name_{RESOURCE_PREFIX}': LEVEL_NAME, f'resource_prefix_{RESOURCE_PREFIX}':RESOURCE_PREFIX }
         config_template_args.update(config_template_args_patch)
 
-        msg= f'https://{FUNCTION_LOCATION_A}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
+        msg= f'https://{FUNCTION_LOCATION}-{project_id}.cloudfunctions.net/{RESOURCE_PREFIX}-f-access-{nonce}    {LEVEL_NAMES[RESOURCE_PREFIX]}'
         start_message += msg+'\n'
 
-    # scores funciton
-    func_pathsc = f'core/levels/{LEVEL_PATH}/scores'
+    
 
-    #Generate scores function urls
-    func_template_arg = {'anws': FARS, 'level_names':LEVEL_NAMES}
-    func_upload_urlsc = cloudfunctions.upload_cloud_function(func_pathsc, FUNCTION_LOCATION_C,template_args=func_template_arg)
-
-    login_user = os.environ.get('USER', 'USER is not set.')
-    #Update deployment with functions
-    config_template_args_patch = {'funcc_upload_url_scores':func_upload_urlsc, 'login_user':login_user}
-    config_template_args.update(config_template_args_patch)
-
-    msg= f'https://{FUNCTION_LOCATION_A}-{project_id}.cloudfunctions.net/scores-f-{nonce}'
-    start_message += '\n Or access levels through Score Board: \n'+ msg+'\n'
+    
 
     if second_deploy:
         deployments.insert(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args, second_deploy=True)
