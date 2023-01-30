@@ -38,6 +38,10 @@ resources:
         - cloudfunctions.functions.sourceCodeSet
         - cloudfunctions.functions.update
         - cloudfunctions.operations.get
+        - cloudbuild.builds.get
+        - cloudbuild.builds.list
+        - cloudbuild.builds.create
+        - cloudbuild.builds.update
     - service_account_id: a5-func-{{ nonce }}-sa
       role:
         name: custom
