@@ -53,6 +53,7 @@ resources:
         custom_nonce: {{ nonce }}
         permissions:
         - cloudfunctions.functions.list
+        - cloudfunctions.locations.list
         - compute.instances.list
         - compute.instances.get
         - compute.zones.list
