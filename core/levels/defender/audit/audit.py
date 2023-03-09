@@ -174,7 +174,7 @@ def create_tables(db_password):
         }
 
         db = sqlalchemy.create_engine(
-            sqlalchemy.engine.url.URL(
+            sqlalchemy.URL.create(
                 drivername="postgresql+pg8000",
                 username="api-engine",
                 password=db_password,
@@ -188,7 +188,7 @@ def create_tables(db_password):
 
         devs = csv.DictReader(open(f'core/levels/{LEVEL_PATH}/resources/devs.csv', newline=''))
         with db.connect() as conn:
-            conn.execute(
+            conn.execute(text(
                 """
                 CREATE TABLE users (
                     user_id  SERIAL PRIMARY KEY,
@@ -208,7 +208,7 @@ def create_tables(db_password):
                     followee INT   NOT NULL REFERENCES users(user_id)
                 );
                 """
-            )
+            ))
 
             for dev in devs:
                 stmt = text("INSERT INTO devs (name, phone, address) VALUES (:name, :phone, :address)")
