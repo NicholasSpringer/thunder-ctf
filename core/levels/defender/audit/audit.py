@@ -122,7 +122,7 @@ def create(second_deploy=True):
 
     bar.tick('Starting exploit script')
     hostname = exploit(nonce, logging_key, bar)
-    hack(hostname)
+    # hack(hostname)  Application is broken since it does not connect to the DB instance but to localhost
     bar.tick('Exploit complete')
 
     print(f'\nLevel creation complete for: {LEVEL_PATH}')

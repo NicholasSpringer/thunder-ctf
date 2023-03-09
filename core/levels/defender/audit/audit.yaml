@@ -68,37 +68,16 @@ resources:
     bindings:
     - service_account_id: api-engine-sa
       role:
-        name: roles/iam.serviceAccountAdmin
-    - service_account_id: api-engine-sa
-      role:
-        name: roles/cloudsql.admin
-    - service_account_id: api-engine-sa
-      role:
-        name: roles/logging.logWriter
-    - service_account_id: api-engine-sa
-      role:
-        name: roles/secretmanager.admin
+        name: roles/owner
     - service_account_id: compute-admin
       role:
-        name: roles/compute.admin
-    - service_account_id: compute-admin
-      role:
-        name: roles/iam.serviceAccountUser        
+        name: roles/editor
     - service_account_id: log-viewer
       role:
-        name: roles/logging.viewer
-    - service_account_id: log-viewer
-      role:
-        name: roles/logging.configWriter
+        name: roles/logging.admin
     - service_account_id: dev-account
       role:
-        name: roles/iam.serviceAccountUser
-    - service_account_id: dev-account
-      role:
-        name: roles/cloudfunctions.developer
+        name: roles/editor
     - service_account_id: rm-user-{{nonce}}-sa
       role:
-        name: roles/iam.serviceAccountUser
-    - service_account_id: rm-user-{{nonce}}-sa
-      role:
-        name: roles/logging.logWriter
+        name: roles/editor
