@@ -35,7 +35,7 @@ def main(request):
 		#entry = list(logger.list_entries(order_by=DESCENDING, filter_=filter))[0]
 		for entry in entries:
 			resources.append(entry)
-			if entries.num_results >0:
+			if len(resources) >0:
 				break
 
 	except Exception as e:
