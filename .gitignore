@@ -6,3 +6,4 @@ __pycache__
 start/*
 core/framework/config/project.txt
 env
+nonce.txt
