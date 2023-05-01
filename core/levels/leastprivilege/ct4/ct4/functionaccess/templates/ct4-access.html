@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+{% raw -%}
+
+<head>
+  <title>Least Privileges - {{prefix}} {{level_name}}</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <style>
+    body {
+      width: 100%;
+      text-align: center
+    }
+
+    div {
+      width: 80%;
+      word-wrap: break-word;
+      text-align: left;
+    }
+
+    pre {
+      width: 80%;
+      margin: auto;
+      padding: auto;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      /* Since CSS 2.1 */
+      white-space: -moz-pre-wrap;
+      /* Mozilla, since 1999 */
+      white-space: -pre-wrap;
+      /* Opera 4-6 */
+      white-space: -o-pre-wrap;
+      /* Opera 7 */
+      word-wrap: break-word;
+      /* Internet Explorer 5.5+ */
+    }
+
+    .err {
+      width: 100%;
+      text-align: left;
+      border-radius: 5px;
+      background-image: linear-gradient(0.25turn, teal, rgb(176, 228, 231), rgb(226, 248, 250));
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      margin: auto;
+      padding: 1% 0;
+      border-radius: 8px;
+      background-image: linear-gradient(0.25turn, rgb(74, 229, 235), rgb(209, 227, 228), white);
+    }
+
+    .ins {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 80%;
+      margin: auto;
+      padding: 1% 0;
+    }
+
+    .code {
+      width: 100%;
+      background-color: rgb(209, 227, 228);
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Least Privileges {{prefix}} {{level_name}}</h1>
+  <h4>nonce: {{nonce}}</h4>
+
+  <div class="ins">
+    <ul>
+      <li>Level service account {{prefix}}-f-access-{{nonce}}-sa is bound with an over-privileged Predefined Role to
+        list Cloud Logging Entries in the project.</li>
+      <li>Your goal is to replace the Predefined Role with a <b>Custom Role</b> which has minimum permission(s) that
+        is(are) just enough to list log entries</li>
+      <li>Use the <a href="{{url}}" target="_blank">check function</a> to view permissions of
+        {{prefix}}-f-access-{{nonce}}-sa.</li>
+      <li>Go to IAM&Admin -> Roles in google cloud console, create a custom role with ID
+        <b>{{prefix}}_access_role_{{nonce}}</b> and attach the least privilege permission.
+        <br><b>Hint:</b> Look for a permission under a <a href="https://cloud.google.com/logging/docs/access-control"
+          target="_blank"><b>Predefined Cloud Logging Role</b></a> in google doc.
+      </li>
+      <li>Go to IAM&Admin -> IAM -> MEMBERS, click the pencil icon to edit service acount
+        {{prefix}}-f-access-{{nonce}}-sa in the table.</li>
+      <li>Add the Custom Role to service account and remove the original one. To keep the process simple, do not leave
+        the service account with empty role.
+        <br>Because if all roles are removed, service account will disappear from the IAM memeber table
+        (can be added back via
+        <a href="https://cloud.google.com/iam/docs/granting-changing-revoking-access#granting-console" target="_blank">
+          granting access</a>).
+      </li>
+      <li>Refresh the <a href="{{url}}" target="_blank">check function</a> to validate your answer.</li>
+      <li>You can submit a new request to this access function by pressing ENTER in the browser's address bar and see if
+        sufficient permissions are granted to level SA.
+        <br> (The change may take a couple submits to show up.)
+      </li>
+    </ul>
+  </div>
+
+
+  <div class="main">
+    <div>
+      <h3>Log Entries:</h3>
+      <ul>
+        {% for r in resources %}
+        <li style="word-wrap: break-word;">{{ r }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% if err|length>0 %}
+    <div>
+      <h4>Error:</h4>
+      {% for e in err %}
+      <div class="err">{{ e }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="ins">
+    <div>
+      <h4>Source code from current function {{prefix}}-f-access-{{nonce}} :</h4>
+    </div>
+    <div class="code">
+      <pre>client = logging.Client(credentials=credentials )
+filter = f"projects.setIamPolicy AND {NONCE} AND log_name=projects/{PROJECT_ID}/logs/cloudaudit.googleapis.com%2Factivity"
+entries = client.list_entries(order_by="timestamp desc", filter_=filter)
+for entry in entries:
+	resources.append(entry) #logging entry
+	if entries.num_results >0:
+		break</pre>
+    </div>
+  </div>
+</body>
+{%- endraw %}

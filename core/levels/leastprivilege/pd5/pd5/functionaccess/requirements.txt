@@ -1,0 +1,4 @@
+google-cloud-datastore
+google-cloud-storage
+google-cloud-vision
+pyparsing==2.4.7

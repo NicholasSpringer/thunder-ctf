@@ -1,0 +1,2 @@
+cryptography
+pyparsing==2.4.7

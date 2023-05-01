@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% raw -%}
+<head>
+  <title>Check Privileges - {{prefix}} {{level_name}}</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <style>
+   body { width:100%;text-align:center }
+    div {width:50%; word-wrap: break-word; text-align: left;}
+    span{width:100%; text-align:center;border-radius:5px;
+       background-image: linear-gradient(0.25turn,teal,rgb(176, 228, 231),rgb(226, 248, 250)); 
+    }
+    .main {display: flex; flex-direction: column; align-items: center; width:80%; margin:auto; padding: 1% 0;border-radius: 8px; 
+       background-image: linear-gradient(0.25turn,rgb(74, 229, 235),rgb(209, 227, 228),white); 
+    }
+  </style>
+</head>
+<body >
+<h1 >Check Privileges {{prefix}} {{level_name}}</h1>
+<h4>nonce: {{nonce}}</h4>
+
+<div class="main">
+<div>
+<h3>Message:</h3>
+<ul>
+  <li>{{ msg }}</li>
+</ul> 
+</div>
+<div> 
+<h3>Permissions of custom role {{rn}}:</h3>
+<ol>
+{% for p in pers %} 
+  <li>{{ p }}</li>
+ {% endfor %}
+</ol>
+</div>
+<div>
+<span >{{err}}</span>   
+</div>
+</div>
+</body>
+{%- endraw %}

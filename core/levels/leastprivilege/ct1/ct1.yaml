@@ -1,0 +1,62 @@
+imports:
+- path: service_account.jinja
+- path: iam_policy.jinja
+- path: bucket_acl.jinja
+- path: ubuntu_vm.jinja
+- path: cloud_function.jinja
+
+resources:
+- name: ct1-bucket
+  type: bucket_acl.jinja
+  properties:
+    nonce: {{ nonce }}
+    predefined_acl: private
+
+- name: ct1-instance
+  type: ubuntu_vm.jinja
+  properties:
+    zone: us-west1-b
+    open_external: true
+
+- name: ct1-f-access
+  type: cloud_function.jinja
+  properties:
+    region: us-central1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funca_upload_url_ct1 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      all_users: allusers 
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct1}},"LEVEL_NAME":{{level_name_ct1}}}
+
+- name: ct1-f-check
+  type: cloud_function.jinja
+  properties:
+    region: europe-west1
+    nonce: {{ nonce }}
+    entry_point: main
+    upload_url: {{ funcc_upload_url_ct1 }}
+    policyBindings:
+    - role: roles/cloudfunctions.invoker
+      all_users: allusers 
+    env_variables: {"NONCE":{{nonce}},"RESOURCE_PREFIX":{{resource_prefix_ct1}},"LEVEL_NAME":{{level_name_ct1}}}
+
+
+- name: iam_policy
+  type: iam_policy.jinja
+  properties:
+    bindings:
+    - service_account_id: ct1-f-access-{{nonce}}-sa
+      role:
+        name: roles/owner
+
+    - service_account_id: ct1-f-check-{{nonce}}-sa
+      role:
+        name: custom
+        custom_nonce: {{ nonce }}
+        permissions:
+        - iam.roles.list
+        - resourcemanager.projects.getIamPolicy
+    
+    
