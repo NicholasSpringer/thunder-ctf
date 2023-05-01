@@ -33,7 +33,7 @@ resources:
 - name: pr-f-check
   type: cloud_function.jinja
   properties:
-    region: europe-west1
+    region: us-central1
     nonce: {{ nonce }}
     entry_point: main
     upload_url: {{ funcc_upload_url_pr }}
