@@ -103,32 +103,36 @@ python3 thunder.py activate_project $GOOGLE_CLOUD_PROJECT</pre>
       <h3>Deploy:</h3>
       <p>You are now ready to play. Create each level individually. </p>
       <pre>
-#PrimitiveRole-Project
+# PrimitiveRole-Project
 python3 thunder.py create leastprivilege/pr
-#PredefinedRole-Storage
+# PredefinedRole-Storage
 python3 thunder.py create leastprivilege/pd1
-#PredefinedRole-Compute
+# PredefinedRole-Compute
 python3 thunder.py create leastprivilege/pd2
-#PredefinedRole-Logging
+# PredefinedRole-Logging
 python3 thunder.py create leastprivilege/pd3
-#PredefinedRole-Datastore
+# PredefinedRole-Datastore
 python3 thunder.py create leastprivilege/pd4
-#PredefinedRole-Vision
+# PredefinedRole-Vision
 python3 thunder.py create leastprivilege/pd5
-#CustomRole-Project
+# CustomRole-Project
 python3 thunder.py create leastprivilege/ct1
-#CustomRole-Storage
+# CustomRole-Storage
 python3 thunder.py create leastprivilege/ct2
-#CustomRole-Compute
+# CustomRole-Compute
 python3 thunder.py create leastprivilege/ct3
-#CustomRole-Logging
+# CustomRole-Logging
 python3 thunder.py create leastprivilege/ct4</pre>
       <p>Or, create all levels with command below.</p>
       <pre>python3 thunder.py create leastprivilege/roles</pre>
       <h3>Level Access:</h3>
-      <p>If deployment is successful, a list of function entrypoints will be printed in Cloud Shell. You can also find
-        them in start/roles.txt . Click each entrypoint link to see its associated level instruction. Note: If level
-        requires creating custom role, you have to create the role with the exact ID specified in level instruction </p>
+      <p>Once the deployment is successful, the Cloud Shell will display either a single function entrypoint or a list
+        of
+        function entrypoints. You can also locate this information in either start/LEVEL_ABBR.txt (e.g. pr.txt) or
+        start/roles.txt. To access further guidance on each level, simply click on its respective link.
+        It is important to note that if the level requires the creation of a custom role, you must create the role using
+        the
+        precise ID specified in the level instruction.</p>
       <h3>Destroy:</h3>
       <p>Don't forget to destroy levels after you are done using the command below:</p>
       <pre>python3 thunder.py destroy</pre>
