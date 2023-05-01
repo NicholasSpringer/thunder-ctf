@@ -20,10 +20,9 @@ def main(request):
 	# Get credential of cloud function account
 	credentials, project_id = google.auth.default()
 
-	#score function url
-	surl  = f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/scores-f-{NONCE}'
+	
 	#check function url
-	url=f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
+	url=f'https://{FUNCTION_REGION}-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
 	#upload url
 	up_url = f'/{RESOURCE_PREFIX}-f-access-{NONCE}'
 	#err_build=request.args['err_build'] if request.args and 'err_build' in request.args else ''
@@ -116,7 +115,7 @@ def main(request):
 	
 	return render_template(f'{RESOURCE_PREFIX}-access.html', url=url, 
                 err_build=err_build,err_query=err_query,prefix=RESOURCE_PREFIX, level_name=LEVEL_NAME, 
-                nonce=NONCE,surl=surl,image_entities=image_entities,up_url=up_url)
+                nonce=NONCE,image_entities=image_entities,up_url=up_url)
 
 	
 
