@@ -15,7 +15,7 @@ resources:
 - name: pr-instance
   type: ubuntu_vm.jinja
   properties:
-    zone: us-west1-b
+    zone: us-east5-c
     open_external: true
 
 - name: pr-f-access
@@ -77,7 +77,7 @@ resources:
 - name: pd2-instance
   type: ubuntu_vm.jinja
   properties:
-    zone: us-west1-b
+    zone: us-east5-c
     open_external: true
 
 - name: pd2-f-access
@@ -194,7 +194,7 @@ resources:
 - name: ct1-instance
   type: ubuntu_vm.jinja
   properties:
-    zone: us-west1-b
+    zone: us-east5-c
     open_external: true
 
 - name: ct1-f-access
@@ -254,7 +254,7 @@ resources:
 - name: ct3-instance
   type: ubuntu_vm.jinja
   properties:
-    zone: us-west1-b
+    zone: us-east5-c
     open_external: true
 
 - name: ct3-f-access
