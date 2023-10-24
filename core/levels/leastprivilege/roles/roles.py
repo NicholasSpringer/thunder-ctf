@@ -19,31 +19,44 @@ FUNCTION_LOCATION_A = 'us-central1'
 FUNCTION_LOCATION_C = 'europe-west1'
 
 
-LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute',
-                'pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore', 'pd5': 'PredefinedRole-Vision',
-               'ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'}
-                #,'ct5': 'CustomdRole-Vision'
+# LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute',
+#                 'pd3':'PredefinedRole-Logging','pd4':'PredefinedRole-Datastore', 'pd5': 'PredefinedRole-Vision',
+#                'ct1':'CustomRole-Project','ct2':'CustomRole-Storage','ct3':'CustomRole-Compute','ct4':'CustomRole-Logging'}
+#                 #,'ct5': 'CustomdRole-Vision'
                 
+# FARS = {
+#          'pr':['roles/viewer'],
+#          'pd1':['roles/storage.objectViewer'],
+#          'pd2':['roles/compute.viewer'],
+#          'pd3':['roles/logging.viewer'],
+#          'pd4':['roles/datastore.viewer'],
+#          'pd5':['roles/datastore.user','roles/storage.admin'],
+#          'ct1':['storage.buckets.list','compute.instances.list'],
+#          'ct2':['storage.objects.list'],
+#          'ct3':['compute.instances.list'],
+#          'ct4':['logging.logEntries.list'],
+#          #'ct5':{'predefined':['roles/datastore.user'],'custom':['storage.buckets.get','storage.objects.create']},
+#          #'ct5':['datastore.entities.create','datastore.entities.get','storage.buckets.get','storage.objects.create'],
+#          #'ct5':['datastore.entities.create','datastore.entities.update','datastore.entities.get','datastore.entities.list','storage.buckets.get','storage.objects.create','storage.objects.delete']
+#         }
+
+# KINDS = ['pd4']
+# BUCKETS = ['pd1','ct2']
+# #entires created in cloud function
+# #F_KINDS =['pd5','ct5']
+# F_KINDS =['pd5']
+
+
+LEVEL_NAMES = {'pr':'PrimitiveRole-Project','pd1':'PredefinedRole-Storage','pd2':'PredefinedRole-Compute','ct1':'CustomRole-Project'}
 FARS = {
          'pr':['roles/viewer'],
          'pd1':['roles/storage.objectViewer'],
          'pd2':['roles/compute.viewer'],
-         'pd3':['roles/logging.viewer'],
-         'pd4':['roles/datastore.viewer'],
-         'pd5':['roles/datastore.user','roles/storage.admin'],
-         'ct1':['storage.buckets.list','compute.instances.list'],
-         'ct2':['storage.objects.list'],
-         'ct3':['compute.instances.list'],
-         'ct4':['logging.logEntries.list'],
-         #'ct5':{'predefined':['roles/datastore.user'],'custom':['storage.buckets.get','storage.objects.create']},
-         #'ct5':['datastore.entities.create','datastore.entities.get','storage.buckets.get','storage.objects.create'],
-         #'ct5':['datastore.entities.create','datastore.entities.update','datastore.entities.get','datastore.entities.list','storage.buckets.get','storage.objects.create','storage.objects.delete']
-        }
-KINDS = ['pd4']
-BUCKETS = ['pd1','ct2']
+         'ct1':['storage.buckets.list','compute.instances.list']}
+KINDS = []
+BUCKETS = ['pd1']
 #entires created in cloud function
-#F_KINDS =['pd5','ct5']
-F_KINDS =['pd5']
+F_KINDS =[]
 
 
 def create(second_deploy=True):
@@ -216,7 +229,8 @@ def destroy():
 
     credentials, project_id = google.auth.default()
     #Delete datastore entity
-    delete_entities(project_id)
+    if len(KINDS)!=0 or len(F_KINDS)!=0:
+        delete_entities(project_id)
 
     # Delete starting files
     levels.delete_start_files()
