@@ -24,7 +24,7 @@ def main(request):
 	resources=[]
 	url=f'https://europe-west1-{PROJECT_ID}.cloudfunctions.net/{RESOURCE_PREFIX}-f-check-{NONCE}'
 	try:
-		instances= instance_api.instances().list(zone="us-west1-b", project=PROJECT_ID).execute()["items"]
+		instances= instance_api.instances().list(zone="us-east5-c", project=PROJECT_ID).execute()["items"]
 		for instance in instances:
 			if instance["name"].startswith(RESOURCE_PREFIX):		
 				resources.append(f'Name: {instance["name"]}')

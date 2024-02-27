@@ -15,7 +15,7 @@ resources:
 - name: pr-instance
   type: ubuntu_vm.jinja
   properties:
-    zone: us-west1-b
+    zone: us-east5-c
     open_external: true
 
 - name: pr-f-access
