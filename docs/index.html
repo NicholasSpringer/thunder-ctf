@@ -43,8 +43,8 @@ source env-tctf/bin/activate</pre>
     <pre>git clone https://github.com/NicholasSpringer/thunder-ctf.git
 cd thunder-ctf
 pip3 install -r requirements.txt</pre>
-    <p>Then, enable the resource manager service for the project</p>
-    <pre>gcloud services enable cloudresourcemanager.googleapis.com</pre>
+    <p>Then, enable the resource manager and service usage services for the project</p>
+    <pre>gcloud services enable cloudresourcemanager.googleapis.com serviceusage.googleapis.com</pre>
     <p>Finally, set up the project to run the CTF by enabling all the services and logging features required by it.</p>
 <pre>#If you want to do the defender path labs later, enter y to turn on audit logging.
 python3 thunder.py activate_project [PROJECT-ID]</pre>
