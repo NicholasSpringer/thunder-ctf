@@ -64,8 +64,6 @@ def create(second_deploy=True):
             f'and the service account bound to it.')
         levels.write_start_info(
             LEVEL_PATH, start_message, file_name=f'{RESOURCE_PREFIX}-leaked.json', file_content=leaked_key)
-        print(
-            f'Instruction for the level can be accessed at thunder-ctf.cloud/thunder/{LEVEL_PATH}.html')
     except Exception as e:
         print('error')
         exit()
