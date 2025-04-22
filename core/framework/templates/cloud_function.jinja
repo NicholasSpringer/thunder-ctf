@@ -11,7 +11,7 @@ resources:
     parent: projects/{{ env['project'] }}/locations/{{ properties['region'] }}
     sourceUploadUrl: {{ properties['upload_url'] }}
     entryPoint: {{ properties['entry_point'] }}
-    runtime: python37
+    runtime: python312
     serviceAccountEmail: $(ref.{{ SERVICE_ACCOUNT_NAME }}.email)
     httpsTrigger: {{ '{}' }}
     {% if 'env_variables' in properties %}
