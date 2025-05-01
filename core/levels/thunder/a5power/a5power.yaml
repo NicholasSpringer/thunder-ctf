@@ -39,6 +39,9 @@ resources:
         - cloudfunctions.functions.update
         - cloudfunctions.operations.get
         - serviceusage.services.get
+    - service_account_id: a5-access
+      role:
+        name: roles/iam.serviceAccountUser
     - service_account_id: a5-func-{{ nonce }}-sa
       role:
         name: custom
