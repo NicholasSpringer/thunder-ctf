@@ -71,11 +71,9 @@ resource "null_resource" "write_bucket_info" {
 # ─────────────────────────────────────────────────────────────
 resource "null_resource" "track_active_level" {
   provisioner "local-exec" {
-    # Write the module name to active_level.txt after deployment
-    command = "mkdir -p config && echo a1openbucket > config/active_level.txt"
+    command = "mkdir -p config && echo a1openbucket > config/a1openbucket_active.txt"
   }
 
-  # Always trigger this resource so it's updated every time
   triggers = {
     always_run = timestamp()
   }

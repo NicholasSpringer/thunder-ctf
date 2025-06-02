@@ -29,9 +29,3 @@ variable "ssh_username" {
   default     = "clouduser"
 }
 
-variable "level_secret" {
-  type        = string
-  description = "The secret to store in the bucket"
-  default     = "default-a3-secret"
-}
-

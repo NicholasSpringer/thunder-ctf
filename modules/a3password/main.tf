@@ -116,7 +116,7 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
 # Mark this as the active level
 resource "null_resource" "track_active_level" {
   provisioner "local-exec" {
-    command = "mkdir -p config && echo a3password > config/active_level.txt"
+    command = "mkdir -p config && echo a3password > config/a3password_active.txt"
   }
 
   triggers = {

@@ -2,31 +2,39 @@
 set -e
 
 LEVEL=$1
-ACTIVE_FILE="config/active_level.txt"
+
+# Helper functions
+print() { echo -e "\033[1;32m$1\033[0m"; }
+warn()  { echo -e "\033[1;33m$1\033[0m"; }
+error() { echo -e "\033[1;31m$1\033[0m"; }
 
 if [ -z "$LEVEL" ]; then
-  echo "Usage: ./run-level.sh <level_module_name>"
+  error "❌ Usage: ./run-level.sh <level_module_name>"
   echo "Example: ./run-level.sh a1openbucket"
   exit 1
 fi
 
-echo "🚀 Deploying level: $LEVEL"
+print "🚀 Deploying level: $LEVEL"
 terraform apply -target=module.${LEVEL} -auto-approve > /dev/null
 
-# Write active level to config
-echo "$LEVEL" > "$ACTIVE_FILE"
+# Write active level tracker
+mkdir -p config
 
-# Run the script
-if [ "$LEVEL" = "a2finance" ]; then
-  sleep 2
-  python3 modules/a2finance/a2finance_provision.py
+# Run post-provision Python script, if applicable
+PROVISION_SCRIPT="modules/${LEVEL}/${LEVEL}_provision.py"
+if [ -f "$PROVISION_SCRIPT" ]; then
+  print "⚙️  Running post-provision script for $LEVEL..."
+  python3 "$PROVISION_SCRIPT"
 fi
 
+echo
+print "✅ Level deployed!"
 
 echo
-echo "✅ Level deployed!"
-
-echo
-echo "📜 Level Instructions:"
-cat instructions/$LEVEL.txt
-
+print "📜 Level Instructions:"
+INSTRUCTION_FILE="instructions/${LEVEL}.txt"
+if [ -f "$INSTRUCTION_FILE" ]; then
+  cat "$INSTRUCTION_FILE"
+else
+  warn "⚠️ No instructions found for $LEVEL."
+fi

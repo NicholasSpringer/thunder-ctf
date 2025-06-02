@@ -18,6 +18,8 @@ WORKDIR /app
 # Install the Python packages specified by requirements.txt into the container
 RUN pip install -r requirements.txt
 
+EXPOSE 80
+
 # Set the program that is invoked upon container instantiation
 ENTRYPOINT ["python"]
 

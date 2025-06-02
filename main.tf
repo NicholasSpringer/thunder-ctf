@@ -5,9 +5,6 @@ module "setup" {
   region     = var.region
 }
 
-output "setup_instructions" {
-  value = module.setup.level_instructions
-}
 
 # ─────────────────────────────────────────────────────────────
 # Deploy Level Module: a1openbucket
@@ -29,22 +26,12 @@ module "a2finance" {
   ssh_username        = var.ssh_username
 }
 
-output "a2finance_level_instructions" {
-  value = module.a2finance.level_instructions
-}
-
-output "a2_bucket_name" {
-  value = module.a2finance.a2_bucket_name
-}
-
 
 module "a3password" {
   source     = "./modules/a3password"
   project_id = var.project_id
   region     = var.region
   zone       = var.zone
-
-  level_secret = var.level_secret
 }
 
 module "a4error" {
@@ -52,7 +39,6 @@ module "a4error" {
   project_id   = var.project_id
   region       = var.region
   zone         = var.zone
-  level_secret = var.level_secret
 }
 
 module "a5power" {
@@ -60,4 +46,23 @@ module "a5power" {
   project_id   = var.project_id
   region       = var.region
   zone         = var.zone
+}
+
+
+module "a6container" {
+  source     = "./modules/a6container"
+  project_id = var.project_id
+  region     = var.region
+  zone       = var.zone
+}
+
+module "auditLogging" {
+  source     = "./modules/auditLogging"
+  project_id = var.project_id
+}
+
+module "audit_intro" {
+  source     = "./modules/audit_intro"
+  region     = var.region
+  project_id = var.project_id
 }

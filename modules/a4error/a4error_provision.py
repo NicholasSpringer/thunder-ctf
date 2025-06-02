@@ -16,9 +16,11 @@ base_dir = os.path.dirname(__file__)
 start_dir = os.path.abspath(os.path.join(base_dir, "../../start"))
 generated_dir = os.path.join(base_dir, "generated")
 bucket_file = os.path.join(generated_dir, "bucket_name.txt")
+instructions_dir = os.path.abspath(os.path.join(base_dir, "../../instructions"))
 bucket_dir = os.path.join(base_dir, "bucket")
 function_dir = os.path.join(base_dir, "function")
 function_zip_path = os.path.join(base_dir, "function.zip")
+os.makedirs(instructions_dir, exist_ok=True)
 
 def generate_service_account_key(service_account_id: str) -> str:
     credentials, project_id = google.auth.default()
@@ -32,16 +34,23 @@ def generate_service_account_key(service_account_id: str) -> str:
 
     return key["privateKeyData"]
 
-def write_start_file(message: str, key_data: str):
+def write_start_file(key_data: str):
     os.makedirs(start_dir, exist_ok=True)
+    os.makedirs(instructions_dir, exist_ok=True)
 
-    with open(os.path.join(start_dir, "a4error.txt"), "w") as f:
-        f.write(message)
-    os.chmod(os.path.join(start_dir, "a4error.txt"), 0o400)
+    # Hardcoded instruction for a4error
+    instruction = (
+        'In this level, look for a file named "secret.txt," which is owned by "secretuser." '
+        "Use the given compromised credentials to find it."
+    )
+
+    with open(os.path.join(instructions_dir, "a4error.txt"), "w") as f:
+        f.write(instruction + "\n")
 
     with open(os.path.join(start_dir, KEY_FILENAME), "w") as f:
         f.write(base64.b64decode(key_data).decode("utf-8"))
-    os.chmod(os.path.join(start_dir, KEY_FILENAME), 0o400)
+
+
 
 def upload_dummy_files(bucket_name: str):
     storage_client = storage.Client()
@@ -127,35 +136,36 @@ def request_string(req):
         zipf.write(main_py_path, arcname="main.py")
         zipf.write(requirements_path, arcname="requirements.txt")
 
-    print(f"[INFO] Created Cloud Function zip at {function_zip_path}")
+def wait_for_file(path, timeout=10):
+    waited = 0
+    while not os.path.exists(path) and waited < timeout:
+        time.sleep(1)
+        waited += 1
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"{path} not found after waiting {timeout} seconds")
+
+def cleanup():
+    for path in [function_dir, generated_dir, function_zip_path]:
+        if os.path.exists(path):
+            if os.path.isdir(path):
+                os.system(f"rm -rf {path}")
+            else:
+                os.remove(path)
+
 
 def main():
+    wait_for_file(bucket_file)
     with open(bucket_file) as f:
         bucket_name = f.read().strip()
 
-    print(f"[INFO] Uploading dummy files to {bucket_name}")
     upload_dummy_files(bucket_name)
-
     create_function_zip(bucket_name)
-
-    
-    print(f"[INFO] Waiting for VM to boot and run startup script...")
     time.sleep(180)  # wait 180 seconds before clearing metadata
-
-    print(f"[INFO] Clearing startup script from {INSTANCE_NAME}")
     clear_instance_metadata(INSTANCE_NAME, ZONE)
-
-    print(f"[INFO] Generating service account key for {SERVICE_ACCOUNT_ID}")
     key_data = generate_service_account_key(SERVICE_ACCOUNT_ID)
+    write_start_file(key_data)
 
-    instructions = (
-        'In this level, look for a file named "secret.txt," which is owned by "secretuser." '
-        "Use the given compromised credentials to find it."
-    )
-
-    print("[INFO] Writing start files")
-    write_start_file(instructions, key_data)
-    print("[DONE] a4error provision complete.")
 
 if __name__ == "__main__":
     main()
+    cleanup()

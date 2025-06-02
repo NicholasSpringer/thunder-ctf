@@ -151,7 +151,8 @@ resource "null_resource" "provision" {
   depends_on = [
     google_storage_bucket.a4_bucket,
     google_compute_instance.a4_instance,
-    google_service_account.a4_access
+    google_service_account.a4_access,
+    local_file.bucket_name_file
   ]
 
   provisioner "local-exec" {
@@ -165,7 +166,7 @@ resource "null_resource" "provision" {
 
 resource "null_resource" "track_active_level" {
   provisioner "local-exec" {
-    command = "mkdir -p config && echo a4error > config/active_level.txt"
+    command = "mkdir -p config && echo a4error > config/a4error_active.txt"
   }
 
   triggers = {

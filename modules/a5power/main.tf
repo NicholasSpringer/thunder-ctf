@@ -129,7 +129,7 @@ resource "null_resource" "provision" {
 
 resource "null_resource" "track_active_level" {
   provisioner "local-exec" {
-    command = "mkdir -p config && echo a5power > config/active_level.txt"
+    command = "mkdir -p config && echo a5power > config/a5power_active.txt"
   }
 
   triggers = {
@@ -155,20 +155,3 @@ resource "null_resource" "cleanup_function_bucket" {
   }
 }
 
-resource "null_resource" "cleanup" {
-  depends_on = [null_resource.provision]
-
-  provisioner "local-exec" {
-    command = <<EOT
-      echo "[INFO] Cleaning up..."
-      rm -rf ${path.module}/function
-      rm -rf ${path.module}/generated
-      rm -f ${path.module}/function.zip
-      echo "[INFO] Cleanup complete."
-    EOT
-  }
-
-  triggers = {
-    always_run = timestamp()
-  }
-}

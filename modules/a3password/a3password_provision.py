@@ -9,6 +9,7 @@ import zipfile
 base_dir = os.path.dirname(__file__)
 function_dir = os.path.join(base_dir, "function")
 generated_dir = os.path.join(base_dir, "generated")
+function_zip_path = os.path.join(base_dir, "function.zip")
 os.makedirs(function_dir, exist_ok=True)
 os.makedirs(generated_dir, exist_ok=True)
 
@@ -37,6 +38,13 @@ def main(request):
         return "Invalid password\\n", 400
 """
 
+def write_start_info():
+    os.makedirs("start", exist_ok=True)
+    os.makedirs("instructions", exist_ok=True)
+    instruction = "Use the given compromised credentials to find the secret hidden in the level."
+    with open("instructions/a3password.txt", "w") as f:
+        f.write(instruction + "\n")
+
 main_py_path = os.path.join(function_dir, "main.py")
 with open(main_py_path, "w") as f:
     f.write(main_py_code.strip())
@@ -46,8 +54,19 @@ zip_path = os.path.join(base_dir, "function.zip")
 with zipfile.ZipFile(zip_path, "w") as zipf:
     zipf.write(main_py_path, arcname="main.py")
 
+
+def cleanup():
+    for path in [function_dir, generated_dir, function_zip_path]:
+        if os.path.exists(path):
+            if os.path.isdir(path):
+                os.system(f"rm -rf {path}")
+            else:
+                os.remove(path)
+
+
 # Save values for Terraform to consume
 Path(os.path.join(generated_dir, "xor_password.txt")).write_text(str(xor_password))
 Path(os.path.join(generated_dir, "correct_password.txt")).write_text(str(correct_password))
 Path(os.path.join(generated_dir, "xor_factor.txt")).write_text(str(xor_factor))
-
+write_start_info()
+cleanup()

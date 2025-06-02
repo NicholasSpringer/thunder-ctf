@@ -1,2 +1,2 @@
-project_id = "thunderctf-vincent-456217"
+project_id = "thunderctf6"
 

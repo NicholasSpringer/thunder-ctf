@@ -109,26 +109,10 @@ resource "local_file" "bucket_name_file" {
 # Track active level
 resource "null_resource" "track_active_level" {
   provisioner "local-exec" {
-    command = "mkdir -p config && echo a2finance > config/active_level.txt"
+    command = "mkdir -p config && echo a2finance > config/a2finance_active.txt"
   }
+
   triggers = {
     always_run = timestamp()
   }
-}
-
-# Outputs
-output "a2_bucket_name" {
-  value = google_storage_bucket.leak_bucket.name
-}
-
-output "a2_vm_ip" {
-  value = google_compute_instance.logging_instance.network_interface[0].access_config[0].nat_ip
-}
-
-output "a2_service_account_email" {
-  value = google_service_account.a2finance_sa.email
-}
-
-output "level_instructions" {
-  value = "Use the compromised service account credentials stored in start/a2-access.json, to find hidden somewhere in the GCP project of the credit card number of: "
 }
