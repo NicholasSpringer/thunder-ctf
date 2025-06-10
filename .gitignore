@@ -20,4 +20,5 @@ secret.txt
 function/
 destroy.log
 generated/*
-function.zip
+
+modules/audit_intro/generated/*

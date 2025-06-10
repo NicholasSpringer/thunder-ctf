@@ -66,3 +66,10 @@ module "audit_intro" {
   region     = var.region
   project_id = var.project_id
 }
+
+module "audit" {
+  source     = "./modules/audit"
+  project_id = var.project_id
+  region     = var.region
+  zone       = var.zone
+}
