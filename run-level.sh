@@ -20,12 +20,12 @@ terraform apply -target=module.${LEVEL} -auto-approve > /dev/null
 # Write active level tracker
 mkdir -p config
 
-# Run post-provision Python script, if applicable
-PROVISION_SCRIPT="modules/${LEVEL}/${LEVEL}_provision.py"
-if [ -f "$PROVISION_SCRIPT" ]; then
-  print "⚙️  Running post-provision script for $LEVEL..."
-  python3 "$PROVISION_SCRIPT"
-fi
+# # Run post-provision Python script, if applicable
+# PROVISION_SCRIPT="modules/${LEVEL}/${LEVEL}_provision.py"
+# if [ -f "$PROVISION_SCRIPT" ]; then
+#   print "⚙️  Running post-provision script for $LEVEL..."
+#   python3 "$PROVISION_SCRIPT"
+# fi
 
 echo
 print "✅ Level deployed!"

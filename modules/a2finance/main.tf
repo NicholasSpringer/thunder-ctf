@@ -106,6 +106,24 @@ resource "local_file" "bucket_name_file" {
   filename = "${path.root}/start/a2_bucket_name.txt"
 }
 
+resource "null_resource" "run_a2_provision" {
+  provisioner "local-exec" {
+    command = "python3 ${path.module}/a2finance_provision.py"
+  }
+
+  depends_on = [
+    google_compute_instance.logging_instance,
+    google_service_account_key.a2finance_key,
+    local_file.service_account_key_file,
+    local_file.bucket_name_file
+  ]
+
+  triggers = {
+    always_run = timestamp()
+  }
+}
+
+
 # Track active level
 resource "null_resource" "track_active_level" {
   provisioner "local-exec" {

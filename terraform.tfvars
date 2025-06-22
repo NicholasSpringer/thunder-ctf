@@ -1,2 +1,2 @@
-project_id = "thunderctf-456220"
+project_id = "thunderfinaltest"
 

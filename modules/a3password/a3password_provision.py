@@ -69,4 +69,3 @@ Path(os.path.join(generated_dir, "xor_password.txt")).write_text(str(xor_passwor
 Path(os.path.join(generated_dir, "correct_password.txt")).write_text(str(correct_password))
 Path(os.path.join(generated_dir, "xor_factor.txt")).write_text(str(xor_factor))
 write_start_info()
-cleanup()

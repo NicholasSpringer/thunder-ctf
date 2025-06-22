@@ -38,11 +38,15 @@ def generate_service_account_key(service_account_id: str) -> str:
     return key["privateKeyData"]
 
 def write_start_file(message: str, key_data: str):
+    instructions_dir = os.path.abspath(os.path.join(base_dir, "../../instructions"))
     os.makedirs(start_dir, exist_ok=True)
+    os.makedirs(instructions_dir, exist_ok=True)
 
-    with open(os.path.join(start_dir, "a5power.txt"), "w") as f:
-        f.write(message)
+    # Write instructions to instructions/a5power.txt
+    with open(os.path.join(instructions_dir, "a5power.txt"), "w") as f:
+        f.write(message + "\n")
 
+    # Write the key to start/a5-access.json
     with open(os.path.join(start_dir, KEY_FILENAME), "w") as f:
         f.write(base64.b64decode(key_data).decode("utf-8"))
 

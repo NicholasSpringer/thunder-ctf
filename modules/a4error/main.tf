@@ -41,7 +41,7 @@ resource "google_compute_instance" "a4_instance" {
 
   boot_disk {
     initialize_params {
-      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts"
+      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2204-lts"
     }
   }
 
