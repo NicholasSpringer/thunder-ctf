@@ -96,15 +96,29 @@ def write_log_entry(target_name):
         resource=Resource(type="global", labels={})
     )
 
-def write_start_info(target_name):
-    os.makedirs(START_DIR, exist_ok=True)
-    os.makedirs(INSTRUCTIONS_DIR, exist_ok=True)
-    instruction = (
-        f"Use the compromised service account credentials stored in start/a2-access.json to find the credit card number of {target_name}, "
-        "which is hidden somewhere in the GCP project."
-    )
-    with open(os.path.join("instructions", "a2finance.txt"), "w") as f:
-        f.write(instruction + "\n")
+def write_log_entries(target_name, count=100):
+    credentials, project_id = default()
+    log_client = logging_v2.Client()
+    logger = log_client.logger("transactions")
+    first_names, last_names = load_names()
+
+    # Randomly choose which log will contain the target name
+    target_index = random.randint(0, count - 1)
+
+    for i in range(count):
+        if i == target_index:
+            name = target_name
+        else:
+            name = f"{random.choice(first_names)} {random.choice(last_names)}"
+
+        logger.log_struct(
+            {
+                "name": name,
+                "card": f"{random.randint(1000,9999)}-{random.randint(1000,9999)}-{random.randint(1000,9999)}-{random.randint(1000,9999)}",
+                "amount": f"{random.randint(10, 999)}.00",
+            },
+            resource=Resource(type="global", labels={})
+        )
 
 def get_bucket_from_file():
     with open("start/a2_bucket_name.txt") as f:
@@ -135,7 +149,7 @@ def main():
 
     first_names, last_names = load_names()
     target_name = f"{random.choice(first_names)} {random.choice(last_names)}"
-    write_log_entry(target_name)
+    write_log_entries(target_name, count=100)
     write_start_info(target_name)
 
     # Inject SSH public key into VM

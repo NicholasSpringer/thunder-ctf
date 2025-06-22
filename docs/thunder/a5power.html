@@ -38,7 +38,7 @@
       <span id="writeup_button" class="hintbanner writeupbutton">Show Level Writeup</span>
     </div>
     <h3>Destroy:</h3>
-    <pre>python3 thunder.py destroy</pre>
+    <pre>./destroy-level.sh</pre>
   </div>
   <footer class="bottombanner">Thunder CTF was created at Portland State University under NSF Award #1821841</footer>
 
@@ -46,9 +46,9 @@
     <li>
       <span>Intro</span>
       <h3>Setup:</h3>
-      <p>Your virtual environment must be active to use thunder.py:</p>
+      <p>Your virtual environment must be activated:</p>
       <pre>source ../env-tctf/bin/activate</pre>
-      <pre>python3 thunder.py create thunder/a5power</pre>
+      <pre>./run-level.sh a5power</pre>
       <p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
       <pre>gcloud auth activate-service-account --key-file=start/a5-access.json</pre>
       <h3>Intro:</h3>

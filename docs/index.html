@@ -49,10 +49,14 @@ pip3 install -r requirements.txt</pre>
       serviceusage.googleapis.com \
       compute.googleapis.com \
       appengine.googleapis.com</pre>
-    <p>Then, edit <pre>terraform.tfvars</pre></p> <p>in root directory to fill in the project id</p>
+    <p>Then, in root directory, edit terraform.tfvars to fill in the project id</p>
+    <pre>vim terraform.tfvars</pre>
+
     <p>Finally, initialize the project for the CTF by enabling all required services and logging features:</p>
     <pre>terraform init
 terraform apply -target=module.setup -auto-approve</pre>
+    <p>If you want to do the defender path labs later, run the audit Logging module to turn on audit logging.</p>
+    <pre>terraform apply -target=module.auditLogging -auto-approve</pre>
     <p>You are now ready to play the CTF! </p>
 
     <h2>Levels:</h2>
