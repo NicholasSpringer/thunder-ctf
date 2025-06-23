@@ -67,6 +67,7 @@ with open(os.path.join(function_dir, "requirements.txt"), "w") as f:
 zip_path = os.path.join(base_dir, "function.zip")
 with zipfile.ZipFile(zip_path, "w") as zipf:
     zipf.write(main_py_path, arcname="main.py")
+    zipf.write(os.path.join(function_dir, "requirements.txt"), arcname="requirements.txt")
 
 
 def cleanup():
