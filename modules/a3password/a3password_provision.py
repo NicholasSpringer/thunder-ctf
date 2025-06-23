@@ -29,6 +29,9 @@ def main(request):
     xor_password = int(os.environ.get("XOR_PASSWORD"))
     password = request.args.get("password")
 
+    if not bucket_name:
+        return "SECRET_BUCKET environment variable not set\n", 500
+
     if not password:
         return "Missing password\\n", 400
     try:

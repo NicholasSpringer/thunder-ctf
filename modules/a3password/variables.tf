@@ -16,5 +16,5 @@ variable "zone" {
 variable "level_secret" {
   type        = string
   description = "Secret to store in the bucket"
-  default     = "example-level-secret"
+  default     = "14587123489571908475230495"
 }
