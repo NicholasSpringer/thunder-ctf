@@ -103,12 +103,6 @@ resource "google_cloudfunctions_function" "a3_func" {
   environment_variables = {
     XOR_PASSWORD = data.local_file.xor_password.content
   }
-
-  depends_on = [
-    google_project_iam_member.bind_custom_role,
-    google_storage_bucket_object.function_zip,
-    google_service_account.a3_sa
-  ]
 }
 
 resource "google_cloudfunctions_function_iam_member" "invoker" {
@@ -116,7 +110,7 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
   region         = var.region
   cloud_function = google_cloudfunctions_function.a3_func.name
   role           = "roles/cloudfunctions.invoker"
-  member         = "allUsers"
+  member         = "serviceAccount:${google_service_account.a3_sa.email}"
 }
 
 # Mark this as the active level
