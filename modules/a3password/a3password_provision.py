@@ -28,23 +28,24 @@ def main(request):
 
     xor_password = int(os.environ.get("XOR_PASSWORD"))
     password = request.args.get("password")
+    bucket_name = os.environ.get("SECRET_BUCKET")
 
     if not bucket_name:
-        return "SECRET_BUCKET environment variable not set\n", 500
+        return "SECRET_BUCKET environment variable not set\\n", 500
 
     if not password:
         return "Missing password\\n", 400
+
     try:
         if int(password) ^ XOR_FACTOR == xor_password:
-            bucket_name = os.environ.get("SECRET_BUCKET")
             storage_client = storage.Client()
             bucket = storage_client.get_bucket(bucket_name)
             secret_blob = bucket.blob("secret.txt")
             return "Correct password. The secret is: " + secret_blob.download_as_string().decode("utf-8") + "\\n"
         else:
             return "Incorrect password\\n", 403
-    except:
-        return "Invalid password\\n", 400
+    except Exception as e:
+        return "Invalid password: " + str(e) + "\\n", 400
 """
 
 def write_start_info():
