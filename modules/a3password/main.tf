@@ -112,6 +112,12 @@ resource "google_project_iam_member" "allow_a3_sa_read_storage" {
   member  = "serviceAccount:${google_service_account.a3_sa.email}"
 }
 
+resource "google_storage_bucket_iam_member" "allow_bucket_read" {
+  bucket = google_storage_bucket.secret_bucket.name
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${google_service_account.a3_sa.email}"
+}
+
 resource "google_cloudfunctions_function_iam_member" "invoker" {
   project        = var.project_id
   region         = var.region
