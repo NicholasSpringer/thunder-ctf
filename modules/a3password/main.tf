@@ -106,6 +106,12 @@ resource "google_cloudfunctions_function" "a3_func" {
   }
 }
 
+resource "google_project_iam_member" "allow_a3_sa_read_storage" {
+  project = var.project_id
+  role    = "roles/storage.objectViewer"
+  member  = "serviceAccount:${google_service_account.a3_sa.email}"
+}
+
 resource "google_cloudfunctions_function_iam_member" "invoker" {
   project        = var.project_id
   region         = var.region
