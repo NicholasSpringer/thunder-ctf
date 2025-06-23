@@ -60,15 +60,15 @@ main_py_path = os.path.join(function_dir, "main.py")
 with open(main_py_path, "w") as f:
     f.write(main_py_code.strip())
 
-with open(os.path.join(function_dir, "requirements.txt"), "w") as f:
+requirements_path = os.path.join(function_dir, "requirements.txt")
+with open(requirements_path, "w") as f:
     f.write("google-cloud-storage\n")
 
 # Zip the function
 zip_path = os.path.join(base_dir, "function.zip")
 with zipfile.ZipFile(zip_path, "w") as zipf:
     zipf.write(main_py_path, arcname="main.py")
-    zipf.write(os.path.join(function_dir, "requirements.txt"), arcname="requirements.txt")
-
+    zipf.write(requirements_path, arcname="requirements.txt")
 
 def cleanup():
     for path in [function_dir, generated_dir, function_zip_path]:
