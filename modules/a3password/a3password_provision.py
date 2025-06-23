@@ -24,6 +24,8 @@ main_py_code = f"""
 def main(request):
     XOR_FACTOR = {xor_factor}
     import os
+    from google.cloud import storage
+
     xor_password = int(os.environ.get("XOR_PASSWORD"))
     password = request.args.get("password")
 
@@ -31,7 +33,11 @@ def main(request):
         return "Missing password\\n", 400
     try:
         if int(password) ^ XOR_FACTOR == xor_password:
-            return "Correct!\\n"
+            bucket_name = os.environ.get("SECRET_BUCKET")
+            storage_client = storage.Client()
+            bucket = storage_client.get_bucket(bucket_name)
+            secret_blob = bucket.blob("secret.txt")
+            return "Correct password. The secret is: " + secret_blob.download_as_string().decode("utf-8") + "\\n"
         else:
             return "Incorrect password\\n", 403
     except:

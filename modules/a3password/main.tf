@@ -101,7 +101,8 @@ resource "google_cloudfunctions_function" "a3_func" {
   service_account_email = google_service_account.a3_sa.email
 
   environment_variables = {
-    XOR_PASSWORD = data.local_file.xor_password.content
+    XOR_PASSWORD  = data.local_file.xor_password.content
+    SECRET_BUCKET = google_storage_bucket.secret_bucket.name
   }
 }
 
