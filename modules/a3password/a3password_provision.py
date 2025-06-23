@@ -42,7 +42,9 @@ def main(request):
             storage_client = storage.Client()
             bucket = storage_client.get_bucket(bucket_name)
             secret_blob = bucket.blob("secret.txt")
-            return "Correct password. The secret is: " + secret_blob.download_as_string().decode("utf-8") + "\\n"
+            secret = secret_blob.download_as_string().decode("utf-8")
+            print(f"[DEBUG] secret.txt content: {secret}")
+            return "Correct password. The secret is: " + secret + "\\n"
         else:
             return "Incorrect password\\n", 403
     except Exception as e:
