@@ -18,6 +18,7 @@ xor_password = random.randint(100000000000, 999999999999)
 xor_factor = random.randint(100000000000, 999999999999)
 correct_password = xor_password ^ xor_factor
 
+
 # cloud function code
 # The function will be deployed to Google Cloud Functions
 main_py_code = f"""
@@ -58,6 +59,9 @@ def write_start_info():
 main_py_path = os.path.join(function_dir, "main.py")
 with open(main_py_path, "w") as f:
     f.write(main_py_code.strip())
+
+with open(os.path.join(function_dir, "requirements.txt"), "w") as f:
+    f.write("google-cloud-storage\n")
 
 # Zip the function
 zip_path = os.path.join(base_dir, "function.zip")
