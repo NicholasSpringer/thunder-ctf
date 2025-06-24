@@ -40,16 +40,24 @@
     <pre>virtualenv -v env-tctf
 source env-tctf/bin/activate</pre>
     <p>Then, clone the CTF and install its required packages</p>
-    <pre>git clone https://github.com/NicholasSpringer/thunder-ctf.git
+    <pre>git clone https://github.com/Vincentmask/thunder-ctf.git
 cd thunder-ctf
 pip3 install -r requirements.txt</pre>
     <p>Then, enable the resource manager and service usage services for the project</p>
-    <pre>gcloud services enable cloudresourcemanager.googleapis.com serviceusage.googleapis.com</pre>
-    <p>Finally, set up the project to run the CTF by enabling all the services and logging features required by it.</p>
-<pre>#If you want to do the defender path labs later, enter y to turn on audit logging.
-python3 thunder.py activate_project [PROJECT-ID]</pre>
-    <p>You are now ready to play the CTF! A full list of commands can be found by running: </p>
-    <pre>python3 thunder.py help</pre>
+    <pre>gcloud services enable \
+      cloudresourcemanager.googleapis.com \
+      serviceusage.googleapis.com \
+      compute.googleapis.com \
+      appengine.googleapis.com</pre>
+    <p>Then, in root directory, edit terraform.tfvars to fill in the project id</p>
+    <pre>vim terraform.tfvars</pre>
+
+    <p>Finally, initialize the project for the CTF by enabling all required services and logging features:</p>
+    <pre>terraform init
+terraform apply -target=module.setup -auto-approve</pre>
+    <p>If you want to do the defender path labs later, run the audit Logging module to turn on audit logging.</p>
+    <pre>terraform apply -target=module.auditLogging -auto-approve</pre>
+    <p>You are now ready to play the CTF! </p>
 
     <h2>Levels:</h2>
     <div><a class="levelbanner levelbutton" style="display: block; margin-bottom: 5px;" href="thunder/a1openbucket.html">thunder/a1openbucket</a></div>

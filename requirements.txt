@@ -30,3 +30,6 @@ progressbar2
 #VM instances
 flask
 gunicorn
+GitPython
+psycopg2
+psycopg2-binary

@@ -1,84 +1,64 @@
-import random
 import os
-
 import google.auth
-from googleapiclient import discovery
 from google.cloud import storage
-
-from core.framework import levels
-from core.framework.cloudhelpers import deployments, iam, gcstorage, cloudfunctions
+from googleapiclient import discovery
+from core.framework import levels, iam
 
 LEVEL_PATH = 'thunder/a4error'
 RESOURCE_PREFIX = 'a4'
-FUNCTION_LOCATION = 'us-central1'
-INSTANCE_ZONE = 'us-west1-b'
 
+# These must match Terraform values
+BUCKET_NAME_FILE = 'start/a4_bucket_name.txt'
+INSTANCE_NAME = 'a4-instance'
+ZONE = 'us-west1-b'
+KEY_FILENAME = 'a4-access.json'
 
-def create(second_deploy=True):
-    print("Level initialization started for: " + LEVEL_PATH)
-    # Create randomized nonce name to avoid namespace conflicts
-    nonce = str(random.randint(100000000000, 999999999999))
-    bucket_name = f'{RESOURCE_PREFIX}-bucket-{nonce}'
+def main():
+    print(f"[INFO] Running provision logic for {LEVEL_PATH}")
 
-    func_template_args = {'bucket_name': bucket_name}
-    # Upload function and get upload url
-    func_upload_url = cloudfunctions.upload_cloud_function(
-        f'core/levels/{LEVEL_PATH}/function', FUNCTION_LOCATION, template_args=func_template_args)
-    print("Level initialization finished for: " + LEVEL_PATH)
+    # Load credentials and project ID
+    credentials, project_id = google.auth.default()
 
-    secret = levels.make_secret(LEVEL_PATH)
-    # Insert deployment
-    config_template_args = {'nonce': nonce,
-                            'secret': secret,
-                            'func_upload_url': func_upload_url}
-    template_files = [
-        'core/framework/templates/bucket_acl.jinja',
-        'core/framework/templates/cloud_function.jinja',
-        'core/framework/templates/service_account.jinja',
-        'core/framework/templates/iam_policy.jinja',
-        'core/framework/templates/ubuntu_vm.jinja']
-    
-    if second_deploy:
-        deployments.insert(LEVEL_PATH, template_files=template_files, config_template_args=config_template_args, second_deploy=True)
-    else:
-        deployments.insert(LEVEL_PATH, template_files=template_files,
-                       config_template_args=config_template_args)
-    try:
+    # Read bucket name from Terraform-provided file
+    with open(BUCKET_NAME_FILE, 'r') as f:
+        bucket_name = f.read().strip()
 
-        print("Level setup started for: " + LEVEL_PATH)
-        # Insert dummy files into bucket
-        gcstorage.upload_directory_recursive(
-            f'core/levels/{LEVEL_PATH}/bucket', bucket_name)
+    print(f"[INFO] Target GCS bucket: {bucket_name}")
 
-        # Delete startup script that contains secret from instance metadata
-        credentials, project_id = google.auth.default()
-        compute_api = discovery.build(
-            'compute', 'v1', credentials=credentials)
-        instance_info = compute_api.instances().get(project=project_id,
-                                                    zone=INSTANCE_ZONE,
-                                                    instance=f'{RESOURCE_PREFIX}-instance').execute()
-        metadata_fingerprint = instance_info['metadata']['fingerprint']
-        set_metadata_body = {'fingerprint': metadata_fingerprint, 'items': []}
-        compute_api.instances().setMetadata(project=project_id,
-                                            zone=INSTANCE_ZONE,
-                                            instance=f'{RESOURCE_PREFIX}-instance',
-                                            body=set_metadata_body).execute()
+    # Upload core/levels/thunder/a4error/bucket/* to GCS bucket
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    local_path = f'core/levels/{LEVEL_PATH}/bucket'
+    for dirpath, _, filenames in os.walk(local_path):
+        for fname in filenames:
+            rel_path = os.path.relpath(os.path.join(dirpath, fname), local_path)
+            blob = bucket.blob(rel_path)
+            blob.upload_from_filename(os.path.join(dirpath, fname))
+            print(f"[UPLOAD] {rel_path} uploaded to {bucket_name}")
 
-        # Create service account key file
-        sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
-        print(f'Level creation complete for: {LEVEL_PATH}')
-        start_message = (
-            f'In this level, look for a file named "secret.txt," which is owned by "secretuser." '
-            'Use the given compromised credentials to find it.')
-        levels.write_start_info(
-            LEVEL_PATH, start_message, file_name=f'{RESOURCE_PREFIX}-access.json', file_content=sa_key)
-        print(
-            f'Instruction for the level can be accessed at thunder-ctf.cloud/thunder/{LEVEL_PATH}.html')
-    except Exception as e: 
-        exit()
+    # Clear startup script from VM metadata
+    compute = discovery.build('compute', 'v1', credentials=credentials)
+    instance_info = compute.instances().get(
+        project=project_id, zone=ZONE, instance=INSTANCE_NAME).execute()
+    fingerprint = instance_info['metadata']['fingerprint']
+    compute.instances().setMetadata(
+        project=project_id,
+        zone=ZONE,
+        instance=INSTANCE_NAME,
+        body={'fingerprint': fingerprint, 'items': []}
+    ).execute()
+    print(f"[INFO] Cleared VM metadata from {INSTANCE_NAME}")
 
-def destroy():
-    # Delete starting files
-    levels.delete_start_files()
-    # Delete deployment
-    deployments.delete()
+    # Generate service account key
+    sa_key = iam.generate_service_account_key(f'{RESOURCE_PREFIX}-access')
+    levels.write_start_info(
+        LEVEL_PATH,
+        'In this level, look for a file named "secret.txt," which is owned by "secretuser." Use the given compromised credentials to find it.',
+        file_name=KEY_FILENAME,
+        file_content=sa_key
+    )
+    print(f"[KEY] Service account key written to start/{KEY_FILENAME}")
+    print("[DONE] a4error provision complete.")
+
+if __name__ == "__main__":
+    main()

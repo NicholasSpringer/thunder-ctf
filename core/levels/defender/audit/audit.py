@@ -163,7 +163,12 @@ def create_tables(db_password):
     user = {'kind':'sql#user','name':'api-engine','project':project_id,'instance':instance_name,'password':db_password}
     service.users().insert(project=project_id, instance=instance_name, body=user).execute()
 
-    proxy = subprocess.Popen([f'core/levels/{LEVEL_PATH}/cloud_sql_proxy', f'-instances={connection_name}=tcp:5432'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log_path = f"/tmp/cloud_sql_proxy.log"
+    with open(log_path, "w") as log_file:
+        proxy = subprocess.Popen([
+            f'core/levels/{LEVEL_PATH}/cloud_sql_proxy',
+            f'-instances={connection_name}=tcp:5432'
+        ], stdout=log_file, stderr=log_file)
     time.sleep(5)
 
     try:

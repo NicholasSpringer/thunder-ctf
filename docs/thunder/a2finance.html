@@ -38,7 +38,7 @@
       <span id="writeup_button" class="hintbanner writeupbutton">Show Level Writeup</span>
     </div>
     <h3>Destroy:</h3>
-    <pre>python3 thunder.py destroy</pre>
+    <pre>./destroy-level.sh</pre>
   </div>
   <footer class="bottombanner">Thunder CTF was created at Portland State University under NSF Award #1821841</footer>
 
@@ -46,7 +46,7 @@
     <li>
       <span>Intro</span>
       <h3>Setup:</h3>
-      <p>Your virtual environment must be active to use thunder.py:</p>
+      <p>Your virtual environment must be activated:</p>
       <pre>source ../env-tctf/bin/activate</pre>
       <p>In order for this level to deploy correctly, you must have your git username and email configuration values set to some values before the level is created, but they don't have to correspond to your actual details.</p>
       <pre># Check if "user.email" and "user.name" are set:
@@ -54,7 +54,7 @@ git config --list
 # If they aren't set, run:
 git config --global user.name "John Doe"
 git config --global user.email johndoe@example.com</pre>
-      <pre>python3 thunder.py create thunder/a2finance</pre>
+      <pre>./run-level.sh a2finance</pre>
       <p>Activate the service account given to you. You MUST do this, or the level will not work as intended.</p>
       <pre>gcloud auth activate-service-account --key-file=start/a2-access.json</pre>
       <h3>Intro:</h3>
@@ -175,7 +175,7 @@ git config --global user.email johndoe@example.com</pre>
     <li>
       <span>Hint 20</span>
       <p>The command to get the log entry you want is:</p>
-      <pre>gcloud logging read "logName=projects/[project-id]/logs/[log-name] AND jsonPayload.name=[name]"</pre>
+      <pre>gcloud logging read 'logName="projects/[project-id]/logs/[log-name]" AND jsonPayload.name="[name]"'</pre>
     </li>
     
   </ul>
