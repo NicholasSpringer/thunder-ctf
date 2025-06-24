@@ -139,7 +139,7 @@ def write_start_info(target_name):
     os.makedirs(START_DIR, exist_ok=True)
     os.makedirs(INSTRUCTIONS_DIR, exist_ok=True)
     instruction = (
-        f"Use the compromised service account credentials stored in start/a2-access.json to find the credit card number of {target_name}, "Add commentMore actions
+        f"Use the compromised service account credentials stored in start/a2-access.json to find the credit card number of {target_name}, "
         "which is hidden somewhere in the GCP project."
     )
     with open(os.path.join("instructions", "a2finance.txt"), "w") as f:
