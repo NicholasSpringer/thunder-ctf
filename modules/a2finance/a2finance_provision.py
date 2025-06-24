@@ -135,6 +135,16 @@ def inject_ssh_key(project_id, zone, instance_name, ssh_username, pubkey_path):
         "--project", project_id
     ], check=True)
 
+def write_start_info(target_name):
+    os.makedirs(START_DIR, exist_ok=True)
+    os.makedirs(INSTRUCTIONS_DIR, exist_ok=True)
+    instruction = (
+        f"Use the compromised service account credentials stored in start/a2-access.json to find the credit card number of {target_name}, "Add commentMore actions
+        "which is hidden somewhere in the GCP project."
+    )
+    with open(os.path.join("instructions", "a2finance.txt"), "w") as f:
+        f.write(instruction + "\n")
+
 def main():
     os.makedirs(START_DIR, exist_ok=True)
     priv_path = os.path.join(START_DIR, "a2_key")
